@@ -7,6 +7,7 @@ import { GoogleApiCallService } from './GoogleApiCallService';
 import { Router } from '@angular/router';
 import { CountryDataForAppStore } from './CountryDataForApp.store';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { ImageFetcherService } from './ImageFetcherService';
 
 declare global {
   interface Window {
@@ -54,6 +55,9 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
     newTripForm!: FormGroup;
     // userService = inject(UserService);
 
+
+    //for auto load trip cover image
+    imageFetcherService = inject(ImageFetcherService)
 
   async ngOnInit(): Promise<void> {
 
