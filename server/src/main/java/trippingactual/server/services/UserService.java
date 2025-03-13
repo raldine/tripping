@@ -1,5 +1,9 @@
 package trippingactual.server.services;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,6 +54,25 @@ public class UserService {
         String replyFromRepo = userRepo.checkIfUserPassFurtherReg(email);
 
         return replyFromRepo;
+    }
+
+    public Optional<UserInfo> getUserDetailsByFireBaseID(String firebaseUid){
+
+        Optional<UserInfo> user = userRepo.getUserDetailsByFireBaseID(firebaseUid);
+
+
+        return user;
+
+    }
+
+    public List<UserInfo> getManyUsersDetailsByFireBaseIDs(List<String> firebaseUids){
+
+
+        List<UserInfo> users = new ArrayList<>();
+
+        users = userRepo.getManyUsersDetailsByFireBaseIDs(firebaseUids);
+
+        return users;
     }
     
 }

@@ -230,6 +230,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   processForm() {
 
     const newUser: UserFront = {
+      user_id: null,
       user_name: this.registerForm.get('user_name')?.value,
       user_email: this.currUser?.email ?? '',
       firebase_uid: this.currUser?.uid ?? '',

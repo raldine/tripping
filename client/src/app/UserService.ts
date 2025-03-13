@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { UserFront } from "./models/models";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { user } from "@angular/fire/auth";
 import { lastValueFrom } from "rxjs";
 
@@ -24,6 +24,34 @@ export class UserService{
                 throw error;  // Re-throwing error after logging
             });
     }
+
+
+    getUserbyFirebaseId(firebaseId: string): Promise<UserFront> {
+        console.info("calling user service");
+        console.log("firebaseuid of user is ", firebaseId);
+           const headers = new HttpHeaders({
+                'Authorization' : firebaseId
+            }
+            )
+
+        return lastValueFrom(this.http.get<UserFront>(`/user/get-user/${firebaseId}`, { headers }))
+
+    }
+
+    getManyUserbyFirebaseId(firebaseIds: string[], firebaseUidOfRequester: string): Promise<UserFront[]> {
+        console.info("calling user service");
+        console.log("firebaseuid of user is ", firebaseIds);
+           const headers = new HttpHeaders({
+                'Authorization' : firebaseUidOfRequester
+            }
+            )
+            const firebaseIdsParam = firebaseIds.join(',');
+
+        return lastValueFrom(this.http.get<UserFront[]>(`/user/get-user/${firebaseIdsParam}`, { headers }))
+
+    }
+
+    
     
     
 

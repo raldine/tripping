@@ -23,4 +23,17 @@ public class SqlQueries {
     //post sql user new/exist check - check if user have gone through further Registration phase
     public final static String checkUserPassFurtherRegistation= "SELECT COUNT(*) from users WHERE country_origin IS NULL and user_email=?";
 
+    public final static String getUserInfoByFirebaseUid = "SELECT * from users where firebase_uid=?";
+
+
+    //TRIP DETALS
+    //put new trip
+    public final static String putNewTrip = "INSERT INTO trips(trip_id, trip_name, start_date, end_date, destination_city, destination_curr, description_t, cover_image_id, attendees, master_user_id) VALUES (?, ?, ?, ?, ?, ? ,?, ?, ?, ?)";
+
+
+
+
+    //USER UPLOADED RESOURCES
+
+
 }

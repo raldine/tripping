@@ -1,6 +1,11 @@
 package trippingactual.server.models;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 
 public class UserInfo {
     private String user_id;
@@ -11,6 +16,7 @@ public class UserInfo {
     private String timezone_origin;
     private String currency_origin;
     private boolean notif;
+    
     public String getUser_id() {
         return user_id;
     }
@@ -129,12 +135,55 @@ public class UserInfo {
         }
 
         return user;
-
-
-
-     
         
 
     }
+
+    public static UserInfo populate(ResultSet rs) throws SQLException {
+    UserInfo user = new UserInfo();
+
+    user.setUser_id(rs.getString("user_id"));
+    user.setUser_name(rs.getString("user_name"));
+    user.setUser_email(rs.getString("user_email"));
+    user.setFirebase_uid(rs.getString("firebase_uid"));
+    user.setCountry_origin(rs.getString("country_origin"));
+    user.setTimezone_origin(rs.getString("timezone_origin"));
+    user.setCurrency_origin(rs.getString("currency_origin"));
+    user.setNotif(rs.getBoolean("notif"));
+
+    return user;
+}
+
+
+public JsonObject toJson() {
+    JsonObjectBuilder builder = Json.createObjectBuilder();
+
+    if (user_id != null) {
+        builder.add("user_id", user_id);
+    }
+    if (user_name != null) {
+        builder.add("user_name", user_name);
+    }
+    if (user_email != null) {
+        builder.add("user_email", user_email);
+    }
+    if (firebase_uid != null) {
+        builder.add("firebase_uid", firebase_uid);
+    }
+    if (country_origin != null) {
+        builder.add("country_origin", country_origin);
+    }
+    if (timezone_origin != null) {
+        builder.add("timezone_origin", timezone_origin);
+    }
+    if (currency_origin != null) {
+        builder.add("currency_origin", currency_origin);
+    }
+    builder.add("notif", notif);  // 'notif' is always included since it's a boolean
+
+    return builder.build();
+}
+
+
 
 }

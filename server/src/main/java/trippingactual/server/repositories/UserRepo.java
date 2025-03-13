@@ -1,11 +1,18 @@
 package trippingactual.server.repositories;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import trippingactual.server.models.FileObject;
 
 // import com.google.gson.JsonObject;
 
@@ -24,7 +31,7 @@ public class UserRepo {
 
             boolean countIfExist = sqltemplate.queryForObject(SqlQueries.checkUserExist, boolean.class, email);
 
-            if (countIfExist==false) {
+            if (countIfExist == false) {
                 System.out.println("detected new user under " + email);
 
                 int successUpdate = sqltemplate.update(SqlQueries.insertNewUser, firebaseUid, email);
@@ -79,7 +86,8 @@ public class UserRepo {
             // user_email=?";
 
             int count = sqltemplate.update(SqlQueries.updateMoreNewUserDetails, userInfo.getUser_name(),
-                    userInfo.getCountry_origin(), userInfo.getTimezone_origin(), userInfo.getCurrency_origin(), userInfo.isNotif(),
+                    userInfo.getCountry_origin(), userInfo.getTimezone_origin(), userInfo.getCurrency_origin(),
+                    userInfo.isNotif(),
                     userInfo.getUser_email());
 
             if (count > 0) {
@@ -94,12 +102,10 @@ public class UserRepo {
         return null;
     }
 
-
-    public String checkIfUserPassFurtherReg(String email){
+    public String checkIfUserPassFurtherReg(String email) {
 
         try {
 
-     
             int count = sqltemplate.queryForObject(SqlQueries.checkUserPassFurtherRegistation, Integer.class, email);
 
             if (count > 0) {
@@ -113,7 +119,36 @@ public class UserRepo {
         }
         return null;
 
+    }
 
+    public Optional<UserInfo> getUserDetailsByFireBaseID(String firebaseUid) {
+
+        return sqltemplate.query(SqlQueries.getUserInfoByFirebaseUid, (ResultSet rs) -> {
+            if (rs.next()) {
+                return Optional.of(UserInfo.populate(rs));
+            } else {
+                return Optional.empty();
+            }
+        }, firebaseUid);
+
+    }
+
+    public List<UserInfo> getManyUsersDetailsByFireBaseIDs(List<String> firebaseUids) {
+
+        // Create a dynamic IN clause with as many placeholders as there are Firebase
+        // UIDs
+        String placeholders = String.join(",", Collections.nCopies(firebaseUids.size(), "?"));
+
+        // Construct the SQL query
+        String sqlQuery = "SELECT * FROM users WHERE firebase_uid IN (" + placeholders + ")";
+
+        return sqltemplate.query(sqlQuery, (ResultSet rs) -> {
+            List<UserInfo> users = new ArrayList<>();
+            while (rs.next()) {
+                users.add(UserInfo.populate(rs));
+            }
+            return users;
+        }, firebaseUids.toArray());
     }
 
 }

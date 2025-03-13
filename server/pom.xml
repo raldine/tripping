@@ -30,6 +30,11 @@
 		<java.version>23</java.version>
 	</properties>
 	<dependencies>
+	<dependency>
+    <groupId>com.amazonaws</groupId>
+    <artifactId>aws-java-sdk-s3</artifactId>
+    <version>1.12.782</version>
+</dependency>
 		<dependency>
 			<groupId>org.glassfish</groupId>
 			<artifactId>jakarta.json</artifactId>

@@ -1,0 +1,36 @@
+<div id="navBar">
+    <p-menubar [model]="items">
+        <!-- Logo Section (Start) -->
+        <ng-template pTemplate="start">
+            <img src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/tripping_logo_nav.png"
+                height="35">
+        </ng-template>
+
+        <!-- Navigation Items -->
+        <ng-template let-item pTemplate="item">
+            <ng-container *ngIf="item.route">
+                <a [routerLink]="item.route" class="p-menubar-item-link">
+                    <span [class]="item.icon"></span>
+                    <span class="ml-2">{{ item.label }}</span>
+                </a>
+            </ng-container>
+        </ng-template>
+
+        <!-- Avatar Section -->
+        <ng-template pTemplate="end">
+            <div class="flex items-center justify-center gap-4" style="display: flex; align-items: center;">
+                @if (currUser) {
+                <span class="text-lg font-medium" style="padding-right: 20px;">{{ currUser.displayName }}</span>
+                @if (user_pp_url) {
+                <p-avatar [image]="user_pp_url" class="mr-2" shape="circle" (onImageError)="user_pp_url = null"></p-avatar>
+                } @else {
+                    <p-avatar [label]="currUser.displayName?.substring(0,1)" styleClass="mr-2" shape="circle" />
+                }
+                } @else {
+                <!-- If no user is logged in, optionally add a login button -->
+                <!-- <button pButton label="Login" (click)="navigateToLogin()"></button> -->
+                }
+            </div>
+        </ng-template>
+    </p-menubar>
+</div>

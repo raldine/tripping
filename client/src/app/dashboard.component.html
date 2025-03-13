@@ -1,1 +1,44 @@
-<p>dashboard works!</p>
+<div id="dashboard-body">
+    <div id="background-image-header">
+        <img src="{{ bg_image }}">
+    </div>
+    <div id="main-content">
+
+        <h1>Welcome, {{ currUser?.displayName }}</h1>
+        <div class="card">
+            <p-menubar [model]="nestedMenuItems">
+                <ng-template #end>
+                    <!-- for left most elements -->
+                </ng-template>
+            </p-menubar>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+</div>

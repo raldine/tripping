@@ -1,9 +1,11 @@
+
+<div>
 @if (currUser) {
     <div>
         @if (user_pp_url) {
             <p-avatar image="{{ user_pp_url }}" class="mr-2" size="xlarge" shape="circle" />
         } @else {
-            <p-avatar [label]="currUser.displayName?.substring(0)" styleClass="mr-2" size="xlarge" />
+            <p-avatar [label]="currUser.displayName?.substring(0)" styleClass="mr-2" shape="circle" size="xlarge" />
         }
         
         <h3>Welcome, {{ currUser.displayName }}</h3>
@@ -39,3 +41,5 @@
 } @else {
     <div>No user</div>
 }
+</div>
+
