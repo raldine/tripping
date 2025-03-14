@@ -23,14 +23,24 @@ export class FileUploadService {
     formData.set("user_id_pp", form['user_id_pp']);
     formData.set('original_file_name', form['original_file_name']);
 
-    console.log("check what is sent", formData.values)
-    const headers = new HttpHeaders({
-        'Authorization' : firebaseUid
-    })
+    console.log("check what is sent", formData.values());
 
-    return lastValueFrom(
-      this.httpClient.post<FileUploadedInfo>('api/upload', formData, { headers })
-    );
+    const headers = new HttpHeaders({
+        'Authorization': firebaseUid
+    });
+
+    // Ensure that the function always resolves a value
+    return Promise.resolve(
+        lastValueFrom(
+            this.httpClient.post<FileUploadedInfo>('api/upload', formData, { headers })
+        )
+    ).then(result => {
+        console.log("Upload Successful:", result);
+        return result;  // Ensure the result is returned
+    }).catch(error => {
+        console.error("Upload Failed:", error);
+        throw error;  // Re-throw the error for handling upstream
+    });
 
   }
 

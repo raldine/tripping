@@ -23,13 +23,14 @@
         <!-- Image Upload Section -->
         <label for="cover_image">Upload an Image to set a Cover Image for this Trip:</label><br>
         <input type="file" id="cover_image" accept=".png, .jpeg, .jpg" (change)="onFileSelected($event)"><br><br>
+        <button type="button" (click)="uploadImage()">Upload Image</button>
 
         <!-- Image Preview -->
-        <div *ngIf="dataUri">
+        <div *ngIf="!fileThatGotSuccessfullyUploaded.resource_id.match('')">
             <label>Image Preview:</label><br>
-            <img [src]="dataUri" alt="Cover Image Preview" style="max-width: 20%; height: auto;">
+            <img [src]="fileThatGotSuccessfullyUploaded.do_url" alt="Cover Image Preview" style="max-width: 20%; height: auto;">
 
-            <button type="button" (click)="cancelImage()">Cancel</button>
+            <button type="button" (click)="cancelImage()">Remove image</button>
         </div>
 
         <button type="submit">Submit</button>

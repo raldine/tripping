@@ -2,7 +2,7 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FireBaseAuthStore } from './FireBaseAuth.store';
 import { User } from 'firebase/auth';
 import { BehaviorSubject, filter, firstValueFrom, map, Observable, Subscription } from 'rxjs';
-import { AuthState, CountryCurrTime, TripInfo } from './models/models';
+import { AuthState, CountryCurrTime, FileUploadedInfo, TripInfo } from './models/models';
 import { GoogleApiCallService } from './GoogleApiCallService';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CountryDataForAppStore } from './CountryDataForApp.store';
@@ -69,7 +69,14 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
   fileUploadService = inject(FileUploadService)
   //for loading incase too long
   isUploading = false;  // Flag to control the spinner visibility
-  resourceIDSuccessUpload!: string //hold resource id
+ fileThatGotSuccessfullyUploaded: FileUploadedInfo = {
+  resource_id: '',
+  do_url: '',
+  uploadedOn: '',
+  fileOriginalName: '',
+  resourceType: '',
+}
+ uploadSuccess: boolean = false;
 
   //error uploading toast
   messagingService = inject(MessageService);
@@ -302,52 +309,73 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
       reader.readAsDataURL(file);
       console.log(this.dataUri)
       // get file original name from input type=file field
+      // Reset everything related to the previous image
+    this.uploadSuccess = false;
+    this.fileThatGotSuccessfullyUploaded = {
+      resource_id: '',
+      do_url: '',
+      uploadedOn: '',
+      fileOriginalName: '',
+      resourceType: '',
+    };
       this.fileNameHolder = file.name;
+      this.newTripForm.patchValue({ cover_image_id: '' }); // Reset cover image in the form
       this.fileUploadForm.get('original_file_name')?.setValue(this.fileNameHolder);
     
-
-      
+  
+    
     }
 
   }
 
-
-  async upload(): Promise<string | null> {
-    console.log("Uploading an image...");
-  
-    if (!this.dataUri || !this.dataUri.match('')) {
-      console.log("No image data to upload.");
-      return null; // Ensure we return null when there's no data
+  async uploadImage() {
+    if (!this.dataUri) {
+      console.error("No image selected for upload.");
+      return;
     }
-  
-    // Set the spinner to visible
+
     this.isUploading = true;
-  
-    // Convert the dataURI to Blob
-    this.blob = this.dataURItoBlob(this.dataUri);
-  
-    // Prepare the form value
-    const formValue = this.fileUploadForm.value;
-  
+
     try {
-      // Upload the image using the file upload service
+      // Convert DataURI to Blob
+      this.blob = this.dataURItoBlob(this.dataUri);
+      const formValue = this.fileUploadForm.value;
+
+      // **Upload the file**
       const result = await this.fileUploadService.upload(formValue, this.blob, this.currUser?.uid ?? '');
-  
-      // Check if upload was successful by checking result
+
       if (result && result.resource_id) {
-        console.log("Upload successful! Cover Image ID set:", result.resource_id);
-        return result.resource_id; // Return the resource_id after successful upload
+        this.fileThatGotSuccessfullyUploaded = result;
+        const coverImageId = result.resource_id
+        this.uploadSuccess = true;
+       
+        // ✅ **Update Form with Cover Image ID**
+        this.newTripForm.patchValue({ cover_image_id: coverImageId});
+
+        console.log("Upload Successful. Cover Image ID:", coverImageId);
+
+        this.messagingService.add({
+          severity: 'success',
+          summary: 'Upload Successful',
+          detail: 'Image uploaded successfully!',
+          life: 3000,
+        });
       } else {
-        console.error("Upload failed, no resource ID returned.");
-        return null; // Return null when upload fails
+        console.error("Upload failed. No resource ID returned.");
       }
     } catch (error) {
-      console.error("Upload failed with error:", error);
-      return null; // Ensure we return null on error
+      console.error("Error uploading image:", error);
+      this.messagingService.add({
+        severity: 'error',
+        summary: 'Upload Failed',
+        detail: 'There was an error uploading the image.',
+        life: 3000,
+      });
     } finally {
-      this.isUploading = false; // Hide loading spinner
+      this.isUploading = false;
     }
   }
+
   
 
 
@@ -369,86 +397,69 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
   cancelImage(): void {
     this.dataUri = '';  // Clear the image preview
     this.newTripForm.get('cover_image_id')?.reset();  // Reset the cover_image form control
-  }
-
-  // Submit the form and trigger image upload
-async onSubmit(): Promise<void> {
-  if (!this.newTripForm.valid) {
-    console.error('Form is not valid!');
-    return;
-  }
-
-  if (this.dataUri) {
-    try {
-      const resourceId = await this.upload();  // Upload image
-      this.newTripForm.get("cover_image_id")?.setValue(resourceId);
-      console.log("after uploading the value in form for cover image id is ",  this.newTripForm.get("cover_image_id")?.value)
-      this.resourceIDSuccessUpload = resourceId ?? ''
-
-    } catch (error) {
-      console.error("Image upload failed:", error);
-      // Optionally handle the failure (e.g., show an error message to the user)
-
-        // Show a toast message on upload failure
-        this.messagingService.add({
-          severity: 'error',
-          summary: 'Upload Failed',
-          detail: 'The image upload failed, but the form has been submitted.',
-          life: 3000,
-        });
+    this.uploadSuccess = false;
+    this.fileThatGotSuccessfullyUploaded = {
+      resource_id: '',
+      do_url: '',
+      uploadedOn: '',
+      fileOriginalName: '',
+      resourceType: '',
     }
   }
 
-  // Continue with form submission logic (e.g., send form data to server)
-  console.log('Form submitted with data:', this.newTripForm.value);
-  const tripInfoToSend: TripInfo = {
-    trip_id: this.newTripForm.get('trip_id')?.value ?? '',
-    trip_name: this.newTripForm.get('trip_name')?.value ?? '',
-    start_date: this.newTripForm.get('start_date')?.value ?? '',
-    end_date: this.newTripForm.get('end_date')?.value ?? '',
-    destination_city: this.newTripForm.get('destination_city')?.value ?? '',
-    destination_curr: this.newTripForm.get('destination_curr')?.value ?? '',
-    destination_timezone: this.newTripForm.get('destination_timezone')?.value ?? '',
-    d_timezone_name: this.newTripForm.get('d_timezone_name')?.value ?? '',
-    description_t: this.newTripForm.get('description_t')?.value ?? '',
-    cover_image_id: this.resourceIDSuccessUpload,
-    attendees: `${this.currUser?.uid}`,
-    master_user_id: `${this.currUser?.uid}`,
-    last_updated: ''
+  async onSubmit(): Promise<void> {
+    if (!this.newTripForm.valid) {
+      console.error('Form is not valid!');
+      return;
+    }
+
+    if (!this.uploadSuccess) {
+      this.messagingService.add({
+        severity: 'warn',
+        summary: 'Upload Image First',
+        detail: 'Please upload an image before submitting the form.',
+        life: 3000,
+      });
+      return;
+    }
+
+    console.log("Final Form Data Before Submission:", this.newTripForm.value);
+
+    const tripInfoToSend: TripInfo = {
+      ...this.newTripForm.value,
+      cover_image_id: this.fileThatGotSuccessfullyUploaded.resource_id,
+      attendees: `${this.currUser?.uid}`,
+      master_user_id: `${this.currUser?.uid}`,
+      last_updated: ''
+    };
+    tripInfoToSend.cover_image_id = this.fileThatGotSuccessfullyUploaded.resource_id
+    console.log(">>>>> final tripinfo before go service :", tripInfoToSend);
+    try {
+      const response = await this.tripService.putNewTrip(tripInfoToSend, `${this.currUser?.uid}`);
+      console.log('Trip Submitted Successfully:', response);
+
+      this.messagingService.add({
+        severity: 'success',
+        summary: 'Trip Created',
+        detail: 'Your trip has been successfully created!',
+        life: 3000,
+      });
+
+    } catch (error) {
+      console.error('Error during trip submission:', error);
+      this.messagingService.add({
+        severity: 'error',
+        summary: 'Submission Failed',
+        detail: 'There was an error submitting your trip. Please try again.',
+        life: 3000,
+      });
+    }
   }
 
-
-  try {
-    const response = await this.tripService.putNewTrip(tripInfoToSend, `${this.currUser?.uid}`);
-    
-    // Handle the response (e.g., show a success message or redirect)
-    console.log('Form submitted successfully:', response);
-
-    // Optionally, show a success toast or redirect the user
-    this.messagingService.add({
-      severity: 'success',
-      summary: 'Trip Created',
-      detail: 'Your trip has been successfully created!',
-      life: 3000,
-    });
-
-    // Optionally, redirect to another page or reset the form
-    // this.router.navigate(['/trip-list']);  // Redirect to a trip list or another page
-
-  } catch (error) {
-    // Handle any error that occurred during the trip submission
-    console.error('Error during trip submission:', error);
-
-    // Show an error toast for the form submission failure
-    this.messagingService.add({
-      severity: 'error',
-      summary: 'Submission Failed',
-      detail: 'There was an error submitting your trip. Please try again.',
-      life: 3000,
-    });
-  }
   
-}
+  
+  
+  
 
   ngOnDestroy(): void {
     this.accessCurrUserDetailsSub.unsubscribe()
