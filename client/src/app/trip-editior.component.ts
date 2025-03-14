@@ -2,12 +2,15 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FireBaseAuthStore } from './FireBaseAuth.store';
 import { User } from 'firebase/auth';
 import { BehaviorSubject, filter, firstValueFrom, map, Observable, Subscription } from 'rxjs';
-import { AuthState, CountryCurrTime } from './models/models';
+import { AuthState, CountryCurrTime, TripInfo } from './models/models';
 import { GoogleApiCallService } from './GoogleApiCallService';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CountryDataForAppStore } from './CountryDataForApp.store';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ImageFetcherService } from './ImageFetcherService';
+import { FileUploadService } from './FileUploadService';
+import { MessageService } from 'primeng/api';
+import { TripService } from './TripService';
 
 declare global {
   interface Window {
@@ -44,22 +47,78 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
   //to get Country data to return appropriate currency and timezone
   countriesData$!: Observable<CountryCurrTime[]>
   countryDataStore = inject(CountryDataForAppStore);
-  printTimeZoneName$ = new BehaviorSubject<string>("")
+  printDestinationInfo$ = new BehaviorSubject<string>("")
 
   //redirect to itineary builder once successful/redirect to unauthorized if authentication expires
   router = inject(Router)
+  activatedRoute = inject(ActivatedRoute)
+  private subToPathVariable!: Subscription
 
 
   //for form and form submission
-    private fb = inject(FormBuilder);
-    newTripForm!: FormGroup;
-    // userService = inject(UserService);
+  private fb = inject(FormBuilder);
+  newTripForm!: FormGroup;
+ 
 
 
-    //for auto load trip cover image
-    imageFetcherService = inject(ImageFetcherService)
+  //for uploading image
+  dataUri!: string
+  blob!: Blob
+  fileNameHolder!: string;
+  fileUploadForm!: FormGroup;
+  fileUploadService = inject(FileUploadService)
+  //for loading incase too long
+  isUploading = false;  // Flag to control the spinner visibility
+  resourceIDSuccessUpload!: string //hold resource id
+
+  //error uploading toast
+  messagingService = inject(MessageService);
+
+  //init tirpservice to post trip
+  tripService = inject(TripService);
 
   async ngOnInit(): Promise<void> {
+
+           //initialise form
+           this.newTripForm = this.fb.group(
+            {
+              trip_id: this.fb.control<string>(''),
+              trip_name: this.fb.control<string>(''),
+              start_date: this.fb.control<string>(''),
+              end_date: this.fb.control<string>(''),
+              destination_city: this.fb.control<string>(''),
+              destination_curr: this.fb.control<string>(''),
+              destination_timezone: this.fb.control<string>(''),
+              d_timezone_name: this.fb.control<string>(''),
+              description_t: this.fb.control<string>(''),
+              cover_image_id: this.fb.control<string>(''),
+              attendees: this.fb.control<string>(''),
+              master_user_id: this.fb.control<string>('')
+            }
+          )
+    this.subToPathVariable = this.activatedRoute.params.subscribe(
+      params => {
+
+       
+        this.newTripForm.get('trip_id')?.setValue(params["trip_id"])
+        console.log("trip id set to " + this.newTripForm.get('trip_id')?.value)
+        this.fileUploadForm = this.fb.group(
+          {comments: this.fb.control<string>('cimage'),
+            trip_id: this.fb.control<string>(params["trip_id"]),
+            accommodation_id: this.fb.control<string>(''),
+            activity_id: this.fb.control<string>(''),
+            flight_id: this.fb.control<string>(''),
+            user_id_pp: this.fb.control<string>(''),
+            original_file_name: this.fb.control<string>('unknownfilename')
+          }
+        )
+
+
+      }
+    )
+
+              
+
 
     this.authStateCaptured$ = this.firebaseAuthStore.getAuthState$
     this.authStateSubscription = this.authStateCaptured$.subscribe((authState) => {
@@ -70,25 +129,23 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
     })
 
 
+
     this.countriesData$ = this.countryDataStore.getCountriesData;
 
     if (!window['initAutocomplete']) {
       window['initAutocomplete'] = this.initAutocomplete.bind(this);
     }
-//get user details
+    //get user details
     this.accessCurrUserDetailsSub = this.firebaseAuthStore.getAuthState$.pipe(
       map((authState) => authState.user),
       filter((user): user is User => user !== null)
     ).subscribe((user) => {
       this.currUser = user;  // Store the user object in the component
- 
-   
+
+
       this.user_pp_url = user.photoURL?.toString().replace("=s96-c", "") ?? null;
       console.log('Current user:', this.currUser);
     });
-
-
-
 
 
 
@@ -102,116 +159,302 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
       console.error('Error getting API key', err);
     }
 
+
+ 
+
+
+  
+
+
+
   }
 
   loadGoogleMapsScript(apiKey: string): Promise<any> {
-      return new Promise((resolve, reject) => {
-        if (document.getElementById('google-maps-script')) {
-          resolve('Script already loaded');
-          return;
+    return new Promise((resolve, reject) => {
+      if (document.getElementById('google-maps-script')) {
+        resolve('Script already loaded');
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&loading=async&callback=initAutocomplete`;
+      script.id = 'google-maps-script';
+      script.async = true;
+      script.defer = true;
+
+      window['initAutocomplete'] = this.initAutocomplete.bind(this);
+
+      script.onload = () => {
+        resolve('Google Maps script loaded');
+      };
+
+      script.onerror = (error) => {
+        reject(error);
+      };
+
+      document.head.appendChild(script);
+    });
+  }
+
+  initAutocomplete(): void {
+    if (this.autocomplete) {
+      return; // Don't initialize again if already initialized
+    }
+
+    const originInputElement = document.getElementById('destinationCity') as HTMLInputElement;
+    if (originInputElement && google) {
+      this.autocomplete = new google.maps.places.Autocomplete(originInputElement, {
+        types: ['(cities)'],
+      });
+
+      this.autocomplete?.addListener('place_changed', async () => {
+        const place = this.autocomplete?.getPlace();
+        if (place && place.name && place.address_components) {
+          console.log('Selected Place: ', place.name);
+          // console.log('Selected full object: ', place.address_components);
+
+          const city = this.getAddressComponent(place.address_components, 'locality') ||
+            this.getAddressComponent(place.address_components, 'colloquial_area');
+
+          // const state = this.getAddressComponent(place.address_components, 'administrative_area_level_1');
+          const country = this.getAddressComponent(place.address_components, 'country');
+          const timezoneRaw: number = place.utc_offset_minutes ?? 0;  // in minutes
+          console.log("timezone minutes is " + place.utc_offset_minutes)
+
+          const safeCountry = country ?? "Singapore";  // Provide a default value to not break app
+          this.countriesData$ = this.countryDataStore.filterCountryInfoByNames([safeCountry]);
+
+          // Convert the timezone offset in minutes to hours and fractional part
+          const hours: number = Math.floor(timezoneRaw / 60);
+          const minutes: number = timezoneRaw % 60;
+
+          // Create the timezone offset as UTC+hours.minutes (i.e., UTC+05.45)
+          // Format the hours and minutes
+          const formattedMinutes: string = minutes < 10 ? `0${minutes}` : `${minutes}`;
+
+          // Create the timezone offset as UTC±hh:mm
+          const timezone: string = `UTC${hours < 0 ? "-" : "+"}${Math.abs(hours).toString().padStart(2, '0')}:${formattedMinutes}`;
+
+          //get currency and timezone name
+          try {
+            const countries = await firstValueFrom(this.countryDataStore.filterCountryInfoByNames([safeCountry]));
+
+            const matchedCountry = countries.find(c => c.country_name === country);
+            if (!matchedCountry) {
+              console.warn("Country not found in store:", country);
+
+              // If country is not found, set default values for form controls
+              this.newTripForm.get('destination_city')?.setValue(city + "-" + country);
+              this.newTripForm.get('destination_timezone')?.setValue('');  // or some default value
+              this.newTripForm.get('destination_curr')?.setValue('');  // or some default value
+              this.newTripForm.get('d_timezone_name')?.setValue('');
+              this.printDestinationInfo$.next('')
+       
+              return;
+            } // Find matching timezone based on UTC offset
+            const matchingTimezone = matchedCountry.timezones.find(tz => tz.gmtOffsetName === timezone);
+            const timezoneName = matchingTimezone ? matchingTimezone.tzName : "Unknown Timezone";
+
+            // ✅ Update form fields
+            this.newTripForm.get('destination_city')?.setValue(city + "-" + country);
+            this.newTripForm.get('destination_timezone')?.setValue(timezone ?? '');
+            this.newTripForm.get('destination_curr')?.setValue(matchedCountry.currency ?? '');
+            this.newTripForm.get('d_timezone_name')?.setValue(timezoneName ?? '');
+            this.printDestinationInfo$.next(`Destination Timezone: ${timezone} (${timezoneName}), Currency: ${matchedCountry.currency}`)
+        
+
+            console.log("Country Matched:", matchedCountry);
+            console.log("Final Timezone Name:", timezoneName);
+          } catch (error) {
+            console.error("Error fetching country data:", error);
+          }
+
+
+
         }
-  
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&loading=async&callback=initAutocomplete`;
-        script.id = 'google-maps-script';
-        script.async = true;
-        script.defer = true;
-  
-        window['initAutocomplete'] = this.initAutocomplete.bind(this);
-  
-        script.onload = () => {
-          resolve('Google Maps script loaded');
-        };
-  
-        script.onerror = (error) => {
-          reject(error);
-        };
-  
-        document.head.appendChild(script);
       });
     }
-  
-    initAutocomplete(): void {
-      if (this.autocomplete) {
-        return; // Don't initialize again if already initialized
-      }
-  
-      const originInputElement = document.getElementById('originCityCountry') as HTMLInputElement;
-      if (originInputElement && google) {
-        this.autocomplete = new google.maps.places.Autocomplete(originInputElement, {
-          types: ['(cities)'],
-        });
-  
-        this.autocomplete?.addListener('place_changed', async () => {
-          const place = this.autocomplete?.getPlace();
-          if (place && place.name && place.address_components) {
-            console.log('Selected Place: ', place.name);
-            // console.log('Selected full object: ', place.address_components);
-  
-            const city = this.getAddressComponent(place.address_components, 'locality') ||
-              this.getAddressComponent(place.address_components, 'colloquial_area');
-  
-            // const state = this.getAddressComponent(place.address_components, 'administrative_area_level_1');
-            const country = this.getAddressComponent(place.address_components, 'country');
-            const timezoneRaw: number = place.utc_offset_minutes ?? 0;  // in minutes
-            console.log("timezone minutes is " + place.utc_offset_minutes)
-  
-            const safeCountry = country ?? "Singapore";  // Provide a default value to not break app
-            this.countriesData$ = this.countryDataStore.filterCountryInfoByNames([safeCountry]);
-  
-                  // Convert the timezone offset in minutes to hours and fractional part
-                  const hours: number = Math.floor(timezoneRaw / 60);
-                  const minutes: number = timezoneRaw % 60;
-        
-                  // Create the timezone offset as UTC+hours.minutes (i.e., UTC+05.45)
-                  // Format the hours and minutes
-                  const formattedMinutes: string = minutes < 10 ? `0${minutes}` : `${minutes}`;
-        
-                  // Create the timezone offset as UTC±hh:mm
-                  const timezone: string = `UTC${hours < 0 ? "-" : "+"}${Math.abs(hours).toString().padStart(2, '0')}:${formattedMinutes}`;
-  
-            //get currency and timezone name
-            try {
-              const countries = await firstValueFrom(this.countryDataStore.filterCountryInfoByNames([safeCountry]));
-  
-              const matchedCountry = countries.find(c => c.country_name === country);
-              if (!matchedCountry) {
-                  console.warn("Country not found in store:", country);
-                  return;
-              } // ✅ Find matching timezone based on UTC offset
-              const matchingTimezone = matchedCountry.timezones.find(tz => tz.gmtOffsetName === timezone);
-              const timezoneName = matchingTimezone ? matchingTimezone.tzName : "Unknown Timezone";
-  
-              // ✅ Update form fields
-              // this.registerForm.get('country_origin')?.setValue(country);
-              // this.registerForm.get('timezone_origin')?.setValue(timezone);
-              // this.registerForm.get('currency_origin')?.setValue(matchedCountry.currency);
-              this.printTimeZoneName$.next(timezoneName);
-  
-              console.log("Country Matched:", matchedCountry);
-              console.log("Final Timezone Name:", timezoneName);
-          } catch (error) {
-              console.error("Error fetching country data:", error);
-          }
-  
+  }
+
 
   
-          }
-        });
+
+
+  getAddressComponent(components: any[], type: string): string | null {
+    const component = components.find(comp => comp.types.includes(type));
+    return component ? component.long_name : null;
+  }
+
+
+  onFileSelected(event: Event){
+    //capture binary format of the file, store in browser's temporary storage directory 
+    // to get a url to that resource in your directory
+    //once stored than go ahead and encode it
+
+    const input = event?.target as HTMLInputElement;
+    if(input.files && input.files.length>0){
+      const file =  input.files[0]
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.dataUri = reader.result as string;
       }
+      
+      reader.readAsDataURL(file);
+      console.log(this.dataUri)
+      // get file original name from input type=file field
+      this.fileNameHolder = file.name;
+      this.fileUploadForm.get('original_file_name')?.setValue(this.fileNameHolder);
+    
+
+      
+    }
+
+  }
+
+
+  async upload(): Promise<string | null> {
+    console.log("Uploading an image...");
+  
+    if (!this.dataUri || !this.dataUri.match('')) {
+      console.log("No image data to upload.");
+      return null; // Ensure we return null when there's no data
     }
   
+    // Set the spinner to visible
+    this.isUploading = true;
   
+    // Convert the dataURI to Blob
+    this.blob = this.dataURItoBlob(this.dataUri);
   
-    getAddressComponent(components: any[], type: string): string | null {
-      const component = components.find(comp => comp.types.includes(type));
-      return component ? component.long_name : null;
+    // Prepare the form value
+    const formValue = this.fileUploadForm.value;
+  
+    try {
+      // Upload the image using the file upload service
+      const result = await this.fileUploadService.upload(formValue, this.blob, this.currUser?.uid ?? '');
+  
+      // Check if upload was successful by checking result
+      if (result && result.resource_id) {
+        console.log("Upload successful! Cover Image ID set:", result.resource_id);
+        return result.resource_id; // Return the resource_id after successful upload
+      } else {
+        console.error("Upload failed, no resource ID returned.");
+        return null; // Return null when upload fails
+      }
+    } catch (error) {
+      console.error("Upload failed with error:", error);
+      return null; // Ensure we return null on error
+    } finally {
+      this.isUploading = false; // Hide loading spinner
     }
+  }
   
-    ngOnDestroy(): void {
-      this.accessCurrUserDetailsSub.unsubscribe()
-      this.authStateSubscription.unsubscribe()
+
+
+  dataURItoBlob(dataURI: string): Blob{
+    const [meta, base64Data] = dataURI.split(',');
+    const mimeMatch = meta.match(/:(.*?);/);
+
+    const mimeType = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
+    const byteString = atob(base64Data);
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for(let i = 0; i < byteString.length; i++){
+      ia[i] = byteString.charCodeAt(i);
     }
+    return new Blob([ia], {type: mimeType});
+  }
+
+
+  cancelImage(): void {
+    this.dataUri = '';  // Clear the image preview
+    this.newTripForm.get('cover_image_id')?.reset();  // Reset the cover_image form control
+  }
+
+  // Submit the form and trigger image upload
+async onSubmit(): Promise<void> {
+  if (!this.newTripForm.valid) {
+    console.error('Form is not valid!');
+    return;
+  }
+
+  if (this.dataUri) {
+    try {
+      const resourceId = await this.upload();  // Upload image
+      this.newTripForm.get("cover_image_id")?.setValue(resourceId);
+      console.log("after uploading the value in form for cover image id is ",  this.newTripForm.get("cover_image_id")?.value)
+      this.resourceIDSuccessUpload = resourceId ?? ''
+
+    } catch (error) {
+      console.error("Image upload failed:", error);
+      // Optionally handle the failure (e.g., show an error message to the user)
+
+        // Show a toast message on upload failure
+        this.messagingService.add({
+          severity: 'error',
+          summary: 'Upload Failed',
+          detail: 'The image upload failed, but the form has been submitted.',
+          life: 3000,
+        });
+    }
+  }
+
+  // Continue with form submission logic (e.g., send form data to server)
+  console.log('Form submitted with data:', this.newTripForm.value);
+  const tripInfoToSend: TripInfo = {
+    trip_id: this.newTripForm.get('trip_id')?.value ?? '',
+    trip_name: this.newTripForm.get('trip_name')?.value ?? '',
+    start_date: this.newTripForm.get('start_date')?.value ?? '',
+    end_date: this.newTripForm.get('end_date')?.value ?? '',
+    destination_city: this.newTripForm.get('destination_city')?.value ?? '',
+    destination_curr: this.newTripForm.get('destination_curr')?.value ?? '',
+    destination_timezone: this.newTripForm.get('destination_timezone')?.value ?? '',
+    d_timezone_name: this.newTripForm.get('d_timezone_name')?.value ?? '',
+    description_t: this.newTripForm.get('description_t')?.value ?? '',
+    cover_image_id: this.resourceIDSuccessUpload,
+    attendees: `${this.currUser?.uid}`,
+    master_user_id: `${this.currUser?.uid}`,
+    last_updated: ''
+  }
+
+
+  try {
+    const response = await this.tripService.putNewTrip(tripInfoToSend, `${this.currUser?.uid}`);
+    
+    // Handle the response (e.g., show a success message or redirect)
+    console.log('Form submitted successfully:', response);
+
+    // Optionally, show a success toast or redirect the user
+    this.messagingService.add({
+      severity: 'success',
+      summary: 'Trip Created',
+      detail: 'Your trip has been successfully created!',
+      life: 3000,
+    });
+
+    // Optionally, redirect to another page or reset the form
+    // this.router.navigate(['/trip-list']);  // Redirect to a trip list or another page
+
+  } catch (error) {
+    // Handle any error that occurred during the trip submission
+    console.error('Error during trip submission:', error);
+
+    // Show an error toast for the form submission failure
+    this.messagingService.add({
+      severity: 'error',
+      summary: 'Submission Failed',
+      detail: 'There was an error submitting your trip. Please try again.',
+      life: 3000,
+    });
+  }
+  
+}
+
+  ngOnDestroy(): void {
+    this.accessCurrUserDetailsSub.unsubscribe()
+    this.authStateSubscription.unsubscribe()
+    this.subToPathVariable.unsubscribe()
+  }
 
 
 }

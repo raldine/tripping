@@ -19,6 +19,8 @@ public class TripInfo {
     private Date end_date;
     private String destination_city;
     private String destination_curr;
+    private String destination_timezone;
+    private String d_timezone_name;
     private String description_t;
     private String cover_image_id;
     private String attendees;
@@ -113,6 +115,24 @@ public class TripInfo {
         this.last_updated = last_updated;
     }
 
+    
+
+    public String getDestination_timezone() {
+        return destination_timezone;
+    }
+
+    public void setDestination_timezone(String destination_timezone) {
+        this.destination_timezone = destination_timezone;
+    }
+
+    public String getD_timezone_name() {
+        return d_timezone_name;
+    }
+
+    public void setD_timezone_name(String d_timezone_name) {
+        this.d_timezone_name = d_timezone_name;
+    }
+
     public String toJson() {
         // Create a JsonObjectBuilder to build the JSON object
         JsonObjectBuilder builder = Json.createObjectBuilder();
@@ -124,6 +144,8 @@ public class TripInfo {
                 .add("end_date", this.end_date.toString()) // Convert Date to String
                 .add("destination_city", this.destination_city)
                 .add("destination_curr", this.destination_curr)
+                .add("destination_timezone", this.destination_timezone)
+                .add("d_timezone_name", this.d_timezone_name)
                 .add("description_t", this.description_t)
                 .add("cover_image_id", this.cover_image_id)
                 .add("attendees", this.attendees)
@@ -154,18 +176,20 @@ public class TripInfo {
         tripInfo.setEnd_date(parseDate(jsonObject.getString("end_date"))); // Convert String to Date
         tripInfo.setDestination_city(jsonObject.getString("destination_city"));
         tripInfo.setDestination_curr(jsonObject.getString("destination_curr"));
+        tripInfo.setDestination_timezone(jsonObject.getString("destination_timezone"));
+        tripInfo.setD_timezone_name(jsonObject.getString("d_timezone_name"));
         tripInfo.setDescription_t(jsonObject.getString("description_t"));
         tripInfo.setCover_image_id(jsonObject.getString("cover_image_id"));
         tripInfo.setAttendees(jsonObject.getString("attendees"));
         tripInfo.setMaster_user_id(jsonObject.getString("master_user_id"));
-        tripInfo.setLast_updated(Timestamp.valueOf(jsonObject.getString("last_updated")));
+        tripInfo.setLast_updated(null);
 
         return tripInfo;
     }
 
     public static Date parseDate(String date) {
         try {
-            return new SimpleDateFormat("yyyy-MM-dd").parse(date);
+            return new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss 'GMT'Z (z)").parse(date);
 
         } catch (ParseException e) {
             return null;

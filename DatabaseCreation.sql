@@ -54,6 +54,8 @@ start_date Date,
 end_date Date,
 destination_city TEXT,
 destination_curr VARCHAR(10),
+destination_timezone VARCHAR(64),
+d_timezone_name VARCHAR(64),
 description_t VARCHAR(255),
 cover_image_id VARCHAR(100),
 attendees TEXT,
@@ -64,7 +66,7 @@ constraint fk_master_user_id foreign key(master_user_id) references users(fireba
 );
 
 
--- drop table trips;
+drop table trips;
 select * from trips;
 
 

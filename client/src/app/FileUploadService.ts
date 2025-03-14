@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
-import { FileUploadedInfo } from './models/models';
+import { FileUploadedInfo, TripInfo } from './models/models';
 
 
 @Injectable({
@@ -12,14 +12,14 @@ export class FileUploadService {
   constructor(private httpClient: HttpClient) { }
 
 
-  upload(form: any, filebytes: Blob, firebaseUid: string){
+  upload(form: any, filebytes: Blob, firebaseUid: string) :Promise<FileUploadedInfo>{
     const formData = new FormData();
     formData.set('comments', form['comments']);
     formData.set('file', filebytes);
     formData.set("trip_id", form['trip_id'])
-    formData.set("accommodation_id", form['accommodation_id'])
-    formData.set("activity_id", form['activity_id'])
-    formData.set("flight_id", form['flight_id'])
+    formData.set("accommodation_id", form['accommodation_id'] ?? null)
+    formData.set("activity_id", form['activity_id'] ?? null)
+    formData.set("flight_id", form['flight_id'] ?? null)
     formData.set("user_id_pp", form['user_id_pp']);
     formData.set('original_file_name', form['original_file_name']);
 
@@ -29,7 +29,7 @@ export class FileUploadService {
     })
 
     return lastValueFrom(
-      this.httpClient.post<string>('api/upload', formData, { headers })
+      this.httpClient.post<FileUploadedInfo>('api/upload', formData, { headers })
     );
 
   }
@@ -52,6 +52,8 @@ export class FileUploadService {
   
     return lastValueFrom(this.httpClient.get<FileUploadedInfo[]>(`/api/get-resources-trip/${trip_id}`, { headers }));
   }
+
+
   
 
 

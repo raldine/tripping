@@ -56,3 +56,5 @@ font-style: normal;
 font-weight: 400;
 line-height: var(--Body-Small-Line-Height, 16px); /* 114.286% */
 }
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

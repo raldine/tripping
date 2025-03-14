@@ -25,6 +25,7 @@ import trippingactual.server.models.FileObject;
 
 @Service
 public class FileUploadService {
+    
      @Autowired
     private AmazonS3 S3Client;
 

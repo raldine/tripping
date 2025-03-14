@@ -190,6 +190,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
             const matchedCountry = countries.find(c => c.country_name === country);
             if (!matchedCountry) {
                 console.warn("Country not found in store:", country);
+                this.registerForm.get('country_origin')?.setValue(country);
+                this.registerForm.get('timezone_origin')?.setValue(timezone);
+                this.registerForm.get('currency_origin')?.setValue('');
+                this.printTimeZoneName$.next('');
                 return;
             } // ✅ Find matching timezone based on UTC offset
             const matchingTimezone = matchedCountry.timezones.find(tz => tz.gmtOffsetName === timezone);

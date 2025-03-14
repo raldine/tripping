@@ -58,6 +58,8 @@ export interface TripInfo{
     end_date: string,
     destination_city: string,
     destination_curr: string,
+    destination_timezone: string,
+    d_timezone_name: string,
     description_t: string,
     cover_image_id: string,
     attendees: string,

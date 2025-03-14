@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { inject, Injectable, provideZoneChangeDetection } from "@angular/core";
-import { map, Observable } from "rxjs";
+import { inject, Injectable } from "@angular/core";
+import { firstValueFrom } from 'rxjs';  // Import firstValueFrom
 
 interface PexelsResponse {
   photos: Array<{
@@ -10,20 +10,18 @@ interface PexelsResponse {
   }>;
 }
 
-
-
 @Injectable({
   providedIn: 'root'
 })
 export class ImageFetcherService {
 
-  http = inject(HttpClient)
-  protected pexel_key = "49326135-73dafaa9457dc42648d3aef47"
+  http = inject(HttpClient);
+  protected pexel_key = "49326135-73dafaa9457dc42648d3aef47";
 
-  get_url = "https://api.pexels.com/v1/search"
+  get_url = "https://api.pexels.com/v1/search";
 
-  fetchRandomImage(query: string): Observable<string> {
-    const finalQuery = query + " travel"
+  async fetchRandomImage(query: string): Promise<string> {
+    const finalQuery = query + " travel";
     const params = new HttpParams()
       .set('query', finalQuery)
       .set('orientation', 'horizontal')
@@ -31,16 +29,17 @@ export class ImageFetcherService {
 
     const headers = { Authorization: this.pexel_key };
 
-    return this.http
-      .get<PexelsResponse>(this.get_url, { params, headers })
-      .pipe(
-        map((response) => {
-          // Get a random photo from the photos array
-          const randomIndex = Math.floor(Math.random() * response.photos.length);
-          return response.photos[randomIndex].src.large2x;
-        })
+    try {
+      const response = await firstValueFrom(
+        this.http.get<PexelsResponse>(this.get_url, { params, headers })
       );
 
-
+      // Get a random photo from the photos array
+      const randomIndex = Math.floor(Math.random() * response.photos.length);
+      return response.photos[randomIndex].src.large2x;
+    } catch (error) {
+      console.error('Error fetching image:', error);
+      throw error;  // Rethrow or handle the error as needed
+    }
   }
 }

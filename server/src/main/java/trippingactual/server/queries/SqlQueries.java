@@ -28,7 +28,7 @@ public class SqlQueries {
 
     //TRIP DETALS
     //put new trip
-    public final static String putNewTrip = "INSERT INTO trips(trip_id, trip_name, start_date, end_date, destination_city, destination_curr, description_t, cover_image_id, attendees, master_user_id) VALUES (?, ?, ?, ?, ?, ? ,?, ?, ?, ?)";
+    public final static String putNewTrip = "INSERT INTO trips(trip_id, trip_name, start_date, end_date, destination_city, destination_curr, destination_timezone, d_timezone_name, description_t, cover_image_id, attendees, master_user_id) VALUES (?, ?, ?, ?, ?, ? ,?, ?, ?, ?, ?, ?)";
 
 
 

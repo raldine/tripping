@@ -34,6 +34,17 @@ import { FileUploadService } from './FileUploadService';
 import { TripService } from './TripService';
 import { TripEditiorComponent } from './trip-editior.component';
 import { NavbarComponent } from './navbar.component';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { CalendarModule } from 'primeng/calendar';  // Import CalendarModule for p-datepicker
+import { DatePickerModule } from 'primeng/datepicker';
+
+
 
 
 
@@ -70,7 +81,15 @@ const appRoutes: Routes = [
     // FloatLabelModule,
     // IftaLabelModule,
     IconFieldModule,
-    InputIconModule
+    InputIconModule,
+    ProgressSpinnerModule,
+    ToastModule,
+    // MatDatepickerModule,
+    // MatFormFieldModule,
+    // MatInputModule
+    CalendarModule,
+    DatePickerModule
+    
 
 
   ],
@@ -86,7 +105,10 @@ const appRoutes: Routes = [
     BackendDataService,
     FireBaseAuthStore,
     CountryDataForAppStore,
-    // {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true}
+    MessageService,
+    // {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
+    // provideNativeDateAdapter(),
+    // // provideDateFnsAdapter(),
     provideAnimationsAsync(),
     providePrimeNG({
         theme: {
@@ -100,3 +122,7 @@ const appRoutes: Routes = [
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+function provideDateFnsAdapter(): import("@angular/core").Provider | import("@angular/core").EnvironmentProviders {
+  throw new Error('Function not implemented.');
+}
+

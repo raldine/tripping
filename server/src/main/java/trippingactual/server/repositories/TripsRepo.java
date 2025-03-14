@@ -18,7 +18,7 @@ public class TripsRepo {
 
             try {
 
-                // trip_id, trip_name, start_date, end_date, destination_city, destination_curr, description_t, cover_image_id, attendees, master_user_id
+// trip_id, trip_name, start_date, end_date, destination_city, destination_curr, destination_timezone, d_timezone_name, description_t, cover_image_id, attendees, master_user_id
             int count = sqltemplate.update(SqlQueries.putNewTrip, 
             newTripInfo.getTrip_id(), 
             newTripInfo.getTrip_name(), 
@@ -26,11 +26,12 @@ public class TripsRepo {
             new java.sql.Date(newTripInfo.getEnd_date().getTime()),
             newTripInfo.getDestination_city(),
             newTripInfo.getDestination_curr(),
+            newTripInfo.getDestination_timezone(),
+            newTripInfo.getD_timezone_name(),
             newTripInfo.getDescription_t(),
             newTripInfo.getCover_image_id(),
             newTripInfo.getAttendees(),
-            newTripInfo.getMaster_user_id(),
-            newTripInfo.getLast_updated()
+            newTripInfo.getMaster_user_id()
             );
 
             if (count > 0) {

@@ -1,5 +1,9 @@
 package trippingactual.server.RestControllers;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.lang.module.ResolutionException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,6 +15,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -40,12 +45,12 @@ public class FileUploadController {
             @RequestHeader("Authorization") String firebaseUUID,
             @RequestPart("file") MultipartFile file,
             @RequestPart("comments") String comments,
-            @RequestPart("trip_id") String trip_id,
-            @RequestPart("accommodation_id") String accommodation_id,
-            @RequestPart("activity_id") String activity_id,
-            @RequestPart("flight_id") String flight_id,
-            @RequestPart("user_id_pp") String user_id_pp,
-            @RequestPart("original_file_name") String original_file_name
+            @RequestPart(value = "trip_id", required = false) String trip_id,
+            @RequestPart(value = "accommodation_id", required = false) String accommodation_id,
+            @RequestPart(value= "activity_id", required = false) String activity_id,
+            @RequestPart(value = "flight_id", required = false) String flight_id,
+            @RequestPart(value = "user_id_pp", required = false) String user_id_pp,
+            @RequestPart(value = "original_file_name", required = false) String original_file_name
 
     ) {
 
@@ -62,12 +67,12 @@ public class FileUploadController {
             FileObject newResource = new FileObject();
             newResource.setResourceId(resourceId);
 
-            // tieing resource to relevant components
-            newResource.setTrip_id(trip_id);
-            newResource.setAccommodation_id(accommodation_id);
-            newResource.setActivity_id(activity_id);
-            newResource.setFlight_id(flight_id);
-            newResource.setUser_id_pp(user_id_pp);
+            // Check for null or empty values for the optional fields and set them to null if not provided
+        newResource.setTrip_id(trip_id != null && !trip_id.isEmpty() ? trip_id : null);
+        newResource.setAccommodation_id(accommodation_id != null && !accommodation_id.isEmpty() ? accommodation_id : null);
+        newResource.setActivity_id(activity_id != null && !activity_id.isEmpty() ? activity_id : null);
+        newResource.setFlight_id(flight_id != null && !flight_id.isEmpty() ? flight_id : null);
+        newResource.setUser_id_pp(user_id_pp != null && !user_id_pp.isEmpty() ? user_id_pp : null);
 
             String formattedOriName = original_file_name.replace(" ", "_");
             String shortenIfTooLong = "";
@@ -110,7 +115,6 @@ public class FileUploadController {
         }
 
     }
-
 
     @GetMapping(path = "/api/get-resources/{resourceId}")
     public ResponseEntity<String> getFileByResourceId(
@@ -178,6 +182,72 @@ public class FileUploadController {
             return ResponseEntity.status(200).body(jsonArrayBuilder.build().toString());
         } else {
             return ResponseEntity.status(505).body("Error: No resources found");
+        }
+    }
+
+    @PostMapping("/api/upload-pexel")
+    public ResponseEntity<String> uploadThePexelFetchImage(
+            @RequestHeader("Authorization") String firebaseUUID,
+            @RequestBody String payload) throws IOException, SQLException {
+        // Check if the Firebase UUID is present
+        if (firebaseUUID.isEmpty()) {
+            JsonObject replyForUnAuthorized = Json.createObjectBuilder()
+                    .add("response", "Unauthorized")
+                    .build();
+            return ResponseEntity.status(401).body(replyForUnAuthorized.toString());
+        }
+
+        // Parse the incoming JSON payload
+        JsonObject photoTripUser = Json.createReader(new StringReader(payload)).readObject();
+
+        // Validate the presence of 'photourl'
+        if (photoTripUser.getString("photourl").isEmpty()) {
+            JsonObject replyForNullValue = Json.createObjectBuilder()
+                    .add("response", "Missing photourl")
+                    .build();
+            return ResponseEntity.status(400).body(replyForNullValue.toString());
+        }
+
+        // Generate a resource ID
+        String resourceId = allfilesserve.resourceIdGenerator(photoTripUser.getString("comments"));
+        System.out.println("Generated resource ID: " + resourceId);
+
+        // Create a new FileObject to store the details
+        FileObject newResource = new FileObject();
+        newResource.setResourceId(resourceId);
+
+        // Tie the resource to the trip and other components
+        newResource.setTrip_id(photoTripUser.getString("trip_id"));
+        newResource.setDo_src_link(photoTripUser.getString("photourl"));
+        newResource.setMedia_type(photoTripUser.getString("media_type"));
+        newResource.setOriginal_file_name(resourceId + "_cover_image");
+
+        try {
+            // Upload the file to the database
+            FileObject finalFileSuccessSQL = fileServiceSql.upload(newResource);
+
+            if (finalFileSuccessSQL != null) {
+                // Prepare the response JSON to return to the frontend
+                JsonObject toReturnJson = Json.createObjectBuilder()
+                        .add("do_url", finalFileSuccessSQL.getDo_src_link())
+                        .add("resource_id", resourceId)
+                        .add("fileOriginalName", finalFileSuccessSQL.getOriginal_file_name())
+                        .add("uploadedOn", finalFileSuccessSQL.getUploaded_on().toString())
+                        // For frontend to know to load resource in <img> or another way for docs
+                        .add("resourceType", allfilesserve.resourceType(resourceId))
+                        .build();
+                return ResponseEntity.status(200).body(toReturnJson.toString());
+            } else {
+                // If the file upload fails, throw an exception
+                throw new Exception("Error during file upload.");
+            }
+        } catch (Exception e) {
+            // Handle any server-side errors (e.g., database issues)
+            JsonObject errorResponse = Json.createObjectBuilder()
+                    .add("response", "Internal server error")
+                    .add("message", e.getMessage())
+                    .build();
+            return ResponseEntity.status(500).body(errorResponse.toString());
         }
     }
 

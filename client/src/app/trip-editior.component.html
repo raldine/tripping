@@ -1,0 +1,42 @@
+<p-toast id="toastMod"></p-toast> <!-- Toast container to show the toast notifications -->
+<div>
+    <form [formGroup]="newTripForm" (submit)="onSubmit()">
+        <label for="trip_name">Name of this Trip:</label><br>
+        <input pInputText type="text" id="trip_name" formControlName="trip_name"><br><br>
+
+        <label for="destinationCity">Destination City:</label><br>
+        <input pInputText type="text" id="destinationCity"
+            placeholder="Search your city-country of your destination"><br><br>
+        <small>{{ printDestinationInfo$ | async}}</small><br>
+
+        <!-- <label for="start_date">Start and End Date of Trip:</label> -->
+        <input type="date" formControlName="start_date">
+        <br><br>
+
+        <input type="date" formControlName="end_date"><br>
+        <!-- <p-datepicker formControlName="start_date" dateFormat="dd-MM-yy" id="start_date"></p-datepicker>
+        <br><br>
+        <p-datepicker formControlName="end_date" dateFormat="dd-MM-yy"></p-datepicker> -->
+
+
+
+        <!-- Image Upload Section -->
+        <label for="cover_image">Upload an Image to set a Cover Image for this Trip:</label><br>
+        <input type="file" id="cover_image" accept=".png, .jpeg, .jpg" (change)="onFileSelected($event)"><br><br>
+
+        <!-- Image Preview -->
+        <div *ngIf="dataUri">
+            <label>Image Preview:</label><br>
+            <img [src]="dataUri" alt="Cover Image Preview" style="max-width: 20%; height: auto;">
+
+            <button type="button" (click)="cancelImage()">Cancel</button>
+        </div>
+
+        <button type="submit">Submit</button>
+
+    </form>
+
+
+    <!-- Loading Spinner -->
+    <p-progress-spinner *ngIf="isUploading" ariaLabel="loading"></p-progress-spinner>
+</div>
