@@ -46,6 +46,7 @@ constraint pk_resourceId primary key(resource_id)
 
 drop table resources;
 select * from resources;
+truncate table resources;
 
 create table trips(
 trip_id VARCHAR(100),

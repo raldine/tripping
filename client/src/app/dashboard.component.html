@@ -6,36 +6,75 @@
 
         <h1>Welcome, {{ currUser?.displayName }}</h1>
         <div class="card">
-            <p-menubar [model]="nestedMenuItems">
-                <ng-template #end>
-                    <!-- for left most elements -->
+            <p-toolbar>
+                <ng-template #start>
+                    <p-button icon="pi pi-plus" class="mr-2" text severity="secondary" label="Add a New Trip"
+                        [routerLink]="['/addedittrip/', generatedNewTripID]" />
                 </ng-template>
-            </p-menubar>
+                <ng-template #center>
+                </ng-template>
+                <ng-template #end>
+                </ng-template>
+            </p-toolbar>
+            <!-- <p-menubar [model]="nestedMenuItems">
+                <ng-template #end> -->
+            <!-- for left most elements -->
+            <!-- </ng-template>
+            </p-menubar> -->
         </div>
 
 
 
+        @if(tripsCreatedByUser){
+        <div class="tripdetailcontainer">
+            @for(trip of tripsCreatedByUser; track trip.trip_id){
+            <div class="card !p-0 overflow-hidden">
+                <img src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/background1.jpg"
+                    alt="blog-bg" class="w-full rounded-t-2xl"/>
+                <div class="p-2">
+                        <div>
+                            <h3>{{ trip.trip_name }}</h3>
+                        </div>
+                    <p class="mb-4 leading-normal w-full">nfiasnfiasnfiasn wnfopawopsao psijdopsakdpofpowm snajfmposajfpnaspfa
+                        ifpanfmpwmdpoasmdpow sndpiajpdojsad.</p>
+
+                    <div class="flex items-center justify-between w-full">
+                        <div class="text-muted-color  flex items-center">
+                            <i class="pi pi-arrow-circle-right"></i>
+                            <span>View Details</span>
+                        </div>
+                            <img src="/demo/images/avatar/amyelsner.png" alt="avatar" class="shrink-0 w-2 h-8" />
+                     
+                            <div class="text-muted-color  flex items-center">
+                                <i class="pi pi-arrow-circle-right"></i>
+                                <span>View Details</span>
+                            </div>
+                        </div>
+                
+                </div>
+            </div>
+            }
+        </div>
 
 
+        } @else {
+
+        <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-12">
+                <div class="card">
+                    <div class="font-semibold text-xl mb-4 items-center">
+                        <h3>No Trips Available</h3>
+                    </div>
+                    <p>Start a new trip by clicking "Add a New Trip".</p>
+                </div>
+            </div>
+        </div>
 
 
-
-
-
-
-
-
-
-
-
+        }
 
 
     </div>
-
-
-
-
-
 
 
 

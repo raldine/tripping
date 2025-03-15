@@ -62,7 +62,38 @@ export interface TripInfo{
     d_timezone_name: string,
     description_t: string,
     cover_image_id: string,
-    attendees: string,
+    attendees: string[],
     master_user_id: string
     last_updated: string,
 }
+
+export function mapTripInfo(response: any): TripInfo {
+    return {
+      trip_id: response.trip_id ?? "N/A",
+      trip_name: response.trip_name ?? "N/A",
+      start_date: response.start_date ?? "N/A",
+      end_date: response.end_date ?? "N/A",
+      destination_city: response.destination_city ?? "N/A",
+      destination_curr: response.destination_curr ?? "N/A",
+      destination_timezone: response.destination_timezone ?? "N/A",
+      d_timezone_name: response.d_timezone_name ?? "N/A",
+      description_t: response.description_t ?? "N/A",
+      cover_image_id: response.cover_image_id ?? "N/A",
+      attendees: response.attendees ? response.attendees.split(/\s*,\s*/) : [],
+      master_user_id: response.master_user_id ?? "N/A",
+      last_updated: response.last_updated ?? "N/A",
+    };
+  }
+
+  //how to use mapTripInfo
+//   async fetchTrips(): Promise<TripInfo[]> {
+//     try {
+//       const response = await lastValueFrom(this.http.get<TripInfo[]>("/trip/all"));
+
+//       // ✅ Map each trip object using `mapTripInfo`
+//       return response.map((trip) => mapTripInfo(trip));
+//     } catch (error) {
+//       console.error("Error fetching trips:", error);
+//       return []; // Return empty array on failure
+//     }
+//   }

@@ -1,43 +1,67 @@
 <p-toast id="toastMod"></p-toast> <!-- Toast container to show the toast notifications -->
-<div>
-    <form [formGroup]="newTripForm" (submit)="onSubmit()">
-        <label for="trip_name">Name of this Trip:</label><br>
-        <input pInputText type="text" id="trip_name" formControlName="trip_name"><br><br>
+<div class="formPage">
+    <div class="card">
+        <form [formGroup]="newTripForm" (submit)="onSubmit()">
+            <div class="mb-2">
+                <label for="trip_name" class="mb-0.5 block">Name of this Trip:</label><br>
+                <input class="w-full" pInputText type="text" id="trip_name" formControlName="trip_name"><br><br>
+            </div>
+            <div class="mb-2">
+                <label for="destinationCity" class="mb-0.5 block">Destination City:</label><br>
+                <input class="w-full" pInputText type="text" id="destinationCity"
+                    placeholder="Search your city-country of your destination"><br>
+                <small>{{ printDestinationInfo$ | async}}</small><br>
+            </div>
 
-        <label for="destinationCity">Destination City:</label><br>
-        <input pInputText type="text" id="destinationCity"
-            placeholder="Search your city-country of your destination"><br><br>
-        <small>{{ printDestinationInfo$ | async}}</small><br>
+            <div class="mb-2">
+                <label for="start_date" class="mb-0.5 block">Start Date of Trip:</label><br>
+                <input  type="date" formControlName="start_date">
 
-        <!-- <label for="start_date">Start and End Date of Trip:</label> -->
-        <input type="date" formControlName="start_date">
-        <br><br>
+            </div>
+            <div class="mb-4">
+                <label for="end_date" class="mb-0.5 block">End Date of Trip:</label><br>
+                <input  type="date" formControlName="end_date"><br>
+            </div>
 
-        <input type="date" formControlName="end_date"><br>
-        <!-- <p-datepicker formControlName="start_date" dateFormat="dd-MM-yy" id="start_date"></p-datepicker>
-        <br><br>
-        <p-datepicker formControlName="end_date" dateFormat="dd-MM-yy"></p-datepicker> -->
+            <div class="mb-2">
+                <label for="description_t" class="mb-0.5 block">Description for this Trip (Optional):</label><br>
+                <textarea class="w-full" rows="4" cols="30" pTextarea formControlName="description_t"
+                    placeholder="Enter an optional description here."></textarea><br>
+
+            </div>
+
+            <div class="mb-2">
+                <!-- Image Upload Section -->
+                <label for="cover_image" class="mb-0.5 block">Upload an Image to set a Cover Image for this Trip:</label><br>
+                <input type="file" accept=".png, .jpeg, .jpg"
+                    (change)="onFileSelected($event)"><br><br>
+            </div>
 
 
 
-        <!-- Image Upload Section -->
-        <label for="cover_image">Upload an Image to set a Cover Image for this Trip:</label><br>
-        <input type="file" id="cover_image" accept=".png, .jpeg, .jpg" (change)="onFileSelected($event)"><br><br>
-        <button type="button" (click)="uploadImage()">Upload Image</button>
+            <!-- Image Preview -->
+            <div *ngIf="dataUri.length!=0">
+                <label class="mb-0.5 block">Image Preview:</label><br>
+                <img [src]="dataUri" alt="Cover Image Preview" style="max-width: 30%; height: auto;">
 
-        <!-- Image Preview -->
-        <div *ngIf="!fileThatGotSuccessfullyUploaded.resource_id.match('')">
-            <label>Image Preview:</label><br>
-            <img [src]="fileThatGotSuccessfullyUploaded.do_url" alt="Cover Image Preview" style="max-width: 20%; height: auto;">
+                <button type="button" (click)="cancelImage()">Remove image</button>
+            </div>
+            <div>
+                <button type="submit">Submit</button>
+            </div>
 
-            <button type="button" (click)="cancelImage()">Remove image</button>
+
+        </form>
+    </div>
+
+
+    <div>
+        <!-- Loading Spinner -->
+        <!-- Full-screen overlay when isUploading is true -->
+        <div *ngIf="isUploading" class="overlay">
+            <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
         </div>
 
-        <button type="submit">Submit</button>
+    </div>
 
-    </form>
-
-
-    <!-- Loading Spinner -->
-    <p-progress-spinner *ngIf="isUploading" ariaLabel="loading"></p-progress-spinner>
 </div>

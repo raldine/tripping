@@ -3,10 +3,11 @@ import { AuthService } from './AuthService';
 import { filter, map, Observable, Subscription } from 'rxjs';
 import { User } from 'firebase/auth';
 import { FireBaseAuthStore } from './FireBaseAuth.store';
-import { AuthState } from './models/models';
+import { AuthState, TripInfo } from './models/models';
 import { Router } from '@angular/router';
 import { MenuItem, PrimeIcons } from 'primeng/api';
 import { v4 as uuidv4 } from 'uuid';
+import { TripService } from './TripService';
 
 
 @Component({
@@ -45,6 +46,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   //randomly generating new trip ids
   generatedNewTripID!: string;
 
+
+  //for getting trips belonging to current user
+  tripService = inject(TripService);
+  tripsCreatedByUser!: TripInfo[]
+
   //for action submenubar
   nestedMenuItems = [
     {
@@ -74,7 +80,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }]
 
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.authStateCaptured$ = this.firebaseAuthStore.getAuthState$
     this.authStateSubscription = this.authStateCaptured$.subscribe((authState) => {
       if (!authState.isAuthenticated) {
@@ -101,7 +107,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       console.log('Current user:', this.currUser);
     });
 
-
+    if(this.currUser){
+      this.tripsCreatedByUser = await this.tripService.getAllTripsByUserId(this.currUser?.uid);
+      console.log("trips received")
+    }
+    
 
 
   }

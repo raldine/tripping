@@ -1,7 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { User } from 'firebase/auth';
 import { MenuItem } from 'primeng/api';
-import { Observable, Subscription } from 'rxjs';
+import { filter, map, Observable, Subscription } from 'rxjs';
 import { FireBaseAuthStore } from './FireBaseAuth.store';
 import { AuthState } from './models/models';
 import { Router } from '@angular/router';
@@ -12,7 +12,8 @@ import { Router } from '@angular/router';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
-export class NavbarComponent implements OnInit{
+export class NavbarComponent implements OnInit, OnDestroy{
+
 
    //for navbar
    items: MenuItem[] | undefined;
@@ -44,13 +45,24 @@ export class NavbarComponent implements OnInit{
       {
         label: 'Dashboard',
         icon: 'pi pi-home',
-        route: '/dashboard'
+        routerLink: '/dashboard'
       },
       //to add more to nav if needed
     ];
 
 
+  //get user details
+    this.accessCurrUserDetailsSub = this.firebaseAuthStore.getAuthState$.pipe(
+      map((authState) => authState.user),
+      filter((user): user is User => user !== null)
+    ).subscribe((user) => {
+      this.currUser = user;  // Store the user object in the component
 
+      
+      this.user_pp_url = user.photoURL?.toString().replace("=s96-c", "") ?? null;
+      console.log("current profile pic", this.user_pp_url)
+      //also assign user to newTripform as master user and attendee
+    });
 
 
 
@@ -58,5 +70,13 @@ export class NavbarComponent implements OnInit{
 
   
      }
+
+
+     ngOnDestroy(): void {
+       this.authStateSubscription.unsubscribe()
+       this.accessCurrUserDetailsSub.unsubscribe()
+     }
+
+
 
 }

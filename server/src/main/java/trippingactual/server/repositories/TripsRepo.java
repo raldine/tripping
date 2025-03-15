@@ -5,7 +5,14 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import trippingactual.server.models.TripInfo;
+import trippingactual.server.models.UserInfo;
 import trippingactual.server.queries.SqlQueries;
 
 @Repository
@@ -15,6 +22,8 @@ public class TripsRepo {
     private JdbcTemplate sqltemplate;
 
     public String putNewTrip(TripInfo newTripInfo){
+
+        System.out.println("TRIP REPO SERVICE SIDE, RECEIVED TRIPINFO IS: ");
 
             try {
 
@@ -50,6 +59,20 @@ public class TripsRepo {
     }
 
 
+    public List<TripInfo> getAllTripsByUserId(String firebaseuid){
+        String sqlQuery = "SELECT * from trips WHERE master_user_id=? ORDER BY last_updated DESC";
 
 
+        return sqltemplate.query(sqlQuery, (ResultSet rs) -> {
+            List<TripInfo> tripsBelongingToUser = new ArrayList<>();
+            while (rs.next()) {
+                tripsBelongingToUser.add(TripInfo.populate(rs));
+            }
+            return tripsBelongingToUser;
+        }, firebaseuid);
+    }
+
+
+
+   
 }

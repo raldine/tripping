@@ -28,7 +28,7 @@ font-family: "Noto Sans";
 font-size: 24px;
 font-style: normal;
 font-weight: 500;
-line-height: var(--Display-Small-Line-Height, 44px); /* 183.333% */
+line-height: var(--Display-Small-Line-Height, 24px); /* 183.333% */
 }
 
 h4 {

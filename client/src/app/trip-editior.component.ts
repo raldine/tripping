@@ -58,25 +58,25 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
   //for form and form submission
   private fb = inject(FormBuilder);
   newTripForm!: FormGroup;
- 
+
 
 
   //for uploading image
-  dataUri!: string
+  dataUri: string = ''
   blob!: Blob
   fileNameHolder!: string;
   fileUploadForm!: FormGroup;
   fileUploadService = inject(FileUploadService)
   //for loading incase too long
   isUploading = false;  // Flag to control the spinner visibility
- fileThatGotSuccessfullyUploaded: FileUploadedInfo = {
-  resource_id: '',
-  do_url: '',
-  uploadedOn: '',
-  fileOriginalName: '',
-  resourceType: '',
-}
- uploadSuccess: boolean = false;
+  fileThatGotSuccessfullyUploaded: FileUploadedInfo = {
+    resource_id: '',
+    do_url: '',
+    uploadedOn: '',
+    fileOriginalName: '',
+    resourceType: '',
+  }
+  uploadSuccess: boolean = false;
 
   //error uploading toast
   messagingService = inject(MessageService);
@@ -86,45 +86,45 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
 
-           //initialise form
-           this.newTripForm = this.fb.group(
-            {
-              trip_id: this.fb.control<string>(''),
-              trip_name: this.fb.control<string>(''),
-              start_date: this.fb.control<string>(''),
-              end_date: this.fb.control<string>(''),
-              destination_city: this.fb.control<string>(''),
-              destination_curr: this.fb.control<string>(''),
-              destination_timezone: this.fb.control<string>(''),
-              d_timezone_name: this.fb.control<string>(''),
-              description_t: this.fb.control<string>(''),
-              cover_image_id: this.fb.control<string>(''),
-              attendees: this.fb.control<string>(''),
-              master_user_id: this.fb.control<string>('')
-            }
-          )
+    //initialise form
+    this.newTripForm = this.fb.group(
+      {
+        trip_id: this.fb.control<string>(''),
+        trip_name: this.fb.control<string>(''),
+        start_date: this.fb.control<string>(''),
+        end_date: this.fb.control<string>(''),
+        destination_city: this.fb.control<string>(''),
+        destination_curr: this.fb.control<string>(''),
+        destination_timezone: this.fb.control<string>(''),
+        d_timezone_name: this.fb.control<string>(''),
+        description_t: this.fb.control<string | null>(null),
+        cover_image_id: this.fb.control<string>('N/A'),
+        attendees: this.fb.control<string>(''),
+        master_user_id: this.fb.control<string>(''),
+        //extra for cover image upload
+        comments: this.fb.control<string>('cimage'),
+        accommodation_id: this.fb.control<string>('N/A'),
+        activity_id: this.fb.control<string>('N/A'),
+        flight_id: this.fb.control<string>('N/A'),
+        user_id_pp: this.fb.control<string>('N/A'),
+        original_file_name: this.fb.control<string>('unknownfilename')
+
+      }
+    )
     this.subToPathVariable = this.activatedRoute.params.subscribe(
       params => {
 
-       
+
         this.newTripForm.get('trip_id')?.setValue(params["trip_id"])
         console.log("trip id set to " + this.newTripForm.get('trip_id')?.value)
-        this.fileUploadForm = this.fb.group(
-          {comments: this.fb.control<string>('cimage'),
-            trip_id: this.fb.control<string>(params["trip_id"]),
-            accommodation_id: this.fb.control<string>(''),
-            activity_id: this.fb.control<string>(''),
-            flight_id: this.fb.control<string>(''),
-            user_id_pp: this.fb.control<string>(''),
-            original_file_name: this.fb.control<string>('unknownfilename')
-          }
-        )
+   
+        
 
 
       }
     )
 
-              
+
 
 
     this.authStateCaptured$ = this.firebaseAuthStore.getAuthState$
@@ -149,9 +149,13 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
     ).subscribe((user) => {
       this.currUser = user;  // Store the user object in the component
 
-
+      
       this.user_pp_url = user.photoURL?.toString().replace("=s96-c", "") ?? null;
+      //also assign user to newTripform as master user and attendee
+      this.newTripForm.get("master_user_id")?.setValue(this.currUser.uid);
+      this.newTripForm.get("attendees")?.setValue(this.currUser.uid);
       console.log('Current user:', this.currUser);
+      console.log("current form before user entered details >>>>. ", this.newTripForm.value)
     });
 
 
@@ -167,10 +171,10 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
     }
 
 
- 
 
 
-  
+
+
 
 
 
@@ -256,7 +260,7 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
               this.newTripForm.get('destination_curr')?.setValue('');  // or some default value
               this.newTripForm.get('d_timezone_name')?.setValue('');
               this.printDestinationInfo$.next('')
-       
+
               return;
             } // Find matching timezone based on UTC offset
             const matchingTimezone = matchedCountry.timezones.find(tz => tz.gmtOffsetName === timezone);
@@ -268,7 +272,7 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
             this.newTripForm.get('destination_curr')?.setValue(matchedCountry.currency ?? '');
             this.newTripForm.get('d_timezone_name')?.setValue(timezoneName ?? '');
             this.printDestinationInfo$.next(`Destination Timezone: ${timezone} (${timezoneName}), Currency: ${matchedCountry.currency}`)
-        
+
 
             console.log("Country Matched:", matchedCountry);
             console.log("Final Timezone Name:", timezoneName);
@@ -284,8 +288,6 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
   }
 
 
-  
-
 
   getAddressComponent(components: any[], type: string): string | null {
     const component = components.find(comp => comp.types.includes(type));
@@ -293,93 +295,38 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
   }
 
 
-  onFileSelected(event: Event){
+  onFileSelected(event: Event) {
     //capture binary format of the file, store in browser's temporary storage directory 
     // to get a url to that resource in your directory
     //once stored than go ahead and encode it
 
     const input = event?.target as HTMLInputElement;
-    if(input.files && input.files.length>0){
-      const file =  input.files[0]
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0]
+      this.isUploading = true;
       const reader = new FileReader();
       reader.onload = () => {
         this.dataUri = reader.result as string;
       }
-      
+      this.isUploading = false;
+
       reader.readAsDataURL(file);
       console.log(this.dataUri)
-      // get file original name from input type=file field
-      // Reset everything related to the previous image
-    this.uploadSuccess = false;
-    this.fileThatGotSuccessfullyUploaded = {
-      resource_id: '',
-      do_url: '',
-      uploadedOn: '',
-      fileOriginalName: '',
-      resourceType: '',
-    };
+    
       this.fileNameHolder = file.name;
-      this.newTripForm.patchValue({ cover_image_id: '' }); // Reset cover image in the form
-      this.fileUploadForm.get('original_file_name')?.setValue(this.fileNameHolder);
-    
-  
-    
+      this.newTripForm.get('original_file_name')?.setValue(this.fileNameHolder);
+
+
+
     }
 
   }
 
-  async uploadImage() {
-    if (!this.dataUri) {
-      console.error("No image selected for upload.");
-      return;
-    }
-
-    this.isUploading = true;
-
-    try {
-      // Convert DataURI to Blob
-      this.blob = this.dataURItoBlob(this.dataUri);
-      const formValue = this.fileUploadForm.value;
-
-      // **Upload the file**
-      const result = await this.fileUploadService.upload(formValue, this.blob, this.currUser?.uid ?? '');
-
-      if (result && result.resource_id) {
-        this.fileThatGotSuccessfullyUploaded = result;
-        const coverImageId = result.resource_id
-        this.uploadSuccess = true;
-       
-        // ✅ **Update Form with Cover Image ID**
-        this.newTripForm.patchValue({ cover_image_id: coverImageId});
-
-        console.log("Upload Successful. Cover Image ID:", coverImageId);
-
-        this.messagingService.add({
-          severity: 'success',
-          summary: 'Upload Successful',
-          detail: 'Image uploaded successfully!',
-          life: 3000,
-        });
-      } else {
-        console.error("Upload failed. No resource ID returned.");
-      }
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      this.messagingService.add({
-        severity: 'error',
-        summary: 'Upload Failed',
-        detail: 'There was an error uploading the image.',
-        life: 3000,
-      });
-    } finally {
-      this.isUploading = false;
-    }
-  }
-
-  
 
 
-  dataURItoBlob(dataURI: string): Blob{
+
+
+  dataURItoBlob(dataURI: string): Blob {
     const [meta, base64Data] = dataURI.split(',');
     const mimeMatch = meta.match(/:(.*?);/);
 
@@ -387,24 +334,18 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
     const byteString = atob(base64Data);
     const ab = new ArrayBuffer(byteString.length);
     const ia = new Uint8Array(ab);
-    for(let i = 0; i < byteString.length; i++){
+    for (let i = 0; i < byteString.length; i++) {
       ia[i] = byteString.charCodeAt(i);
     }
-    return new Blob([ia], {type: mimeType});
+    return new Blob([ia], { type: mimeType });
   }
 
 
   cancelImage(): void {
     this.dataUri = '';  // Clear the image preview
-    this.newTripForm.get('cover_image_id')?.reset();  // Reset the cover_image form control
-    this.uploadSuccess = false;
-    this.fileThatGotSuccessfullyUploaded = {
-      resource_id: '',
-      do_url: '',
-      uploadedOn: '',
-      fileOriginalName: '',
-      resourceType: '',
-    }
+    this.fileNameHolder = '';
+    this.newTripForm.get("original_file_name")?.setValue('');
+
   }
 
   async onSubmit(): Promise<void> {
@@ -413,37 +354,28 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (!this.uploadSuccess) {
-      this.messagingService.add({
-        severity: 'warn',
-        summary: 'Upload Image First',
-        detail: 'Please upload an image before submitting the form.',
-        life: 3000,
-      });
-      return;
+
+    if(this.dataUri.length!=0){
+      this.blob = this.dataURItoBlob(this.dataUri);
     }
 
+    const formValue = this.newTripForm.value;
     console.log("Final Form Data Before Submission:", this.newTripForm.value);
 
-    const tripInfoToSend: TripInfo = {
-      ...this.newTripForm.value,
-      cover_image_id: this.fileThatGotSuccessfullyUploaded.resource_id,
-      attendees: `${this.currUser?.uid}`,
-      master_user_id: `${this.currUser?.uid}`,
-      last_updated: ''
-    };
-    tripInfoToSend.cover_image_id = this.fileThatGotSuccessfullyUploaded.resource_id
-    console.log(">>>>> final tripinfo before go service :", tripInfoToSend);
+   
     try {
-      const response = await this.tripService.putNewTrip(tripInfoToSend, `${this.currUser?.uid}`);
-      console.log('Trip Submitted Successfully:', response);
-
+      this.isUploading = true;
+      const response = await this.tripService.putNewTrip(formValue, this.blob, `${this.currUser?.uid}`);
+      
+      if(response){
+        this.isUploading = false;
       this.messagingService.add({
         severity: 'success',
         summary: 'Trip Created',
         detail: 'Your trip has been successfully created!',
         life: 3000,
       });
+    }
 
     } catch (error) {
       console.error('Error during trip submission:', error);
@@ -454,12 +386,12 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
         life: 3000,
       });
     }
+  
+
   }
 
-  
-  
-  
-  
+
+
 
   ngOnDestroy(): void {
     this.accessCurrUserDetailsSub.unsubscribe()

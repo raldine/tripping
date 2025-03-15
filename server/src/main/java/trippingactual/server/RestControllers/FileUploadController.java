@@ -185,70 +185,70 @@ public class FileUploadController {
         }
     }
 
-    @PostMapping("/api/upload-pexel")
-    public ResponseEntity<String> uploadThePexelFetchImage(
-            @RequestHeader("Authorization") String firebaseUUID,
-            @RequestBody String payload) throws IOException, SQLException {
-        // Check if the Firebase UUID is present
-        if (firebaseUUID.isEmpty()) {
-            JsonObject replyForUnAuthorized = Json.createObjectBuilder()
-                    .add("response", "Unauthorized")
-                    .build();
-            return ResponseEntity.status(401).body(replyForUnAuthorized.toString());
-        }
+    // @PostMapping("/api/upload-pexel")
+    // public ResponseEntity<String> uploadThePexelFetchImage(
+    //         @RequestHeader("Authorization") String firebaseUUID,
+    //         @RequestBody String payload) throws IOException, SQLException {
+    //     // Check if the Firebase UUID is present
+    //     if (firebaseUUID.isEmpty()) {
+    //         JsonObject replyForUnAuthorized = Json.createObjectBuilder()
+    //                 .add("response", "Unauthorized")
+    //                 .build();
+    //         return ResponseEntity.status(401).body(replyForUnAuthorized.toString());
+    //     }
 
-        // Parse the incoming JSON payload
-        JsonObject photoTripUser = Json.createReader(new StringReader(payload)).readObject();
+    //     // Parse the incoming JSON payload
+    //     JsonObject photoTripUser = Json.createReader(new StringReader(payload)).readObject();
 
-        // Validate the presence of 'photourl'
-        if (photoTripUser.getString("photourl").isEmpty()) {
-            JsonObject replyForNullValue = Json.createObjectBuilder()
-                    .add("response", "Missing photourl")
-                    .build();
-            return ResponseEntity.status(400).body(replyForNullValue.toString());
-        }
+    //     // Validate the presence of 'photourl'
+    //     if (photoTripUser.getString("photourl").isEmpty()) {
+    //         JsonObject replyForNullValue = Json.createObjectBuilder()
+    //                 .add("response", "Missing photourl")
+    //                 .build();
+    //         return ResponseEntity.status(400).body(replyForNullValue.toString());
+    //     }
 
-        // Generate a resource ID
-        String resourceId = allfilesserve.resourceIdGenerator(photoTripUser.getString("comments"));
-        System.out.println("Generated resource ID: " + resourceId);
+    //     // Generate a resource ID
+    //     String resourceId = allfilesserve.resourceIdGenerator(photoTripUser.getString("comments"));
+    //     System.out.println("Generated resource ID: " + resourceId);
 
-        // Create a new FileObject to store the details
-        FileObject newResource = new FileObject();
-        newResource.setResourceId(resourceId);
+    //     // Create a new FileObject to store the details
+    //     FileObject newResource = new FileObject();
+    //     newResource.setResourceId(resourceId);
 
-        // Tie the resource to the trip and other components
-        newResource.setTrip_id(photoTripUser.getString("trip_id"));
-        newResource.setDo_src_link(photoTripUser.getString("photourl"));
-        newResource.setMedia_type(photoTripUser.getString("media_type"));
-        newResource.setOriginal_file_name(resourceId + "_cover_image");
+    //     // Tie the resource to the trip and other components
+    //     newResource.setTrip_id(photoTripUser.getString("trip_id"));
+    //     newResource.setDo_src_link(photoTripUser.getString("photourl"));
+    //     newResource.setMedia_type(photoTripUser.getString("media_type"));
+    //     newResource.setOriginal_file_name(resourceId + "_cover_image");
 
-        try {
-            // Upload the file to the database
-            FileObject finalFileSuccessSQL = fileServiceSql.upload(newResource);
+    //     try {
+    //         // Upload the file to the database
+    //         FileObject finalFileSuccessSQL = fileServiceSql.upload(newResource);
 
-            if (finalFileSuccessSQL != null) {
-                // Prepare the response JSON to return to the frontend
-                JsonObject toReturnJson = Json.createObjectBuilder()
-                        .add("do_url", finalFileSuccessSQL.getDo_src_link())
-                        .add("resource_id", resourceId)
-                        .add("fileOriginalName", finalFileSuccessSQL.getOriginal_file_name())
-                        .add("uploadedOn", finalFileSuccessSQL.getUploaded_on().toString())
-                        // For frontend to know to load resource in <img> or another way for docs
-                        .add("resourceType", allfilesserve.resourceType(resourceId))
-                        .build();
-                return ResponseEntity.status(200).body(toReturnJson.toString());
-            } else {
-                // If the file upload fails, throw an exception
-                throw new Exception("Error during file upload.");
-            }
-        } catch (Exception e) {
-            // Handle any server-side errors (e.g., database issues)
-            JsonObject errorResponse = Json.createObjectBuilder()
-                    .add("response", "Internal server error")
-                    .add("message", e.getMessage())
-                    .build();
-            return ResponseEntity.status(500).body(errorResponse.toString());
-        }
-    }
+    //         if (finalFileSuccessSQL != null) {
+    //             // Prepare the response JSON to return to the frontend
+    //             JsonObject toReturnJson = Json.createObjectBuilder()
+    //                     .add("do_url", finalFileSuccessSQL.getDo_src_link())
+    //                     .add("resource_id", resourceId)
+    //                     .add("fileOriginalName", finalFileSuccessSQL.getOriginal_file_name())
+    //                     .add("uploadedOn", finalFileSuccessSQL.getUploaded_on().toString())
+    //                     // For frontend to know to load resource in <img> or another way for docs
+    //                     .add("resourceType", allfilesserve.resourceType(resourceId))
+    //                     .build();
+    //             return ResponseEntity.status(200).body(toReturnJson.toString());
+    //         } else {
+    //             // If the file upload fails, throw an exception
+    //             throw new Exception("Error during file upload.");
+    //         }
+    //     } catch (Exception e) {
+    //         // Handle any server-side errors (e.g., database issues)
+    //         JsonObject errorResponse = Json.createObjectBuilder()
+    //                 .add("response", "Internal server error")
+    //                 .add("message", e.getMessage())
+    //                 .build();
+    //         return ResponseEntity.status(500).body(errorResponse.toString());
+    //     }
+    // }
 
 }

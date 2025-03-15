@@ -1,6 +1,8 @@
 package trippingactual.server.models;
 
 import java.io.StringReader;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -115,8 +117,6 @@ public class TripInfo {
         this.last_updated = last_updated;
     }
 
-    
-
     public String getDestination_timezone() {
         return destination_timezone;
     }
@@ -133,15 +133,15 @@ public class TripInfo {
         this.d_timezone_name = d_timezone_name;
     }
 
-    public String toJson() {
+    public JsonObject toJson() {
         // Create a JsonObjectBuilder to build the JSON object
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
         // Add properties to the JSON object
         builder.add("trip_id", this.trip_id)
                 .add("trip_name", this.trip_name)
-                .add("start_date", this.start_date.toString()) // Convert Date to String
-                .add("end_date", this.end_date.toString()) // Convert Date to String
+                .add("start_date", dateUtilToString(this.start_date))// Convert Date to String
+                .add("end_date", dateUtilToString(this.end_date)) // Convert Date to String
                 .add("destination_city", this.destination_city)
                 .add("destination_curr", this.destination_curr)
                 .add("destination_timezone", this.destination_timezone)
@@ -156,7 +156,7 @@ public class TripInfo {
         JsonObject jsonObject = builder.build();
 
         // Return the JSON object as a String
-        return jsonObject.toString();
+        return jsonObject;
     }
 
     public static TripInfo fromJsonToTripInfo(JsonObject tripInfoInJson) {
@@ -187,15 +187,39 @@ public class TripInfo {
         return tripInfo;
     }
 
+    public static TripInfo populate(ResultSet rs) throws SQLException {
+        TripInfo trips = new TripInfo();
+
+        trips.setTrip_id(rs.getString("trip_id"));
+        trips.setTrip_name(rs.getString("trip_name"));
+        trips.setStart_date(parseDate(rs.getString("start_date"))); // Convert String to Date
+        trips.setEnd_date(parseDate(rs.getString("end_date"))); // Convert String to Date
+        trips.setDestination_city(rs.getString("destination_city"));
+        trips.setDestination_curr(rs.getString("destination_curr"));
+        trips.setDestination_timezone(rs.getString("destination_timezone"));
+        trips.setD_timezone_name(rs.getString("d_timezone_name"));
+        trips.setDescription_t(rs.getString("description_t"));
+        trips.setCover_image_id(rs.getString("cover_image_id"));
+        trips.setAttendees(rs.getString("attendees"));
+        trips.setMaster_user_id(rs.getString("master_user_id"));
+        trips.setLast_updated(rs.getTimestamp("last_updated"));
+
+        return trips;
+    }
+
     public static Date parseDate(String date) {
         try {
-            return new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss 'GMT'Z (z)").parse(date);
+            return new SimpleDateFormat("yyyy-MM-dd").parse(date);
 
         } catch (ParseException e) {
             return null;
         }
     }
 
+    public static String dateUtilToString(Date date){
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
+        return formatter.format(date);
+    }
 
 }

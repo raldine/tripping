@@ -16,7 +16,7 @@ public class UserInfo {
     private String timezone_origin;
     private String currency_origin;
     private boolean notif;
-    
+
     public String getUser_id() {
         return user_id;
     }

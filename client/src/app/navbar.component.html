@@ -20,7 +20,7 @@
         <ng-template pTemplate="end">
             <div class="flex items-center justify-center gap-4" style="display: flex; align-items: center;">
                 @if (currUser) {
-                <span class="text-lg font-medium" style="padding-right: 20px;">{{ currUser.displayName }}</span>
+                <span class="text-lg font-medium">{{ currUser.displayName }}</span>
                 @if (user_pp_url) {
                 <p-avatar [image]="user_pp_url" class="mr-2" shape="circle" (onImageError)="user_pp_url = null"></p-avatar>
                 } @else {

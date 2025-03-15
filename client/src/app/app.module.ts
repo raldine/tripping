@@ -12,13 +12,10 @@ import { RegisterComponent } from './register.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from './AuthService';
 import { GoogleApiCallService } from './GoogleApiCallService';
-// import { JwtInterceptor } from './interceptor/JwtInterceptor';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
 import { InputTextModule } from 'primeng/inputtext';
-// import { FloatLabelModule } from 'primeng/floatlabel'
-// import { IftaLabelModule } from 'primeng/iftalabel';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { AvatarModule } from 'primeng/avatar';
 import { MenubarModule } from 'primeng/menubar';
@@ -37,12 +34,11 @@ import { NavbarComponent } from './navbar.component';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { provideNativeDateAdapter } from '@angular/material/core';
 import { CalendarModule } from 'primeng/calendar';  // Import CalendarModule for p-datepicker
 import { DatePickerModule } from 'primeng/datepicker';
+import { TextareaModule } from 'primeng/textarea';
+import { ToolbarModule } from 'primeng/toolbar';
+import {FluidModule} from 'primeng/fluid';
 
 
 
@@ -78,17 +74,15 @@ const appRoutes: Routes = [
     AvatarModule,
     MenubarModule,
     ButtonModule,
-    // FloatLabelModule,
-    // IftaLabelModule,
     IconFieldModule,
     InputIconModule,
     ProgressSpinnerModule,
     ToastModule,
-    // MatDatepickerModule,
-    // MatFormFieldModule,
-    // MatInputModule
     CalendarModule,
-    DatePickerModule
+    DatePickerModule,
+    TextareaModule,
+    ToolbarModule,
+    FluidModule
     
 
 

@@ -1,0 +1,65 @@
+/* You can add global styles to this file, and also import other style files */
+@use './tailwind.css';
+@use './assets/layout/layout.scss';
+@use 'primeicons/primeicons.css';
+@use './assets/demo/demo.scss';
+/* You can add global styles to this file, and also import other style files */
+@import "primeicons/primeicons.css";
+
+h1 {
+ 
+    font-family: Domine;
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: var(--Display-Medium-Line-Height, 52px);
+    /* 144.444% */
+}
+
+
+h2 {
+
+font-family: "Noto Sans";
+font-size: 28px;
+font-style: normal;
+font-weight: 600;
+line-height: var(--Display-Small-Line-Height, 44px); /* 157.143% */
+}
+
+
+h3 {
+
+font-family: "Noto Sans";
+font-size: 24px;
+font-style: normal;
+font-weight: 500;
+line-height: var(--Display-Small-Line-Height, 28px); /* 183.333% */
+}
+
+h4 {
+
+font-family: "Noto Sans";
+font-size: 18px;
+font-style: normal;
+font-weight: 400;
+line-height: 20px; /* 111.111% */
+}
+
+body {
+   
+font-family: "Noto Sans";
+font-size: 14px;
+font-style: normal;
+font-weight: 400;
+line-height: var(--Body-Small-Line-Height, 16px); /* 114.286% */
+}
+
+p {
+    font-family: "Noto Sans";
+font-size: 14px;
+font-style: normal;
+font-weight: 400;
+line-height: var(--Body-Small-Line-Height, 16px); /* 114.286% */
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

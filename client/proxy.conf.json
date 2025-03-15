@@ -1,23 +1,18 @@
 {
-    "/api": {
-      "target": "http://localhost:8080",
-      "secure": false
-    
-    },
-    "/authen": {
-      "target": "http://localhost:8080",
-      "secure": false
-    
-    },
-    "/user": {
-      "target": "http://localhost:8080",
-      "secure": false
-    
-    },
-    "/trip": {
-      "target": "http://localhost:8080",
-      "secure": false
-    
-    }
+  "/api": {
+    "target": "http://localhost:8080",
+    "secure": false
+  },
+  "/authen": {
+    "target": "http://localhost:8080",
+    "secure": false
+  },
+  "/user": {
+    "target": "http://localhost:8080",
+    "secure": false
+  },
+  "/trip": {
+    "target": "http://localhost:8080",
+    "secure": false
   }
-  
+}
