@@ -15,6 +15,7 @@ import { TripService } from './TripService';
 declare global {
   interface Window {
     initAutocomplete: () => void;  // Add the initAutocomplete function to the window object
+    google: any
   }
 }
 
@@ -96,6 +97,8 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
         destination_city: this.fb.control<string>(''),
         destination_curr: this.fb.control<string>(''),
         destination_timezone: this.fb.control<string>(''),
+        dest_lat: this.fb.control<string>(''),
+        dest_lng: this.fb.control<string>(''),
         d_timezone_name: this.fb.control<string>(''),
         description_t: this.fb.control<string | null>(null),
         cover_image_id: this.fb.control<string>('N/A'),
@@ -117,8 +120,8 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
 
         this.newTripForm.get('trip_id')?.setValue(params["trip_id"])
         console.log("trip id set to " + this.newTripForm.get('trip_id')?.value)
-   
-        
+
+
 
 
       }
@@ -149,7 +152,7 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
     ).subscribe((user) => {
       this.currUser = user;  // Store the user object in the component
 
-      
+
       this.user_pp_url = user.photoURL?.toString().replace("=s96-c", "") ?? null;
       //also assign user to newTripform as master user and attendee
       this.newTripForm.get("master_user_id")?.setValue(this.currUser.uid);
@@ -162,12 +165,25 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
 
     //get google api key before form loads
     try {
+      console.info("Fetching Google API key...");
       this.api_key = await firstValueFrom(this.googleServiceApi.getGoogleMapApi());
+  
       if (this.api_key) {
-        this.loadGoogleMapsScript(this.api_key);
+        console.info("Google API key received:", this.api_key);
+  
+        // ✅ Reload Google Maps script only if missing
+        if (!window.google || !window.google.maps) {
+          console.info("Google Maps script not found, loading...");
+          await this.loadGoogleMapsScript(this.api_key);
+        } else {
+          console.info("Google Maps script already loaded.");
+        }
+  
+        // ✅ Always reinitialize Autocomplete to avoid stale references
+        setTimeout(() => this.initAutocomplete(), 500);
       }
     } catch (err) {
-      console.error('Error getting API key', err);
+      console.error("Error getting API key:", err);
     }
 
 
@@ -208,12 +224,26 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
   }
 
   initAutocomplete(): void {
-    if (this.autocomplete) {
-      return; // Don't initialize again if already initialized
+    if (!google || !google.maps || !google.maps.places) {
+      console.error("Google Maps API not loaded yet. Retrying...");
+      setTimeout(() => this.initAutocomplete(), 500); // Retry after 500ms
+      return;
     }
 
     const originInputElement = document.getElementById('destinationCity') as HTMLInputElement;
     if (originInputElement && google) {
+      this.autocomplete = new google.maps.places.Autocomplete(originInputElement, {
+        types: ['(cities)'],
+      });
+      console.info("Initializing Google Autocomplete...");
+
+      // ✅ Destroy the previous instance before reinitializing
+      if (this.autocomplete) {
+        google.maps.event.clearInstanceListeners(this.autocomplete);
+        this.autocomplete = null;
+      }
+    
+      // ✅ Initialize a new Autocomplete instance
       this.autocomplete = new google.maps.places.Autocomplete(originInputElement, {
         types: ['(cities)'],
       });
@@ -222,7 +252,8 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
         const place = this.autocomplete?.getPlace();
         if (place && place.name && place.address_components) {
           console.log('Selected Place: ', place.name);
-          // console.log('Selected full object: ', place.address_components);
+          console.log("WHOLE PLACE OBJECT", place)
+
 
           const city = this.getAddressComponent(place.address_components, 'locality') ||
             this.getAddressComponent(place.address_components, 'colloquial_area');
@@ -235,55 +266,78 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
           const safeCountry = country ?? "Singapore";  // Provide a default value to not break app
           this.countriesData$ = this.countryDataStore.filterCountryInfoByNames([safeCountry]);
 
-          // Convert the timezone offset in minutes to hours and fractional part
-          const hours: number = Math.floor(timezoneRaw / 60);
-          const minutes: number = timezoneRaw % 60;
 
-          // Create the timezone offset as UTC+hours.minutes (i.e., UTC+05.45)
-          // Format the hours and minutes
-          const formattedMinutes: string = minutes < 10 ? `0${minutes}` : `${minutes}`;
+          if (place.place_id) {
+            //geometry for printing on google maps
+            console.log('Fetching latitude & longitude for:', place.place_id);
+            const geometry = await this.googleServiceApi.getPlaceGeometry(place.place_id);
+            if (geometry) {
+              console.log("Latitude:", geometry.lat);
+              this.newTripForm.get("dest_lat")?.setValue(geometry.lat)
 
-          // Create the timezone offset as UTC±hh:mm
-          const timezone: string = `UTC${hours < 0 ? "-" : "+"}${Math.abs(hours).toString().padStart(2, '0')}:${formattedMinutes}`;
-
-          //get currency and timezone name
-          try {
-            const countries = await firstValueFrom(this.countryDataStore.filterCountryInfoByNames([safeCountry]));
-
-            const matchedCountry = countries.find(c => c.country_name === country);
-            if (!matchedCountry) {
-              console.warn("Country not found in store:", country);
-
-              // If country is not found, set default values for form controls
-              this.newTripForm.get('destination_city')?.setValue(city + "-" + country);
-              this.newTripForm.get('destination_timezone')?.setValue('');  // or some default value
-              this.newTripForm.get('destination_curr')?.setValue('');  // or some default value
-              this.newTripForm.get('d_timezone_name')?.setValue('');
-              this.printDestinationInfo$.next('')
-
-              return;
-            } // Find matching timezone based on UTC offset
-            const matchingTimezone = matchedCountry.timezones.find(tz => tz.gmtOffsetName === timezone);
-            const timezoneName = matchingTimezone ? matchingTimezone.tzName : "Unknown Timezone";
-
-            // ✅ Update form fields
-            this.newTripForm.get('destination_city')?.setValue(city + "-" + country);
-            this.newTripForm.get('destination_timezone')?.setValue(timezone ?? '');
-            this.newTripForm.get('destination_curr')?.setValue(matchedCountry.currency ?? '');
-            this.newTripForm.get('d_timezone_name')?.setValue(timezoneName ?? '');
-            this.printDestinationInfo$.next(`Destination Timezone: ${timezone} (${timezoneName}), Currency: ${matchedCountry.currency}`)
+              console.log("Longitude:", geometry.lng);
+              this.newTripForm.get("dest_lng")?.setValue(geometry.lng)
 
 
-            console.log("Country Matched:", matchedCountry);
-            console.log("Final Timezone Name:", timezoneName);
-          } catch (error) {
-            console.error("Error fetching country data:", error);
+
+            } else {
+              console.log("this result has no location lat lng")
+              this.newTripForm.get("dest_lat")?.setValue('')
+              this.newTripForm.get("dest_lng")?.setValue('')
+
+            }
           }
 
 
+            // Convert the timezone offset in minutes to hours and fractional part
+            const hours: number = Math.floor(timezoneRaw / 60);
+            const minutes: number = timezoneRaw % 60;
 
-        }
-      });
+            // Create the timezone offset as UTC+hours.minutes (i.e., UTC+05.45)
+            // Format the hours and minutes
+            const formattedMinutes: string = minutes < 10 ? `0${minutes}` : `${minutes}`;
+
+            // Create the timezone offset as UTC±hh:mm
+            const timezone: string = `UTC${hours < 0 ? "-" : "+"}${Math.abs(hours).toString().padStart(2, '0')}:${formattedMinutes}`;
+
+            //get currency and timezone name
+            try {
+              const countries = await firstValueFrom(this.countryDataStore.filterCountryInfoByNames([safeCountry]));
+
+              const matchedCountry = countries.find(c => c.country_name === country);
+              if (!matchedCountry) {
+                console.warn("Country not found in store:", country);
+
+                // If country is not found, set default values for form controls
+                this.newTripForm.get('destination_city')?.setValue(city + "-" + country);
+                this.newTripForm.get('destination_timezone')?.setValue('');  // or some default value
+                this.newTripForm.get('destination_curr')?.setValue('');  // or some default value
+                this.newTripForm.get('d_timezone_name')?.setValue('');
+                this.printDestinationInfo$.next('')
+
+                return;
+              } // Find matching timezone based on UTC offset
+              const matchingTimezone = matchedCountry.timezones.find(tz => tz.gmtOffsetName === timezone);
+              const timezoneName = matchingTimezone ? matchingTimezone.tzName : "Unknown Timezone";
+
+              // ✅ Update form fields
+              this.newTripForm.get('destination_city')?.setValue(city + "-" + country);
+              this.newTripForm.get('destination_timezone')?.setValue(timezone ?? '');
+              this.newTripForm.get('destination_curr')?.setValue(matchedCountry.currency ?? '');
+              this.newTripForm.get('d_timezone_name')?.setValue(timezoneName ?? '');
+              this.printDestinationInfo$.next(`Destination Timezone: ${timezone} (${timezoneName}), Currency: ${matchedCountry.currency}`)
+
+
+              console.log("Country Matched:", matchedCountry);
+              console.log("Final Timezone Name:", timezoneName);
+            } catch (error) {
+              console.error("Error fetching country data:", error);
+            }
+
+
+
+          }
+        });
     }
   }
 
@@ -312,7 +366,7 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
 
       reader.readAsDataURL(file);
       console.log(this.dataUri)
-    
+
       this.fileNameHolder = file.name;
       this.newTripForm.get('original_file_name')?.setValue(this.fileNameHolder);
 
@@ -355,27 +409,27 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
     }
 
 
-    if(this.dataUri.length!=0){
+    if (this.dataUri.length != 0) {
       this.blob = this.dataURItoBlob(this.dataUri);
     }
 
     const formValue = this.newTripForm.value;
     console.log("Final Form Data Before Submission:", this.newTripForm.value);
 
-   
+
     try {
       this.isUploading = true;
       const response = await this.tripService.putNewTrip(formValue, this.blob, `${this.currUser?.uid}`);
-      
-      if(response){
+
+      if (response) {
         this.isUploading = false;
-      this.messagingService.add({
-        severity: 'success',
-        summary: 'Trip Created',
-        detail: 'Your trip has been successfully created!',
-        life: 3000,
-      });
-    }
+        this.messagingService.add({
+          severity: 'success',
+          summary: 'Trip Created',
+          detail: 'Your trip has been successfully created!',
+          life: 3000,
+        });
+      }
 
     } catch (error) {
       console.error('Error during trip submission:', error);
@@ -386,7 +440,7 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
         life: 3000,
       });
     }
-  
+
 
   }
 

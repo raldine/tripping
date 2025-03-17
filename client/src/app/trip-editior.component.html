@@ -1,4 +1,9 @@
 <p-toast id="toastMod"></p-toast> <!-- Toast container to show the toast notifications -->
+<div *ngIf="dataUri.length!=0">
+    <div id="trip-image-header-preview">
+        <img [src]="dataUri" alt="Cover Image Preview" style="height: auto;">
+    </div>
+</div>
 <div class="formPage">
     <div class="card">
         <form [formGroup]="newTripForm" (submit)="onSubmit()">
@@ -15,12 +20,12 @@
 
             <div class="mb-2">
                 <label for="start_date" class="mb-0.5 block">Start Date of Trip:</label><br>
-                <input  type="date" formControlName="start_date">
+                <input type="date" formControlName="start_date">
 
             </div>
             <div class="mb-4">
                 <label for="end_date" class="mb-0.5 block">End Date of Trip:</label><br>
-                <input  type="date" formControlName="end_date"><br>
+                <input type="date" formControlName="end_date"><br>
             </div>
 
             <div class="mb-2">
@@ -29,25 +34,29 @@
                     placeholder="Enter an optional description here."></textarea><br>
 
             </div>
+            <label for="cover_image" class="mb-0.5 block">Upload an Image to set a Cover Image for this Trip
+                (Optional):</label><br>
+            <div class="flex items-center gap-0.5 mb-8">
+                <div>
+                    <!-- Image Upload Section -->
+                    <input type="file" accept=".png, .jpeg, .jpg" (change)="onFileSelected($event)">
+                </div>
 
-            <div class="mb-2">
-                <!-- Image Upload Section -->
-                <label for="cover_image" class="mb-0.5 block">Upload an Image to set a Cover Image for this Trip:</label><br>
-                <input type="file" accept=".png, .jpeg, .jpg"
-                    (change)="onFileSelected($event)"><br><br>
+
+
+                <!-- Image Preview -->
+                <div *ngIf="dataUri.length!=0" class="mb-2">
+                    <button type="button" (click)="cancelImage()">Remove image</button>
+                </div>
             </div>
 
-
-
-            <!-- Image Preview -->
-            <div *ngIf="dataUri.length!=0">
-                <label class="mb-0.5 block">Image Preview:</label><br>
-                <img [src]="dataUri" alt="Cover Image Preview" style="max-width: 30%; height: auto;">
-
-                <button type="button" (click)="cancelImage()">Remove image</button>
-            </div>
-            <div>
-                <button type="submit">Submit</button>
+            <div class="flex items-center gap-5 mb-2">
+                <div>
+                    <button type="button" routerLink="/dashboard">Back to Dashboard</button>
+                </div>
+                <div>
+                    <button type="submit">Submit</button>
+                </div>
             </div>
 
 

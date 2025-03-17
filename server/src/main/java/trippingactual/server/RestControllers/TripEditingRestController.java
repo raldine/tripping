@@ -56,6 +56,8 @@ public class TripEditingRestController {
             @RequestPart(value = "destination_curr", required = false) Optional<String> destination_curr,
             @RequestPart(value = "destination_timezone", required = false) Optional<String> destination_timezone,
             @RequestPart(value = "d_timezone_name", required = false) Optional<String> d_timezone_name,
+            @RequestPart(value = "dest_lat", required = false) Optional<String> dest_lat,
+            @RequestPart(value = "dest_lng", required = false) Optional<String> dest_lng,
             @RequestPart(value = "description_t", required = false) Optional<String> description_t,
             @RequestPart(value = "cover_image_id", required = false) Optional<String> cover_image_id,
             @RequestPart(value = "attendees") String attendees,
@@ -78,6 +80,8 @@ public class TripEditingRestController {
             String finalDestinationCurr = destination_curr.orElse("N/A");
             String finalDestinationTimezone = destination_timezone.orElse("N/A");
             String finalDTimezoneName = d_timezone_name.orElse("N/A");
+            String finalDest_lat = dest_lat.orElse("N/A");
+            String finalDest_lng = dest_lng.orElse("N/A");
             String finalDescriptionT = description_t.orElse("No description provided");
             String finalCoverImageId = cover_image_id.orElse("N/A");
             String finalOriginalFileName = original_file_name.orElse("unknownfilename");
@@ -96,6 +100,8 @@ public class TripEditingRestController {
             tripBuilding.setDestination_curr(finalDestinationCurr);
             tripBuilding.setDestination_timezone(finalDestinationTimezone);
             tripBuilding.setD_timezone_name(finalDTimezoneName);
+            tripBuilding.setDest_lat(finalDest_lat);
+            tripBuilding.setDest_lng(finalDest_lng);
             tripBuilding.setDescription_t(finalDescriptionT);
 
             // Handle Optional File Upload

@@ -33,6 +33,8 @@ export class TripService {
         formData.set("destination_curr", form["destination_curr"] ?? "N/A");
         formData.set("destination_timezone", form["destination_timezone"] ?? "N/A");
         formData.set("d_timezone_name", form["d_timezone_name"] ?? "N/A");
+        formData.set("dest_lat", form["dest_lat"] ?? "N/A")
+        formData.set("dest_lng", form["dest_lng"] ?? "N/A")
         formData.set("description_t", form["description_t"] ?? "N/A");
         formData.set("cover_image_id", form["cover_image_id"] ?? "N/A");
         formData.set("attendees", form["attendees"] ?? "N/A");

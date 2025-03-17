@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, inject, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from './AuthService';
 import { filter, map, Observable, Subscription } from 'rxjs';
 import { User } from 'firebase/auth';
@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { MenuItem, PrimeIcons } from 'primeng/api';
 import { v4 as uuidv4 } from 'uuid';
 import { TripService } from './TripService';
+import { FileUploadService } from './FileUploadService';
 
 
 @Component({
@@ -50,6 +51,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   //for getting trips belonging to current user
   tripService = inject(TripService);
   tripsCreatedByUser!: TripInfo[]
+
+  //retrieve trip cover iamge
+  fileUploadService = inject(FileUploadService);
+  // Cache for trip cover images
+tripCoverImages: { [key: string]: string } = {};
 
   //for action submenubar
   nestedMenuItems = [
@@ -110,11 +116,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if(this.currUser){
       this.tripsCreatedByUser = await this.tripService.getAllTripsByUserId(this.currUser?.uid);
       console.log("trips received")
+
+       // ✅ Preload trip cover images
+       for (const trip of this.tripsCreatedByUser) {
+        this.tripCoverImages[trip.cover_image_id] = await this.getTripsCoverImage(trip.cover_image_id);
+    }
     }
     
 
 
   }
+
+// Fetch cover image and store it
+async getTripsCoverImage(resourceId: string): Promise<string> {
+  if (!resourceId) return ''; // Handle missing resourceId
+  const imageUrl = await this.fileUploadService.getFileByResourceId(resourceId, this.currUser?.uid ?? '');
+  return imageUrl.do_url;
+}
 
   getRandomElement(arr: string[]): string {
     if (arr.length === 0) return ''; // Handle empty array case

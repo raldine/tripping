@@ -1,6 +1,6 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { BehaviorSubject, catchError, map, Observable, tap, throwError } from "rxjs";
+import { BehaviorSubject, catchError, firstValueFrom, map, Observable, tap, throwError } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +14,8 @@ export class GoogleApiCallService{
 
   private get_google_map_url = "/api/googlekey";  // URL to your backend endpoint
 
+  private apikey!: string
+
   constructor() {}
 
   getGoogleMapApi(): Observable<string> {
@@ -23,12 +25,43 @@ export class GoogleApiCallService{
       .pipe(
         tap(result => console.log("API key received:", result)), // Log full response
         map(result => result.api_key), // Extract "api_key"
-        tap(apiKey => this.googleMapsApi.next(apiKey)), // Store API key
+        tap(apiKey => 
+        {
+          this.googleMapsApi.next(apiKey as string)
+        this.apikey = apiKey}), // Store API key
         catchError(error => {
           console.error("Error fetching API key:", error);
           return throwError(() => error);
         })
       );
+  }
+
+  async getPlaceGeometry(placeId: string): Promise<{ lat: string; lng: string } | null> {
+        // Wait for the API key to be set before making the request
+       
+    const params = new HttpParams()
+              .set("place_id", placeId)
+
+    try {
+      const response: any = await firstValueFrom(this.http.get<any>("/api/googlekey/getlatlng", { params }));
+
+
+        if (response && response.result) {
+          // ✅ Parse result if it's a string
+          const parsedResult = typeof response.result === "string" ? JSON.parse(response.result) : response.result;
+          
+          const lat = parsedResult.lat;
+          const lng = parsedResult.lng;
+   
+        return { lat, lng };
+      } else {
+        console.error('No geometry data found for place ID:', placeId);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching place details:', error);
+      return null;
+    }
   }
 
 }

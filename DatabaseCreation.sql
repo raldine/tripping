@@ -57,6 +57,8 @@ destination_city TEXT,
 destination_curr VARCHAR(10),
 destination_timezone VARCHAR(64),
 d_timezone_name VARCHAR(64),
+dest_lat VARCHAR(64),
+dest_lng VARCHAR(64),
 description_t VARCHAR(255),
 cover_image_id VARCHAR(100),
 attendees TEXT,
@@ -66,9 +68,14 @@ constraint pk_trip_id primary key(trip_id),
 constraint fk_master_user_id foreign key(master_user_id) references users(firebase_uid)
 );
 
-
+ALTER TABLE trips ADD dest_lat VARCHAR(22) default 'N/A';
+ALTER TABLE trips MODIFY dest_lat varchar(64) default 'N/A';
+ALTER TABLE trips ADD dest_lng VARCHAR(22) default 'N/A';
+ALTER TABLE trips MODIFY dest_lng varchar(64) default 'N/A';
 drop table trips;
 select * from trips;
+
+select * from trips where master_user_id='WvibmPm1KMT9071ynwo1oA7G7GJ3' ORDER BY last_updated DESC;
 
 
 

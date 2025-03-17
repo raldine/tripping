@@ -23,11 +23,29 @@ public class TripInfo {
     private String destination_curr;
     private String destination_timezone;
     private String d_timezone_name;
+    private String dest_lat;
+    private String dest_lng;
     private String description_t;
     private String cover_image_id;
     private String attendees;
     private String master_user_id;
     private Timestamp last_updated;
+
+    public String getDest_lat() {
+        return dest_lat;
+    }
+
+    public void setDest_lat(String dest_lat) {
+        this.dest_lat = dest_lat;
+    }
+
+    public String getDest_lng() {
+        return dest_lng;
+    }
+
+    public void setDest_lng(String dest_lng) {
+        this.dest_lng = dest_lng;
+    }
 
     public String getTrip_id() {
         return trip_id;
@@ -146,6 +164,8 @@ public class TripInfo {
                 .add("destination_curr", this.destination_curr)
                 .add("destination_timezone", this.destination_timezone)
                 .add("d_timezone_name", this.d_timezone_name)
+                .add("dest_lat", this.dest_lat)
+                .add("dest_lng", this.dest_lng)
                 .add("description_t", this.description_t)
                 .add("cover_image_id", this.cover_image_id)
                 .add("attendees", this.attendees)
@@ -178,6 +198,8 @@ public class TripInfo {
         tripInfo.setDestination_curr(jsonObject.getString("destination_curr"));
         tripInfo.setDestination_timezone(jsonObject.getString("destination_timezone"));
         tripInfo.setD_timezone_name(jsonObject.getString("d_timezone_name"));
+        tripInfo.setDest_lat(jsonObject.getString("dest_lat"));
+        tripInfo.setDest_lng(jsonObject.getString("dest_lng"));
         tripInfo.setDescription_t(jsonObject.getString("description_t"));
         tripInfo.setCover_image_id(jsonObject.getString("cover_image_id"));
         tripInfo.setAttendees(jsonObject.getString("attendees"));
@@ -198,6 +220,8 @@ public class TripInfo {
         trips.setDestination_curr(rs.getString("destination_curr"));
         trips.setDestination_timezone(rs.getString("destination_timezone"));
         trips.setD_timezone_name(rs.getString("d_timezone_name"));
+        trips.setDest_lat(rs.getString("dest_lat"));
+        trips.setDest_lng(rs.getString("dest_lng"));
         trips.setDescription_t(rs.getString("description_t"));
         trips.setCover_image_id(rs.getString("cover_image_id"));
         trips.setAttendees(rs.getString("attendees"));

@@ -45,10 +45,10 @@ export class FileUploadService {
   }
 
 
-  getFileByResourceId(resourceId: string, firebaseUid: string) :Promise<FileUploadedInfo>{
+  getFileByResourceId(resourceId: string, firebaseUid: string | null) :Promise<FileUploadedInfo>{
     console.log(resourceId)
     const headers = new HttpHeaders({
-        'Authorization' : firebaseUid
+        'Authorization' : firebaseUid ?? ''
     }
     )
     return lastValueFrom(this.httpClient.get<FileUploadedInfo>(`/api/get-resources/${resourceId}`, { headers }))
