@@ -8,29 +8,29 @@
     <div class="card">
         <form [formGroup]="newTripForm" (submit)="onSubmit()">
             <div class="mb-2">
-                <label for="trip_name" class="mb-0.5 block">Name of this Trip:</label><br>
-                <input class="w-full" pInputText type="text" id="trip_name" formControlName="trip_name"><br><br>
+                <label for="trip_name" class="block">Name of this Trip:</label><br>
+                <input style="width: 60%;" pInputText type="text" id="trip_name" formControlName="trip_name"><br><br>
             </div>
             <div class="mb-2">
-                <label for="destinationCity" class="mb-0.5 block">Destination City:</label><br>
-                <input class="w-full" pInputText type="text" id="destinationCity"
+                <label for="destinationCity" class="block">Destination City:</label><br>
+                <input style="width: 60%; margin-bottom: 2px;" pInputText type="text" id="destinationCity"
                     placeholder="Search your city-country of your destination"><br>
                 <small>{{ printDestinationInfo$ | async}}</small><br>
             </div>
 
             <div class="mb-2">
-                <label for="start_date" class="mb-0.5 block">Start Date of Trip:</label><br>
-                <input type="date" formControlName="start_date">
+                <label for="start_date" class="block">Start Date of Trip:</label><br>
+                <input style="width: 30%;" type="date" formControlName="start_date">
 
             </div>
             <div class="mb-4">
-                <label for="end_date" class="mb-0.5 block">End Date of Trip:</label><br>
-                <input type="date" formControlName="end_date"><br>
+                <label for="end_date" class="block">End Date of Trip:</label><br>
+                <input style="width: 30%;" type="date" formControlName="end_date" [min]="minEndDate()"><br>
             </div>
 
             <div class="mb-2">
                 <label for="description_t" class="mb-0.5 block">Description for this Trip (Optional):</label><br>
-                <textarea class="w-full" rows="4" cols="30" pTextarea formControlName="description_t"
+                <textarea style="width: 60%;" rows="4" cols="30" pTextarea formControlName="description_t"
                     placeholder="Enter an optional description here."></textarea><br>
 
             </div>

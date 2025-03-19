@@ -1,0 +1,449 @@
+{
+    "address_components": [
+        {
+            "long_name": "115/5",
+            "short_name": "115/5",
+            "types": [
+                "street_number"
+            ]
+        },
+        {
+            "long_name": "Dinso Road",
+            "short_name": "Dinso Rd",
+            "types": [
+                "route"
+            ]
+        },
+        {
+            "long_name": "Khwaeng Wat Bowon Niwet",
+            "short_name": "Khwaeng Wat Bowon Niwet",
+            "types": [
+                "sublocality_level_2",
+                "sublocality",
+                "political"
+            ]
+        },
+        {
+            "long_name": "Khet Phra Nakhon",
+            "short_name": "Khet Phra Nakhon",
+            "types": [
+                "sublocality_level_1",
+                "sublocality",
+                "political"
+            ]
+        },
+        {
+            "long_name": "Krung Thep Maha Nakhon",
+            "short_name": "Krung Thep Maha Nakhon",
+            "types": [
+                "administrative_area_level_1",
+                "political"
+            ]
+        },
+        {
+            "long_name": "Thailand",
+            "short_name": "TH",
+            "types": [
+                "country",
+                "political"
+            ]
+        },
+        {
+            "long_name": "10200",
+            "short_name": "10200",
+            "types": [
+                "postal_code"
+            ]
+        }
+    ],
+    "adr_address": "<span class=\"street-address\">115/5 Dinso Rd</span>, <span class=\"extended-address\">Khwaeng Wat Bowon Niwet</span>, <span class=\"locality\">Khet Phra Nakhon</span>, <span class=\"region\">Krung Thep Maha Nakhon</span> <span class=\"postal-code\">10200</span>, <span class=\"country-name\">Thailand</span>",
+    "business_status": "OPERATIONAL",
+    "current_opening_hours": {
+        "open_now": true,
+        "periods": [
+            {
+                "close": {
+                    "date": "2025-03-24",
+                    "day": 1,
+                    "time": "0000"
+                },
+                "open": {
+                    "date": "2025-03-23",
+                    "day": 0,
+                    "time": "1000"
+                }
+            },
+            {
+                "close": {
+                    "date": "2025-03-25",
+                    "day": 2,
+                    "time": "0000"
+                },
+                "open": {
+                    "date": "2025-03-24",
+                    "day": 1,
+                    "time": "1000"
+                }
+            },
+            {
+                "close": {
+                    "date": "2025-03-25",
+                    "day": 2,
+                    "time": "2359",
+                    "truncated": true
+                },
+                "open": {
+                    "date": "2025-03-25",
+                    "day": 2,
+                    "time": "1000"
+                }
+            },
+            {
+                "close": {
+                    "date": "2025-03-20",
+                    "day": 4,
+                    "time": "0000"
+                },
+                "open": {
+                    "date": "2025-03-19",
+                    "day": 3,
+                    "time": "1000"
+                }
+            },
+            {
+                "close": {
+                    "date": "2025-03-21",
+                    "day": 5,
+                    "time": "0000"
+                },
+                "open": {
+                    "date": "2025-03-20",
+                    "day": 4,
+                    "time": "1000"
+                }
+            },
+            {
+                "close": {
+                    "date": "2025-03-22",
+                    "day": 6,
+                    "time": "0000"
+                },
+                "open": {
+                    "date": "2025-03-21",
+                    "day": 5,
+                    "time": "1000"
+                }
+            },
+            {
+                "close": {
+                    "date": "2025-03-23",
+                    "day": 0,
+                    "time": "0000"
+                },
+                "open": {
+                    "date": "2025-03-22",
+                    "day": 6,
+                    "time": "1000"
+                }
+            }
+        ],
+        "weekday_text": [
+            "Monday: 10:00 am – 12:00 am",
+            "Tuesday: 10:00 am – 12:00 am",
+            "Wednesday: 10:00 am – 12:00 am",
+            "Thursday: 10:00 am – 12:00 am",
+            "Friday: 10:00 am – 12:00 am",
+            "Saturday: 10:00 am – 12:00 am",
+            "Sunday: 10:00 am – 12:00 am"
+        ]
+    },
+    "formatted_address": "115/5 Dinso Rd, Khwaeng Wat Bowon Niwet, Khet Phra Nakhon, Krung Thep Maha Nakhon 10200, Thailand",
+    "formatted_phone_number": "089 811 1888",
+    "geometry": {
+        "location": {
+            "lat": 13.7578915,
+            "lng": 100.5022115
+        },
+        "viewport": {
+            "south": 13.7565457197085,
+            "west": 100.5008460697085,
+            "north": 13.7592436802915,
+            "east": 100.5035440302915
+        }
+    },
+    "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+    "icon_background_color": "#FF9E67",
+    "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/restaurant_pinlet",
+    "international_phone_number": "+66 89 811 1888",
+    "name": "Pad Thai Fai Ta Lu @Dinso Rd",
+    "opening_hours": {
+        "open_now": true,
+        "periods": [
+            {
+                "close": {
+                    "day": 1,
+                    "time": "0000",
+                    "hours": 0,
+                    "minutes": 0,
+                    "nextDate": 1742749200000
+                },
+                "open": {
+                    "day": 0,
+                    "time": "1000",
+                    "hours": 10,
+                    "minutes": 0,
+                    "nextDate": 1742698800000
+                }
+            },
+            {
+                "close": {
+                    "day": 2,
+                    "time": "0000",
+                    "hours": 0,
+                    "minutes": 0,
+                    "nextDate": 1742835600000
+                },
+                "open": {
+                    "day": 1,
+                    "time": "1000",
+                    "hours": 10,
+                    "minutes": 0,
+                    "nextDate": 1742785200000
+                }
+            },
+            {
+                "close": {
+                    "day": 3,
+                    "time": "0000",
+                    "hours": 0,
+                    "minutes": 0,
+                    "nextDate": 1742922000000
+                },
+                "open": {
+                    "day": 2,
+                    "time": "1000",
+                    "hours": 10,
+                    "minutes": 0,
+                    "nextDate": 1742871600000
+                }
+            },
+            {
+                "close": {
+                    "day": 4,
+                    "time": "0000",
+                    "hours": 0,
+                    "minutes": 0,
+                    "nextDate": 1742403600000
+                },
+                "open": {
+                    "day": 3,
+                    "time": "1000",
+                    "hours": 10,
+                    "minutes": 0,
+                    "nextDate": 1742958000000
+                }
+            },
+            {
+                "close": {
+                    "day": 5,
+                    "time": "0000",
+                    "hours": 0,
+                    "minutes": 0,
+                    "nextDate": 1742490000000
+                },
+                "open": {
+                    "day": 4,
+                    "time": "1000",
+                    "hours": 10,
+                    "minutes": 0,
+                    "nextDate": 1742439600000
+                }
+            },
+            {
+                "close": {
+                    "day": 6,
+                    "time": "0000",
+                    "hours": 0,
+                    "minutes": 0,
+                    "nextDate": 1742576400000
+                },
+                "open": {
+                    "day": 5,
+                    "time": "1000",
+                    "hours": 10,
+                    "minutes": 0,
+                    "nextDate": 1742526000000
+                }
+            },
+            {
+                "close": {
+                    "day": 0,
+                    "time": "0000",
+                    "hours": 0,
+                    "minutes": 0,
+                    "nextDate": 1742662800000
+                },
+                "open": {
+                    "day": 6,
+                    "time": "1000",
+                    "hours": 10,
+                    "minutes": 0,
+                    "nextDate": 1742612400000
+                }
+            }
+        ],
+        "weekday_text": [
+            "Monday: 10:00 am – 12:00 am",
+            "Tuesday: 10:00 am – 12:00 am",
+            "Wednesday: 10:00 am – 12:00 am",
+            "Thursday: 10:00 am – 12:00 am",
+            "Friday: 10:00 am – 12:00 am",
+            "Saturday: 10:00 am – 12:00 am",
+            "Sunday: 10:00 am – 12:00 am"
+        ]
+    },
+    "photos": [
+        {
+            "height": 4032,
+            "html_attributions": [
+                "<a href=\"https://maps.google.com/maps/contrib/100421684123203052338\">Pad Thai Fai Ta Lu @Dinso Rd</a>"
+            ],
+            "width": 3024
+        },
+        {
+            "height": 3024,
+            "html_attributions": [
+                "<a href=\"https://maps.google.com/maps/contrib/100421684123203052338\">Pad Thai Fai Ta Lu @Dinso Rd</a>"
+            ],
+            "width": 4032
+        },
+        {
+            "height": 4032,
+            "html_attributions": [
+                "<a href=\"https://maps.google.com/maps/contrib/110873359847809758314\">Alfonso Garrido barnola</a>"
+            ],
+            "width": 3024
+        },
+        {
+            "height": 3024,
+            "html_attributions": [
+                "<a href=\"https://maps.google.com/maps/contrib/106265589250471004962\">Terry Ding</a>"
+            ],
+            "width": 3024
+        },
+        {
+            "height": 3540,
+            "html_attributions": [
+                "<a href=\"https://maps.google.com/maps/contrib/112650938819436912056\">Alicia Almudéver</a>"
+            ],
+            "width": 4716
+        },
+        {
+            "height": 3072,
+            "html_attributions": [
+                "<a href=\"https://maps.google.com/maps/contrib/117633646561528564110\">Emily McBride</a>"
+            ],
+            "width": 4080
+        },
+        {
+            "height": 4000,
+            "html_attributions": [
+                "<a href=\"https://maps.google.com/maps/contrib/116643541561824283554\">Yody Cork</a>"
+            ],
+            "width": 3000
+        },
+        {
+            "height": 6048,
+            "html_attributions": [
+                "<a href=\"https://maps.google.com/maps/contrib/114558574366814401124\">Doha Park (Dovi)</a>"
+            ],
+            "width": 8064
+        },
+        {
+            "height": 2652,
+            "html_attributions": [
+                "<a href=\"https://maps.google.com/maps/contrib/101952712797630858012\">Josefína Havelková</a>"
+            ],
+            "width": 2652
+        },
+        {
+            "height": 4096,
+            "html_attributions": [
+                "<a href=\"https://maps.google.com/maps/contrib/116769390014595232716\">myung park</a>"
+            ],
+            "width": 3072
+        }
+    ],
+    "place_id": "ChIJJy7IpBSZ4jARJOWMygJHVfM",
+    "plus_code": {
+        "compound_code": "QG52+5V Bangkok, Thailand",
+        "global_code": "7P52QG52+5V"
+    },
+    "rating": 4.2,
+    "reference": "ChIJJy7IpBSZ4jARJOWMygJHVfM",
+    "reviews": [
+        {
+            "author_name": "Cristian Oriak",
+            "author_url": "https://www.google.com/maps/contrib/105579815825892287118/reviews",
+            "language": "en",
+            "profile_photo_url": "https://lh3.googleusercontent.com/a/ACg8ocJUvFa4CyZUwDlVyxwGyzdlu3wthcBjrLjIQ3gsHezTTlJZng=s128-c0x00000000-cc-rp-mo",
+            "rating": 5,
+            "relative_time_description": "3 weeks ago",
+            "text": "Incredible food! 100% worth eating here. By far the best pad Thai I’ve had, hands down. We had the crispy pork belly and pork. The pork belly was the crispiest, juiciest piece of pork belly I’ve had. Everything was seasoned wonderfully and the presentation was superb! In terms of service they forgot to bring us our drinks but the food came out fairly quick.",
+            "time": 1740144411
+        },
+        {
+            "author_name": "Matt Emmanuel",
+            "author_url": "https://www.google.com/maps/contrib/108951660365183237126/reviews",
+            "language": "en",
+            "profile_photo_url": "https://lh3.googleusercontent.com/a-/ALV-UjWcpBLw_KrvHE6iMX0MkncGrxIoyhQ3QaXPMFwKRoiRFHAXGzRzAQ=s128-c0x00000000-cc-rp-mo-ba4",
+            "rating": 4,
+            "relative_time_description": "a month ago",
+            "text": "Compared to other Pad Thais, this spot has the perfect ratio of sweet to savory. Many places tend to be overwhelmingly sugary, while this one is more subtle. Also for the chef’s special, the serving size of the actual Pad Thai is small, the basic version comes with almost double the amount! Overall solid food but at a higher cost for the “hip vibes”.",
+            "time": 1737880146
+        },
+        {
+            "author_name": "Dexter John Arroyo",
+            "author_url": "https://www.google.com/maps/contrib/111164400095990055563/reviews",
+            "language": "en",
+            "profile_photo_url": "https://lh3.googleusercontent.com/a-/ALV-UjWYpKIYt8WdLcythgtz6qjAZBhob6_eTTg6awMKQUTyYlbwvuw=s128-c0x00000000-cc-rp-mo-ba4",
+            "rating": 5,
+            "relative_time_description": "a week ago",
+            "text": "Pad Thai Fai Ta Lu is a Michelin-starred gem serving one of the best Pad Thai dishes you’ll ever taste. The flavors are rich, smoky, and perfectly balanced, with high-quality ingredients that elevate this classic dish. If you’re a Pad Thai lover, this spot is a must-visit for an unforgettable dining experience!",
+            "time": 1741329301
+        },
+        {
+            "author_name": "Yk Wong",
+            "author_url": "https://www.google.com/maps/contrib/111987138598618223141/reviews",
+            "language": "en",
+            "profile_photo_url": "https://lh3.googleusercontent.com/a-/ALV-UjVT4x7TMaaItmV--6wT3o8i-PO6Z9p_fKZTihtZn3lEi4r8uSc=s128-c0x00000000-cc-rp-mo-ba5",
+            "rating": 3,
+            "relative_time_description": "3 months ago",
+            "text": "Smoky but sweet and pricey.\n\nPersonal review:\n- I can taste smokiness and well seasoned.\n- The taste is too sweet for me but maybe suit for those who don't like spicy food.\n- Shrimp came big size, fresh and chewy.\n- Small portion and pricey.\n\nStaff is nice and food came quite fast.\nRestaurant located on the Dinso road and got lots of table and air-con to dine in.\nNo parking.",
+            "time": 1734063924
+        },
+        {
+            "author_name": "Ben C",
+            "author_url": "https://www.google.com/maps/contrib/107849769109626369253/reviews",
+            "language": "en",
+            "profile_photo_url": "https://lh3.googleusercontent.com/a-/ALV-UjX7Rpg8K15FyG--ATKHWHbVm8wC9G2AJPiY4mcl5naB18InIBxzew=s128-c0x00000000-cc-rp-mo-ba7",
+            "rating": 3,
+            "relative_time_description": "3 months ago",
+            "text": "Based on your experience at Pad Thai Fai Ta Lu on Dinso Rd, it seems that the overall dining experience was quite average. The food, drinks, and atmosphere were all described as \"normal,\" which doesn't leave a lasting impression. However, there are a few points worth highlighting. The taste being a bit sweet may not be to everyone's liking, and the concern about the healthiness of the food is definitely something to take into consideration. Additionally, the high prices for local cuisine may not be justifiable. It's important for restaurants to offer good value for the quality of their food. Overall, it sounds like there are some areas for improvement at this establishment.",
+            "time": 1734453034
+        }
+    ],
+    "types": [
+        "restaurant",
+        "food",
+        "point_of_interest",
+        "establishment"
+    ],
+    "url": "https://maps.google.com/?cid=17533998801550632228",
+    "user_ratings_total": 1181,
+    "utc_offset": 420,
+    "vicinity": "115/5 Dinso Road, Khwaeng Wat Bowon Niwet, Khet Phra Nakhon",
+    "website": "https://www.facebook.com/padthaifaitalu",
+    "html_attributions": [],
+    "utc_offset_minutes": 420
+}

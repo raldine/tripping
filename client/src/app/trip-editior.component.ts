@@ -187,13 +187,14 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
     }
 
 
+  }
+
+  //end of ngOnInit
 
 
 
-
-
-
-
+  minEndDate() {
+    return this.newTripForm.get('start_date')?.value || '';
   }
 
   loadGoogleMapsScript(apiKey: string): Promise<any> {
@@ -419,18 +420,23 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
 
     try {
       this.isUploading = true;
+      
       const response = await this.tripService.putNewTrip(formValue, this.blob, `${this.currUser?.uid}`);
-
+    
       if (response) {
-        this.isUploading = false;
         this.messagingService.add({
           severity: 'success',
           summary: 'Trip Created',
           detail: 'Your trip has been successfully created!',
           life: 3000,
         });
+    
+        // Wait for the toast to be visible before navigating (adjust timing if needed)
+        await new Promise(resolve => setTimeout(resolve, 3000));
+    
+        this.router.navigate(["/dashboard"]);
       }
-
+    
     } catch (error) {
       console.error('Error during trip submission:', error);
       this.messagingService.add({
@@ -439,7 +445,10 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
         detail: 'There was an error submitting your trip. Please try again.',
         life: 3000,
       });
+    } finally {
+      this.isUploading = false; // Ensure uploading state is reset
     }
+    
 
 
   }

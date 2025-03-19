@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { lastValueFrom } from "rxjs";
 import { ImageFetcherService } from "./ImageFetcherService";
@@ -113,6 +113,39 @@ export class TripService {
             console.error("Error fetching trips:", error);
             return [];
         }
+    }
+
+    async deleteTripByTripid(firebaseUid: string, trip_id: string){
+
+        const headers = new HttpHeaders({
+            "Authorization": firebaseUid
+        });
+
+        const params = new HttpParams();
+        params.set("trip_id", trip_id);
+
+        try {
+            // Make the HTTP GET request
+            const response = await lastValueFrom(
+                this.http.delete<any>("/trip/delete", { headers, params })
+            );
+
+            console.log("Raw response:", response); // Debugging
+
+            // ✅ Check if API returned "No trips found"
+            if (response?.response === "No trip deleted") {
+                console.warn("No trips deleted. Returning an empty string.");
+                return "";
+            }
+
+            
+            return response.deleted_id as string;
+
+        } catch (error) {
+            console.error("Error fetching trips:", error);
+            return [];
+        }
+
     }
 
 

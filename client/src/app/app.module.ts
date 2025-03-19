@@ -39,6 +39,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { TextareaModule } from 'primeng/textarea';
 import { ToolbarModule } from 'primeng/toolbar';
 import {FluidModule} from 'primeng/fluid';
+import { DateFormatPipe } from './date-format.pipe';
 
 
 
@@ -62,7 +63,8 @@ const appRoutes: Routes = [
     UnauthorizedPageComponent,
     DashboardComponent,
     TripEditiorComponent,
-    NavbarComponent
+    NavbarComponent,
+    DateFormatPipe
    
   ],
   imports: [

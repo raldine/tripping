@@ -8,9 +8,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.json.JsonObject;
+import trippingactual.server.models.ItineraryObject;
 import trippingactual.server.models.TripInfo;
+import trippingactual.server.repositories.ItnRepo;
 import trippingactual.server.repositories.TripsRepo;
 
 @Service
@@ -19,9 +22,22 @@ public class TripService {
     @Autowired
     private TripsRepo tripsRepo;
 
-    public String putNewTrip(TripInfo tripInfoInJson) {
+    @Autowired
+    private ItineraryBuilder itineraryBuilder;
 
-        String replyFromRepo = tripsRepo.putNewTrip(tripInfoInJson);
+    @Autowired
+    private ItnRepo itineraryRepo;
+
+
+    @Transactional(rollbackFor = Exception.class)
+    public String putNewTrip(TripInfo tripInfoObj) {
+
+        String replyFromRepo = tripsRepo.putNewTrip(tripInfoObj);
+
+        List<ItineraryObject> itineraryObjects = itineraryBuilder.generateItineraryIds(tripInfoObj.getTrip_id(), tripInfoObj.getStart_date(), tripInfoObj.getEnd_date());
+
+        itineraryRepo.addNewItineraries(itineraryObjects);
+
 
         return replyFromRepo;
 
@@ -34,6 +50,14 @@ public class TripService {
 
         return trips;
         
+    }
+
+
+    public String deleteTripByTripId (String trip_id){
+
+        String replyFromRepo = tripsRepo.deleteTripByTrip_id(trip_id);
+
+        return replyFromRepo;
     }
 
 

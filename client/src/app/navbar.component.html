@@ -19,12 +19,12 @@
         <!-- Avatar Section -->
         <ng-template pTemplate="end">
             <div class="flex items-center justify-center gap-4" style="display: flex; align-items: center;">
-                @if (currUser) {
-                <span class="text-lg font-medium">{{ currUser.displayName }}</span>
+                @if (currUserDetails) {
+                <span class="text-lg font-medium">{{ currUserDetails.user_name }}</span>
                 @if (user_pp_url) {
                 <p-avatar [image]="user_pp_url" class="mr-2" shape="circle" (onImageError)="user_pp_url = null"></p-avatar>
                 } @else {
-                    <p-avatar [label]="currUser.displayName?.substring(0,1)" styleClass="mr-2" shape="circle" />
+                    <p-avatar [label]="currUserDetails.user_name?.substring(0,1) ?? '' " styleClass="mr-2" shape="circle" />
                 }
                 } @else {
                 <!-- If no user is logged in, optionally add a login button -->

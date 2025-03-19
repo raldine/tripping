@@ -7,13 +7,14 @@ import org.springframework.stereotype.Repository;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Collections;
+
 import java.util.List;
 import java.util.Optional;
 
 import trippingactual.server.models.TripInfo;
-import trippingactual.server.models.UserInfo;
+
 import trippingactual.server.queries.SqlQueries;
+
 
 @Repository
 public class TripsRepo {
@@ -45,11 +46,16 @@ public class TripsRepo {
             newTripInfo.getMaster_user_id()
             );
 
+            
+
             if (count > 0) {
                 return "OK";
             } else {
                 return "error";
             }
+
+            
+
 
         } catch (DataAccessException ex) {
             ex.printStackTrace();
@@ -72,6 +78,28 @@ public class TripsRepo {
             }
             return tripsBelongingToUser;
         }, firebaseuid);
+    }
+
+    public String deleteTripByTrip_id(String trip_id){
+        String sqlQuery = "DELETE FROM trips WHERE trip_id=?";
+
+        try {
+
+            int status = sqltemplate.update(sqlQuery, trip_id);
+
+            if(status==1){
+                return trip_id;
+            } else {
+                return "Error";
+            }
+    
+
+        } catch (DataAccessException ex){
+            System.out.println("Error on sql side when deleting");
+
+            return "Error";
+        }
+
     }
 
 

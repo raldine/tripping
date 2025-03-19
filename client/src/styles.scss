@@ -12,7 +12,7 @@ h1 {
     font-size: 36px;
     font-style: normal;
     font-weight: 700;
-    line-height: var(--Display-Medium-Line-Height, 52px);
+    line-height: var(--Display-Medium-Line-Height, 40px);
     /* 144.444% */
 }
 
@@ -23,7 +23,7 @@ font-family: "Noto Sans";
 font-size: 28px;
 font-style: normal;
 font-weight: 600;
-line-height: var(--Display-Small-Line-Height, 44px); /* 157.143% */
+line-height: var(--Display-Small-Line-Height, 32px); /* 157.143% */
 }
 
 
@@ -33,7 +33,7 @@ font-family: "Noto Sans";
 font-size: 24px;
 font-style: normal;
 font-weight: 500;
-line-height: var(--Display-Small-Line-Height, 28px); /* 183.333% */
+line-height: var(--Display-Small-Line-Height, 26px); /* 183.333% */
 }
 
 h4 {
@@ -66,8 +66,18 @@ label {
     font-family: "Noto Sans";
     font-size: 14px;
     font-style: normal;
-    font-weight: 500;
+    font-weight: 600;
     line-height: var(--Body-Small-Line-Height, 16px); /* 114.286% */
+}
+
+.label-brand-color {
+    font-family: "Noto Sans";
+    font-size: 14px;
+    color: #6B79F7;
+    font-style: normal;
+    font-weight: 600;
+    line-height: var(--Body-Small-Line-Height, 16px); /* 114.286% */
+
 }
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

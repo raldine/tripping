@@ -3,8 +3,9 @@ import { User } from 'firebase/auth';
 import { MenuItem } from 'primeng/api';
 import { filter, map, Observable, Subscription } from 'rxjs';
 import { FireBaseAuthStore } from './FireBaseAuth.store';
-import { AuthState } from './models/models';
+import { AuthState, UserFront } from './models/models';
 import { Router } from '@angular/router';
+import { UserDetailsStore } from './UserDetails.store';
 
 @Component({
   selector: 'app-navbar',
@@ -28,6 +29,12 @@ export class NavbarComponent implements OnInit, OnDestroy{
      //To track currUser changes
      private accessCurrUserDetailsSub!: Subscription
 
+       //to track user details from my backend
+       private userDetailsStore = inject(UserDetailsStore);
+       private loggedInUserDetailsSub!: Subscription;
+       protected currUserDetails!: UserFront
+     
+
      //for unauthorised path and further path
      router = inject(Router)
 
@@ -37,8 +44,11 @@ export class NavbarComponent implements OnInit, OnDestroy{
         if (!authState.isAuthenticated) {
           this.router.navigate(['/unauthorized']); // Navigate to unauthorized page
           return; // Exit early if the user is not authenticated
-        }
-      })
+        } else if (authState.user  && authState.user.uid){
+          this.userDetailsStore.loadUserDetails(authState.user.uid)
+          console.log("user details loaded");
+      }
+     })
 
           //init nav bar
     this.items = [
@@ -65,7 +75,11 @@ export class NavbarComponent implements OnInit, OnDestroy{
     });
 
 
-
+   //sub currentUserDetails
+   this.loggedInUserDetailsSub = this.userDetailsStore.userDetails$.subscribe((user) => {
+    this.currUserDetails = user;
+    console.log("User details loaded:", this.currUserDetails);
+  });
 
 
   

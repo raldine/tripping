@@ -3,12 +3,14 @@ import { AuthService } from './AuthService';
 import { filter, map, Observable, Subscription } from 'rxjs';
 import { User } from 'firebase/auth';
 import { FireBaseAuthStore } from './FireBaseAuth.store';
-import { AuthState, TripInfo } from './models/models';
+import { AuthState, TripInfo, UserFront } from './models/models';
 import { Router } from '@angular/router';
 import { MenuItem, PrimeIcons } from 'primeng/api';
 import { v4 as uuidv4 } from 'uuid';
 import { TripService } from './TripService';
 import { FileUploadService } from './FileUploadService';
+import { UserDetailsStore } from './UserDetails.store';
+import { TripStore } from './TripsStore.store';
 
 
 @Component({
@@ -31,6 +33,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private router = inject(Router)
 
+  //to track user details from my backend
+  private userDetailsStore = inject(UserDetailsStore);
+  private loggedInUserDetailsSub!: Subscription;
+  protected currUserDetails!: UserFront
+
 
 
 
@@ -50,6 +57,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   //for getting trips belonging to current user
   tripService = inject(TripService);
+  tripStore = inject(TripStore);
+  tripsSubscription!: Subscription;
   tripsCreatedByUser!: TripInfo[]
 
   //retrieve trip cover iamge
@@ -92,7 +101,26 @@ tripCoverImages: { [key: string]: string } = {};
       if (!authState.isAuthenticated) {
         this.router.navigate(['/unauthorized']); // Navigate to unauthorized page
         return; // Exit early if the user is not authenticated
+      } else {
+        if(authState.user  && authState.user.uid){
+          this.userDetailsStore.loadUserDetails(authState.user.uid)
+          console.log("user details loaded in component store");
+          this.tripStore.loadTrips(authState.user.uid);
+          console.log("users trips loaded in component store")
+          
+        }
+       
       }
+    })
+
+    //sub currentUserDetails
+    this.loggedInUserDetailsSub = this.userDetailsStore.userDetails$.subscribe((user) => {
+      this.currUserDetails = user;
+      console.log("User details loaded:", this.currUserDetails);
+    });
+
+    this.tripsSubscription =  this.tripStore.user_trips$.subscribe((trips) => {
+      this.tripsCreatedByUser = trips;
     })
 
     //randomly generate new trip id
@@ -113,11 +141,8 @@ tripCoverImages: { [key: string]: string } = {};
       console.log('Current user:', this.currUser);
     });
 
-    if(this.currUser){
-      this.tripsCreatedByUser = await this.tripService.getAllTripsByUserId(this.currUser?.uid);
-      console.log("trips received")
-
-       // ✅ Preload trip cover images
+    if(this.tripsCreatedByUser){
+       // Preload trip cover images
        for (const trip of this.tripsCreatedByUser) {
         this.tripCoverImages[trip.cover_image_id] = await this.getTripsCoverImage(trip.cover_image_id);
     }
@@ -147,9 +172,15 @@ async getTripsCoverImage(resourceId: string): Promise<string> {
     return tripID;
   }
 
+  navigateToItinerary(trip: TripInfo) {
+    this.tripStore.setSelectedTripInfo(trip);
+    this.router.navigate(["/itinerary-builder"]);
+  }
+
   ngOnDestroy(): void {
     this.authStateSubscription.unsubscribe()
     this.accessCurrUserDetailsSub.unsubscribe()
+    this.loggedInUserDetailsSub.unsubscribe();
   }
 
 }

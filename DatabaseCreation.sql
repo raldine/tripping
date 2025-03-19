@@ -68,14 +68,24 @@ constraint pk_trip_id primary key(trip_id),
 constraint fk_master_user_id foreign key(master_user_id) references users(firebase_uid)
 );
 
-ALTER TABLE trips ADD dest_lat VARCHAR(22) default 'N/A';
-ALTER TABLE trips MODIFY dest_lat varchar(64) default 'N/A';
-ALTER TABLE trips ADD dest_lng VARCHAR(22) default 'N/A';
-ALTER TABLE trips MODIFY dest_lng varchar(64) default 'N/A';
 drop table trips;
 select * from trips;
+truncate table trips;
 
 select * from trips where master_user_id='WvibmPm1KMT9071ynwo1oA7G7GJ3' ORDER BY last_updated DESC;
+delete from trips where trip_id='trip36ded672cdf6433ab5e2319b';
+
+
+create table itinerary(
+itinerary_id VARCHAR(64),
+trip_id VARCHAR(64),
+itn_date date,
+constraint pk_itinerary_id primary key (itinerary_id),
+constraint fk_trip_id FOREIGN KEY (trip_id) REFERENCES trips(trip_id) ON DELETE CASCADE
+);
+
+select * from itinerary;
+
 
 
 

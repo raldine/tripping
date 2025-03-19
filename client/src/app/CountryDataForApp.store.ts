@@ -16,7 +16,7 @@ export class CountryDataForAppStore extends ComponentStore<CountryDataSlice> {
     constructor(private backendService: BackendDataService) {
         super(INIT);
         console.log("CountryDataForAppStore Initialized");
-        this.loadCountryData(); // Ensure this runs at initialization
+        this.loadCountryData(); // laod data from backend
     }
 
     private async loadCountryData(): Promise<void> {
@@ -26,7 +26,7 @@ export class CountryDataForAppStore extends ComponentStore<CountryDataSlice> {
       
 
             if (data.length === 0) {
-                console.warn("⚠ No country data received. Check API response.");
+                console.warn("No country data received. Check API response.");
             }
 
             this.addLoadCountryCurrTimelist(data);

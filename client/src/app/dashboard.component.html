@@ -36,6 +36,10 @@
         <div class="tripdetailcontainer">
             @for(trip of tripsCreatedByUser; track trip.trip_id){
             <div class="card !p-0 overflow-hidden">
+                <div>
+                    <p class="label-brand-color"><i class="pi pi-calendar mr-1"></i>{{ trip.start_date | dateFormat }}  to {{ trip.end_date | dateFormat }}</p>
+                    <p>Created by:</p>
+                </div>
                 <img [src]="tripCoverImages[trip.cover_image_id] || 'default-image.jpg'"
                     alt="blog-bg" class="w-full rounded-t-2xl"/>
                 <div class="p-2">
@@ -44,6 +48,7 @@
                         </div>
                     <p class="mb-4 leading-normal w-full">{{ trip.destination_city.replaceAll("-", ", ")}}</p>
                     <p class="mb-4 leading-normal w-full">{{ trip.description_t }}</p>
+                    
 
                     <div class="flex items-center justify-between w-full">
                         <div class="text-muted-color  flex items-center">
@@ -54,7 +59,8 @@
                      
                             <div class="text-muted-color  flex items-center">
                                 <i class="pi pi-arrow-circle-right"></i>
-                                <span>View Details</span>
+                                <a [routerLink]="">View Details</a>
+        
                             </div>
                         </div>
                 
