@@ -40,7 +40,14 @@ import { TextareaModule } from 'primeng/textarea';
 import { ToolbarModule } from 'primeng/toolbar';
 import {FluidModule} from 'primeng/fluid';
 import { DateFormatPipe } from './date-format.pipe';
-
+import { TripDetailComponent } from './trip-detail.component';
+import { AccommDetailComponent } from './accomm-detail.component';
+import { TripStore } from './TripsStore.store';
+import { TabsModule } from 'primeng/tabs';
+import { DateFormatDayPipe } from './date-format-day.pipe';
+import { CardModule } from 'primeng/card';
+import { AvatarGroupModule } from 'primeng/avatargroup';
+import { StepperModule } from 'primeng/stepper';
 
 
 
@@ -52,6 +59,7 @@ const appRoutes: Routes = [
   {path:"register", component: RegisterComponent},
   {path:"unauthorized", component: UnauthorizedPageComponent},
   {path:"addedittrip/:trip_id", component: TripEditiorComponent},
+  {path: "trip-details/:trip_id", component: TripDetailComponent},
   { path: '', redirectTo: '/login', pathMatch: 'full' }
 ]
 
@@ -64,12 +72,15 @@ const appRoutes: Routes = [
     DashboardComponent,
     TripEditiorComponent,
     NavbarComponent,
-    DateFormatPipe
+    DateFormatPipe,
+    TripDetailComponent,
+    AccommDetailComponent,
+    DateFormatDayPipe
    
   ],
   imports: [
     BrowserModule,
-    RouterModule.forRoot(appRoutes),
+    RouterModule.forRoot(appRoutes, {useHash: true}),
     ReactiveFormsModule,
     InputTextModule,
     RadioButtonModule,
@@ -84,7 +95,13 @@ const appRoutes: Routes = [
     DatePickerModule,
     TextareaModule,
     ToolbarModule,
-    FluidModule
+    FluidModule,
+    TabsModule,
+    CardModule,
+    AvatarGroupModule,
+    StepperModule
+ 
+    
     
 
 
@@ -102,6 +119,9 @@ const appRoutes: Routes = [
     FireBaseAuthStore,
     CountryDataForAppStore,
     MessageService,
+    TripStore,
+    DateFormatDayPipe,
+    DateFormatPipe,
     // {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     // provideNativeDateAdapter(),
     // // provideDateFnsAdapter(),

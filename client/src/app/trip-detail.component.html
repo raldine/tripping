@@ -1,0 +1,137 @@
+<div id="header-for-tripdetail">
+    <div class="img-wrapper">
+        <img [src]="selected_trip_cover_img" alt="Background Image" width="100%" height="100%" loading="lazy"
+            decoding="async">
+        <div class="overlay-black"></div>
+        <div class="trip-details-info">
+            <h1>Your trip at a glance:</h1>
+            <div class="cards-info">
+                <p-card id="trip-info-card"
+                    [style]="{ borderTop: '8px solid #6B79F7', overflow: 'hidden', padding: '8px 16px 16px 16px' }">
+                    <ng-template #header>
+                        <p class="label-brand-color"><i class="pi pi-calendar mr-1"></i>{{ selected_tripInfo?.start_date
+                            ?? '' | dateFormat }} to {{ selected_tripInfo?.end_date ?? '' | dateFormat }}</p>
+                    </ng-template>
+                    <ng-template #title>{{ selected_tripInfo?.trip_name }}</ng-template>
+                    <p>{{ selected_tripInfo?.description_t}}</p>
+                    <ng-template #footer>
+                        <div class="flex gap-4 mt-1">
+                            <label>Created by: {{ selected_trip_master_name }}</label>
+                        </div>
+                    </ng-template>
+                </p-card>
+                <p-card id="flight-info-card"
+                    [style]="{ borderTop: '8px solid #2C43C4', overflow: 'hidden', padding: '8px 16px 16px 16px' }">
+                    <ng-template #header>
+
+                    </ng-template>
+                    <ng-template #title>nonono</ng-template>
+                    <p>helosodasdadsa</p>
+                    <ng-template #footer>
+                        <div class="flex gap-4 mt-1">
+                            <label>dasdasdsadas</label>
+                        </div>
+                    </ng-template>
+                </p-card>
+                <p-card id="acc-info-card"
+                    [style]="{ borderTop: '8px solid #6DCB6A', overflow: 'hidden', padding: '8px 16px 16px 16px' }">
+                    <ng-template #header>
+
+                    </ng-template>
+                    <ng-template #title>nonono</ng-template>
+                    <p>helosodasdadsa</p>
+                    <ng-template #footer>
+                        <div class="flex gap-4 mt-1">
+                            <label>dasdasdsadas</label>
+                        </div>
+                    </ng-template>
+                </p-card>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="trip-detail-main-body">
+    <div></div>
+    <div class="itinerary-builder">
+        <label>Quick jump to day:</label><br><br>
+        <div class="flex justify-center gap-2 flex-wrap" [style]="{ backgroundColor: 'white'}">
+            @for(tab of scrollableTabs; track tab.value){
+            <p-button (onClick)="tabValue = tab.value" rounded="true"
+                styleClass="flex items-center justify-center text-sm" [outlined]="tabValue !== tab.value"
+                [label]="'D' + (tab.value + 1)" />
+            }
+        </div>
+        <p-tabs [value]="tabValue" [style]="{ width: '100%' }">
+            <p-tablist [style]="{ maxWidth: '100%', display: 'flex', overflowX: 'auto', whiteSpace: 'nowrap'}">
+                @for(tab of scrollableTabs; track tab.value){
+                <p-tab [value]="tab.value">
+                    {{ tab.title }}
+                </p-tab>
+                }
+            </p-tablist>
+            <p-tabpanels>
+                @for(tab of scrollableTabs; track tab.value){
+                <p-tabpanel [value]="tab.value">
+                    <h4 class="m-2" style="font-weight: bold;">{{ tab.content }}</h4>
+                </p-tabpanel>
+                }
+            </p-tabpanels>
+        </p-tabs>
+        <div [style]="{ width: '100%' }">
+            <p-stepper [value]="1" [style]="{ width: '100%' }">
+                <p-step-item [value]="1">
+                    <p-step>Header I</p-step>
+                    <p-step-panel [style]="{ width: '100%' }">
+                        <ng-template #content let-activateCallback="activateCallback">
+                            <div [style]="{ width: '100%' }">
+                                <div class="card"></div>
+                            </div>
+                            <div class="py-6">
+                                <p-button label="Next" (onClick)="activateCallback(2)" />
+                            </div>
+                        </ng-template>
+                    </p-step-panel>
+                </p-step-item>
+
+                <p-step-item [value]="2">
+                    <p-step>Header II</p-step>
+                    <p-step-panel>
+                        <ng-template #content let-activateCallback="activateCallback">
+                            <div class="flex flex-col h-48">
+                                <div
+                                    class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium">
+                                    Content II
+                                </div>
+                            </div>
+                            <div class="flex py-6 gap-2">
+                                <p-button label="Back" severity="secondary" (onClick)="activateCallback(1)" />
+                                <p-button label="Next" (onClick)="activateCallback(3)" />
+                            </div>
+                        </ng-template>
+                    </p-step-panel>
+                </p-step-item>
+
+                <p-step-item [value]="3">
+                    <p-step>Header III</p-step>
+                    <p-step-panel>
+                        <ng-template #content let-activateCallback="activateCallback">
+                            <div class="flex flex-col h-48">
+                                <div
+                                    class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium">
+                                    Content III
+                                </div>
+                            </div>
+                            <div class="py-6">
+                                <p-button label="Back" severity="secondary" (onClick)="activateCallback(2)" />
+                            </div>
+                        </ng-template>
+                    </p-step-panel>
+                </p-step-item>
+            </p-stepper>
+        </div>
+
+    </div>
+    <div></div>
+
+</div>

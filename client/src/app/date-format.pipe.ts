@@ -12,7 +12,11 @@ export class DateFormatPipe implements PipeTransform {
     const date = new Date(value);
     if (isNaN(date.getTime())) return value; // Return original string if invalid
 
-    return `${date.getDate()}/${date.getMonth() + 1}`;
-  }
+    // Get day, month, and short day of the week (e.g., "Wed")
+    const day = date.getDate(); // 27
+    const month = date.getMonth() + 1; // 3 (March)
+    const dayOfWeek = date.toLocaleDateString('en-GB', { weekday: 'short' }); // "Thu"
 
+    return `${day}/${month} (${dayOfWeek})`;
+  }
 }

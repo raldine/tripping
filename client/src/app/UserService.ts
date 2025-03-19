@@ -26,11 +26,14 @@ export class UserService {
     }
 
 
-    getUserbyFirebaseId(firebaseId: string): Promise<UserFront> {
+    getUserbyFirebaseId(firebaseId: string | null): Promise<UserFront | null> {
         console.info("calling user service");
+        if(firebaseId==null){
+            return Promise.resolve(null);
+        }
         console.log("firebaseuid of user is ", firebaseId);
         const headers = new HttpHeaders({
-            'Authorization': firebaseId
+            'Authorization': firebaseId ?? ''
         }
         )
 

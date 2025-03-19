@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { ComponentStore } from "@ngrx/component-store";
 import { TripInfo } from "./models/models";
 import { TripService } from "./TripService";
@@ -14,8 +14,12 @@ export interface TripState {
   providedIn: "root"
 })
 export class TripStore extends ComponentStore<TripState> {
-  constructor(private tripService: TripService) {
+
+  tripService = inject(TripService);
+  
+  constructor() {
     super({ selected_tripInfo: null, user_trips: [] });
+   
   }
 
   // SELECTORS

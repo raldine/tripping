@@ -2,61 +2,42 @@ import { inject, Injectable } from "@angular/core";
 import { ComponentStore } from "@ngrx/component-store";
 import { UserFront } from "./models/models";
 import { UserService } from "./UserService";
-import { Observable, switchMap, tap } from "rxjs";
+import { Observable, switchMap, tap, catchError, of, from } from "rxjs";
 
-
-
-const INIT: UserFront = {
-    user_id: null,
-    user_name: '',
-    firebase_uid: '',
-    user_email: '',
-    country_origin: '',
-    timezone_origin: '',
-    currency_origin: '',
-    notif: false
-}
+const INIT: Partial<UserFront> = {}; // ✅ Use an empty object instead of `null`
 
 @Injectable({
     providedIn: 'root'
 })
-export class UserDetailsStore extends ComponentStore<UserFront>{
+export class UserDetailsStore extends ComponentStore<Partial<UserFront>> { // ✅ Use Partial<UserFront>
 
     userService = inject(UserService);
 
-    constructor(){
-        super(INIT)
+    constructor() {
+        super(INIT); // ✅ Initialize with an empty object
     }
 
+    // ✅ Ensure Updater always receives an object, never `null`
+    readonly setUserDetails = this.updater((state, user: Partial<UserFront>) => ({
+        ...state, 
+        ...user
+    }));
 
-    //set user when usr loggedin
+    // ✅ Selector remains unchanged
+    readonly userDetails$ = this.select((state) => state);
 
-      // UPDATERS
-  readonly setUserDetails = this.updater((state, user: UserFront) => ({
-    ...state,
-    user_id: user.user_id,
-    user_name: user.user_name,
-    firebase_uid: user.firebase_uid,
-    user_email: user.user_email,
-    country_origin: user.country_origin,
-    currency_origin: user.currency_origin,
-    notif: user.notif
-  }));
-
-
-  //get user info
-   // SELECTORS
-   readonly userDetails$ = this.select((state) => state);
-
-
-   // EFFECT to fetch user details from backend
-  readonly loadUserDetails = this.effect((firebaseUid$: Observable<string>) => {
-    return firebaseUid$.pipe(
-      switchMap((firebaseUid) => this.userService.getUserbyFirebaseId(firebaseUid)), 
-      tap((userDetails) => this.setUserDetails(userDetails)) 
-    );
-  });
-
-
-
+    // ✅ Effect to load user details, handling errors safely
+    readonly loadUserDetails = this.effect((firebaseUid$: Observable<string>) => {
+        return firebaseUid$.pipe(
+            switchMap((firebaseUid) => 
+                from(this.userService.getUserbyFirebaseId(firebaseUid)).pipe( // ✅ Convert Promise to Observable
+                    catchError((error) => {
+                        console.error("Error loading user:", error);
+                        return of({}); // ✅ Return an empty object instead of `null`
+                    })
+                )
+            ),
+            tap((userDetails) => this.setUserDetails(userDetails || {})) // ✅ Ensure we never pass `null`
+        );
+    });
 }

@@ -37,6 +37,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private userDetailsStore = inject(UserDetailsStore);
   private loggedInUserDetailsSub!: Subscription;
   protected currUserDetails!: UserFront
+  // Default user structure (fallback)
+  DEFAULT_USER: UserFront = {
+    user_id: null,
+    user_name: '',
+    firebase_uid: '',
+    user_email: '',
+    country_origin: '',
+    timezone_origin: '',
+    currency_origin: '',
+    notif: false
+  };
 
 
 
@@ -64,7 +75,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   //retrieve trip cover iamge
   fileUploadService = inject(FileUploadService);
   // Cache for trip cover images
-tripCoverImages: { [key: string]: string } = {};
+  tripCoverImages: { [key: string]: string } = {};
 
   //for action submenubar
   nestedMenuItems = [
@@ -102,25 +113,32 @@ tripCoverImages: { [key: string]: string } = {};
         this.router.navigate(['/unauthorized']); // Navigate to unauthorized page
         return; // Exit early if the user is not authenticated
       } else {
-        if(authState.user  && authState.user.uid){
+        if (authState.user && authState.user.uid) {
           this.userDetailsStore.loadUserDetails(authState.user.uid)
           console.log("user details loaded in component store");
           this.tripStore.loadTrips(authState.user.uid);
           console.log("users trips loaded in component store")
-          
+
         }
-       
+
       }
     })
 
     //sub currentUserDetails
     this.loggedInUserDetailsSub = this.userDetailsStore.userDetails$.subscribe((user) => {
-      this.currUserDetails = user;
+      this.currUserDetails = { ...this.DEFAULT_USER, ...user };
       console.log("User details loaded:", this.currUserDetails);
     });
 
-    this.tripsSubscription =  this.tripStore.user_trips$.subscribe((trips) => {
+    this.tripsSubscription = this.tripStore.user_trips$.subscribe(async (trips) => {
       this.tripsCreatedByUser = trips;
+
+      if (this.tripsCreatedByUser) {
+        // Preload trip cover images
+        for (const trip of this.tripsCreatedByUser) {
+          this.tripCoverImages[trip.cover_image_id] = await this.getTripsCoverImage(trip.cover_image_id);
+        }
+      }
     })
 
     //randomly generate new trip id
@@ -141,23 +159,18 @@ tripCoverImages: { [key: string]: string } = {};
       console.log('Current user:', this.currUser);
     });
 
-    if(this.tripsCreatedByUser){
-       // Preload trip cover images
-       for (const trip of this.tripsCreatedByUser) {
-        this.tripCoverImages[trip.cover_image_id] = await this.getTripsCoverImage(trip.cover_image_id);
-    }
-    }
-    
+
+
 
 
   }
 
-// Fetch cover image and store it
-async getTripsCoverImage(resourceId: string): Promise<string> {
-  if (!resourceId) return ''; // Handle missing resourceId
-  const imageUrl = await this.fileUploadService.getFileByResourceId(resourceId, this.currUser?.uid ?? '');
-  return imageUrl.do_url;
-}
+  // Fetch cover image and store it
+  async getTripsCoverImage(resourceId: string): Promise<string> {
+    if (!resourceId) return ''; // Handle missing resourceId
+    const imageUrl = await this.fileUploadService.getFileByResourceId(resourceId, this.currUser?.uid ?? '');
+    return imageUrl?.do_url ?? '';
+  }
 
   getRandomElement(arr: string[]): string {
     if (arr.length === 0) return ''; // Handle empty array case
@@ -174,7 +187,7 @@ async getTripsCoverImage(resourceId: string): Promise<string> {
 
   navigateToItinerary(trip: TripInfo) {
     this.tripStore.setSelectedTripInfo(trip);
-    this.router.navigate(["/itinerary-builder"]);
+    this.router.navigate(["/trip-details", trip.trip_id]);
   }
 
   ngOnDestroy(): void {

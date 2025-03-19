@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import trippingactual.server.services.ItineraryBuilder;
 
 @RestController
 @RequestMapping("/api/itnry")
+@CrossOrigin("http://localhost:4200")
 public class ItnFetcherController {
 
     @Autowired
@@ -37,6 +39,7 @@ public class ItnFetcherController {
             return ResponseEntity.status(401).body(replyForUnAuthorized.toString());
         }
 
+        System.out.println("itinerary fetcher triggered");
         List<ItineraryObject> fromRepo = itnServ.getItnryFromTripId(trip_id);
 
    

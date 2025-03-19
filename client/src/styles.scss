@@ -79,5 +79,10 @@ label {
     line-height: var(--Body-Small-Line-Height, 16px); /* 114.286% */
 
 }
+
+.p-timeline-event-opposite{
+    width: 1px !important;
+}
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

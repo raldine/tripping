@@ -101,3 +101,20 @@ export function mapTripInfo(response: any): TripInfo {
 //       return []; // Return empty array on failure
 //     }
 //   }
+
+
+export interface ItineraryObj {
+    itinerary_id: string | null,
+    trip_id: string | null,
+    itn_date: string
+}
+
+export function mapItineraryObj(response: any): ItineraryObj {
+    return {
+      trip_id: response.trip_id ?? "N/A",
+      itinerary_id: response.itinerary_id ?? "N/A",
+      itn_date: response.itn_date ?? "N/A"
+     
+    };
+  }
+

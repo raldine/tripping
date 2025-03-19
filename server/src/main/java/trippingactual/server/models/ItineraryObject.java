@@ -33,7 +33,7 @@ public class ItineraryObject {
 
         itnr.setItinerary_id(rs.getString("itinerary_id"));
         itnr.setTrip_id(rs.getString("trip_id"));
-        itnr.setItn_date(TripInfo.parseDate(rs.getString("start_date")));
+        itnr.setItn_date(TripInfo.parseDate(rs.getString("itn_date")));
       
 
     

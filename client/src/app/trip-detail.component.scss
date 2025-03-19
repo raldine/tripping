@@ -1,0 +1,118 @@
+#header-for-tripdetail {
+    width: 100vw; /* Set container size */
+    height: 45vh;
+    min-height: 45vh;
+    overflow: hidden; /* Hides overflow */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    
+}
+
+
+/* ✅ Ensure .image-wrapper is correctly positioned */
+.img-wrapper {
+    position: relative; /* Required for overlay positioning */
+    width: 100%;
+    height: 100%;
+}
+
+/* ✅ Ensure the image is properly displayed */
+.img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    display: block;
+    z-index: 1;
+}
+
+/* ✅ Separate overlay div (Fixes all ::after issues) */
+.overlay-black {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); /* 50% black transparency */
+    z-index: 2; /* Ensure overlay is above the image */
+    pointer-events: none; /* Allows interactions below */
+}
+
+.trip-details-info{
+    border: 2px dotted;
+    border-color: red;
+    position: absolute;
+    top: 0;
+    left: 2.5%;
+    width: 95%;
+    height: 100%;
+    z-index: 3; /* Ensure overlay is above the image */
+    pointer-events: none; /* Allows interactions below */
+}
+
+.trip-details-info h1{
+   color: white;
+}
+
+.cards-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* ✅ Creates 3 equal columns */
+    gap: 30px; /* ✅ 30px gap between cards */
+    width: 100%; /* ✅ Ensures it spans full width */
+    margin-top: 16px; /* ✅ Adds spacing between title and cards */
+}
+
+.trip-detail-main-body {
+    display: grid;
+    border: 1px dotted;
+    border-color: red;
+    grid-template-columns: 15% 60% 25%;
+    gap: 16px; /* ✅ Space between columns */
+    width: 100%; /* ✅ Ensures full width */
+    height: 95vh; /* ✅ Takes up 95% of parent's height */
+    
+    /* ✅ Vertically center align */
+    align-items: stretch;
+    justify-content: stretch; 
+}
+
+/* ✅ Add borders to visualize columns */
+.trip-detail-main-body > div {
+    // border: 2px solid red; /* ✅ Change color to see different sections */
+    min-height: 50px; /* ✅ Ensures divs are visible */
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.itinerary-builder{
+    max-width: 100%;
+    padding-top: 16px;
+    background-color: white;
+    padding-right: 8px;
+    padding-left: 8px;
+    border-radius: 16px;
+    align-items: stretch;
+    justify-content: stretch; 
+    
+}
+
+/* ✅ Responsive: Stack columns below each other when screen width is less than 768px */
+@media (max-width: 768px) {
+    .trip-detail-main-body {
+        grid-template-columns: 1fr; /* ✅ Change to single column */
+        grid-template-rows: auto auto auto; /* ✅ Each row takes automatic height */
+        height: auto; /* ✅ Allow content to define height */
+
+    }
+}
+
+.p-timeline {
+    min-width: 100%;
+}
+
+.p-timeline-event-opposite{
+    width: 1px !important;
+}

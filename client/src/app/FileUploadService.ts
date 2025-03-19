@@ -45,8 +45,11 @@ export class FileUploadService {
   }
 
 
-  getFileByResourceId(resourceId: string, firebaseUid: string | null) :Promise<FileUploadedInfo>{
-    console.log(resourceId)
+  getFileByResourceId(resourceId: string | null , firebaseUid: string | null) :Promise<FileUploadedInfo | null>{
+    console.log(resourceId ?? "no resource")
+    if(resourceId == null || firebaseUid == null){
+      return Promise.resolve(null);;
+    }
     const headers = new HttpHeaders({
         'Authorization' : firebaseUid ?? ''
     }
