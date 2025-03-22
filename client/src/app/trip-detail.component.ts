@@ -11,6 +11,7 @@ import { UserService } from './UserService';
 import { ItineraryService } from './ItineraryService';
 import { DateFormatDayPipe } from './date-format-day.pipe';
 import { DateFormatPipe } from './date-format.pipe';
+import { v4 as uuidv4 } from 'uuid';
 
 interface EventItem {
   status?: string;
@@ -101,6 +102,9 @@ export class TripDetailComponent implements OnInit, OnDestroy {
   //get resources
   fileUploadService = inject(FileUploadService)
 
+  //generate accommodation link if dh
+  acc_id_generated!: string;
+
 
   async ngOnInit(): Promise<void> {
     this.paramsSub = this.activatedRoute.params.subscribe(params => {
@@ -154,8 +158,26 @@ export class TripDetailComponent implements OnInit, OnDestroy {
       }));
     }
 
+
+    this.acc_id_generated = this.generateAccUUID();
+
+
+
   }
 
+  navigateToAccommodationNew(){
+
+    this.itineraryService.setAllItineraryForTrip(this.itinerary_array);
+    this.router.navigate(["/addeditaccomm", this.acc_id_generated]);
+
+  }
+
+  generateAccUUID(): string {
+    const newUUID = uuidv4().replaceAll("-", "").substring(0, 24);
+    const accId = "acc" + newUUID;
+    console.log(newUUID + " created for accommodation capture");
+    return accId;
+  }
 
   ngOnDestroy(): void {
     this.authStateSubscription.unsubscribe();

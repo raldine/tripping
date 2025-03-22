@@ -17,27 +17,26 @@ export class UserDetailsStore extends ComponentStore<Partial<UserFront>> { // �
         super(INIT); // ✅ Initialize with an empty object
     }
 
-    // ✅ Ensure Updater always receives an object, never `null`
+    // Ensure Updater always receives an object, never `null`
     readonly setUserDetails = this.updater((state, user: Partial<UserFront>) => ({
         ...state, 
         ...user
     }));
 
-    // ✅ Selector remains unchanged
     readonly userDetails$ = this.select((state) => state);
 
-    // ✅ Effect to load user details, handling errors safely
+    // Effect to load user details
     readonly loadUserDetails = this.effect((firebaseUid$: Observable<string>) => {
         return firebaseUid$.pipe(
             switchMap((firebaseUid) => 
-                from(this.userService.getUserbyFirebaseId(firebaseUid)).pipe( // ✅ Convert Promise to Observable
+                from(this.userService.getUserbyFirebaseId(firebaseUid)).pipe( 
                     catchError((error) => {
                         console.error("Error loading user:", error);
-                        return of({}); // ✅ Return an empty object instead of `null`
+                        return of({}); 
                     })
                 )
             ),
-            tap((userDetails) => this.setUserDetails(userDetails || {})) // ✅ Ensure we never pass `null`
+            tap((userDetails) => this.setUserDetails(userDetails || {})) 
         );
     });
 }

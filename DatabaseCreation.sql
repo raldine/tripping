@@ -57,6 +57,7 @@ destination_city TEXT,
 destination_curr VARCHAR(10),
 destination_timezone VARCHAR(64),
 d_timezone_name VARCHAR(64),
+d_iso2 VARCHAR(8),
 dest_lat VARCHAR(64),
 dest_lng VARCHAR(64),
 description_t VARCHAR(255),
@@ -69,11 +70,16 @@ constraint fk_master_user_id foreign key(master_user_id) references users(fireba
 );
 
 drop table trips;
+
+
 select * from trips;
+
+
 truncate table trips;
 
 select * from trips where master_user_id='WvibmPm1KMT9071ynwo1oA7G7GJ3' ORDER BY last_updated DESC;
 delete from trips where trip_id='trip36ded672cdf6433ab5e2319b';
+
 
 
 create table itinerary(
@@ -85,6 +91,8 @@ constraint fk_trip_id FOREIGN KEY (trip_id) REFERENCES trips(trip_id) ON DELETE 
 );
 
 select * from itinerary;
+drop table itinerary;
+truncate table itinerary;
 
 
 

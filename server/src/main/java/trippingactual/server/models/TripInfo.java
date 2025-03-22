@@ -23,6 +23,7 @@ public class TripInfo {
     private String destination_curr;
     private String destination_timezone;
     private String d_timezone_name;
+    private String d_iso2;
     private String dest_lat;
     private String dest_lng;
     private String description_t;
@@ -31,6 +32,16 @@ public class TripInfo {
     private String master_user_id;
     private Timestamp last_updated;
 
+
+    public String getD_iso2() {
+        return d_iso2;
+    }
+
+    public void setD_iso2(String d_iso2) {
+        this.d_iso2 = d_iso2;
+    }
+
+    
     public String getDest_lat() {
         return dest_lat;
     }
@@ -164,6 +175,7 @@ public class TripInfo {
                 .add("destination_curr", this.destination_curr)
                 .add("destination_timezone", this.destination_timezone)
                 .add("d_timezone_name", this.d_timezone_name)
+                .add("d_iso2", this.d_iso2)
                 .add("dest_lat", this.dest_lat)
                 .add("dest_lng", this.dest_lng)
                 .add("description_t", this.description_t)
@@ -198,6 +210,7 @@ public class TripInfo {
         tripInfo.setDestination_curr(jsonObject.getString("destination_curr"));
         tripInfo.setDestination_timezone(jsonObject.getString("destination_timezone"));
         tripInfo.setD_timezone_name(jsonObject.getString("d_timezone_name"));
+        tripInfo.setD_iso2(jsonObject.getString("d_iso2"));
         tripInfo.setDest_lat(jsonObject.getString("dest_lat"));
         tripInfo.setDest_lng(jsonObject.getString("dest_lng"));
         tripInfo.setDescription_t(jsonObject.getString("description_t"));
@@ -220,6 +233,7 @@ public class TripInfo {
         trips.setDestination_curr(rs.getString("destination_curr"));
         trips.setDestination_timezone(rs.getString("destination_timezone"));
         trips.setD_timezone_name(rs.getString("d_timezone_name"));
+        trips.setD_iso2(rs.getString("d_iso2"));
         trips.setDest_lat(rs.getString("dest_lat"));
         trips.setDest_lng(rs.getString("dest_lng"));
         trips.setDescription_t(rs.getString("description_t"));
@@ -245,5 +259,6 @@ public class TripInfo {
 
         return formatter.format(date);
     }
+
 
 }

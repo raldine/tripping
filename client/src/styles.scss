@@ -84,5 +84,64 @@ label {
     width: 1px !important;
 }
 
+.nav-link{
+    cursor: pointer;
+    text-decoration: none;
+    color: #2C43C4;
+}
+
+.nav-link:hover {
+    text-decoration: underline;
+    color: #6B79F7;
+  }
+
+  .uniform-input {
+    height: 36px; // adjust as needed
+    line-height: 16px;
+    font-size: 14px;
+    padding: 10px 7px 7px 10px;
+    border-color: rgb(203, 213, 225);
+    border-radius: 6px;
+    border-style: solid;
+    border-width: 1px;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+  
+
+  }
+
+  .uniform-input:focus {
+    height: 36px; // adjust as needed
+    line-height: 16px;
+    font-size: 14px;
+    padding: 8px 2px 2px 8px;
+    border-color: #10b981;
+    border-radius: 6px;
+    border-style: solid;
+    border-width: 1px;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+  
+
+  }
+
+  .custom-line {
+    border: none;
+    height: 1px;
+    background-color: rgb(203, 213, 225); // your desired color
+    margin-top: 8px;
+    margin-bottom: 12px;
+
+  }
+
+  .custom-line-partial {
+    border: none;
+    height: 1px;
+    background-color: rgb(203, 213, 225); // your desired color
+    width: 75%;
+    margin-top: 8px;
+    margin-bottom: 12px;
+    margin-left: auto; // ✅ This pushes it to the right
+  }
+  
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

@@ -1,0 +1,84 @@
+#toastMod {
+
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+
+}
+
+
+/* Fullscreen overlay */
+.overlay {
+    position: fixed;  /* Makes it stay in place */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999; /* Ensures it is above everything */
+  }
+  
+
+  .formPageAcc {
+    width: 90vw;
+
+    align-content: center;
+    padding: 60px;
+  }
+
+  .map-place-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    width: 100%;
+    margin-top: 12px;
+  
+    // stack vertically on smaller screens
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+  }
+  
+  .google-map {
+    height: 400px;
+    flex: 1; // expands to fill available space
+  }
+  
+  .place-card {
+    width: 30%;
+    min-width: 280px;
+  }
+
+  .checkin-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap; // for responsive fallback
+    margin-bottom: 1rem;
+  }
+  
+  .field-wrapper {
+    flex: 1;
+    min-width: 200px; // allows wrapping on small screens
+  }
+  
+  input[type="date"],
+  input[type="time"],
+  .select {
+    width: 100%;
+  }
+  
+  .checkout-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: flex-end; // align the bottom of the inputs for visual consistency
+    margin-bottom: 1rem;
+    width: 60%;
+  }
+
+  
+  

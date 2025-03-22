@@ -33,6 +33,7 @@
                         </div>
                     </ng-template>
                 </p-card>
+                <!-- accommodation card -->
                 <p-card id="acc-info-card"
                     [style]="{ borderTop: '8px solid #6DCB6A', overflow: 'hidden', padding: '8px 16px 16px 16px' }">
                     <ng-template #header>
@@ -43,9 +44,11 @@
                     <ng-template #footer>
                         <div class="flex gap-4 mt-1">
                             <label>dasdasdsadas</label>
+                            <a (click)="navigateToAccommodationNew()" class="nav-link">Add Accommodation Details</a>
                         </div>
                     </ng-template>
                 </p-card>
+                <!-- end of accommodation card -->
             </div>
 
         </div>

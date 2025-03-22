@@ -38,7 +38,7 @@
             <div class="card !p-0 overflow-hidden">
                 <div>
                     <p class="label-brand-color"><i class="pi pi-calendar mr-1"></i>{{ trip.start_date | dateFormat }}  to {{ trip.end_date | dateFormat }}</p>
-                    <p>Created by:</p>
+                    <p>Created by: {{ trip.master_user_id }}</p>
                 </div>
                 <img [src]="tripCoverImages[trip.cover_image_id] || 'default-image.jpg'"
                     alt="blog-bg" class="w-full rounded-t-2xl"/>
@@ -58,8 +58,8 @@
                             <img src="/demo/images/avatar/amyelsner.png" alt="avatar" class="shrink-0 w-2 h-8" />
                      
                             <div class="text-muted-color  flex items-center">
-                                <i class="pi pi-arrow-circle-right mr-1"></i>
-                                <a (click)="navigateToItinerary(trip)" class="cursor-pointer">View Details</a>
+                                
+                                <a (click)="navigateToItinerary(trip)" class="nav-link"> <i class="pi pi-arrow-circle-right mr-1"></i>View Details</a>
 
         
                             </div>

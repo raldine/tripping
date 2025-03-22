@@ -1,6 +1,6 @@
 import { User } from "firebase/auth"
 
-export interface UserFront{
+export interface UserFront {
     user_id: string | null,
     user_name: string,
     firebase_uid: string,
@@ -13,7 +13,7 @@ export interface UserFront{
 }
 
 //tracking of AuthState
-export interface AuthState{
+export interface AuthState {
     user: User | null,
     isAuthenticated: boolean,
     loading: boolean
@@ -22,10 +22,11 @@ export interface AuthState{
 
 
 //Country - Currency - Timezone info
-export interface CountryCurrTime{
+export interface CountryCurrTime {
     _id: string,
     country_name: string,
     currency: string,
+    iso2: string,
     timezones: TimeZone[]
 
 }
@@ -42,8 +43,8 @@ export interface CountryDataSlice {
 }
 
 
-export interface FileUploadedInfo{
-    do_url: string, 
+export interface FileUploadedInfo {
+    do_url: string,
     resource_id: string,
     uploadedOn: string,
     resourceType: string,
@@ -51,7 +52,7 @@ export interface FileUploadedInfo{
 
 }
 
-export interface TripInfo{
+export interface TripInfo {
     trip_id: string,
     trip_name: string,
     start_date: string,
@@ -60,6 +61,7 @@ export interface TripInfo{
     destination_curr: string,
     destination_timezone: string,
     d_timezone_name: string,
+    d_iso2: string,
     dest_lat: string,
     dest_lng: string,
     description_t: string,
@@ -71,25 +73,26 @@ export interface TripInfo{
 
 export function mapTripInfo(response: any): TripInfo {
     return {
-      trip_id: response.trip_id ?? "N/A",
-      trip_name: response.trip_name ?? "N/A",
-      start_date: response.start_date ?? "N/A",
-      end_date: response.end_date ?? "N/A",
-      destination_city: response.destination_city ?? "N/A",
-      destination_curr: response.destination_curr ?? "N/A",
-      destination_timezone: response.destination_timezone ?? "N/A",
-      d_timezone_name: response.d_timezone_name ?? "N/A",
-      dest_lat: response.dest_lat ?? "N/A",
-      dest_lng: response.dest_lng ?? "N/A",
-      description_t: response.description_t ?? "N/A",
-      cover_image_id: response.cover_image_id ?? "N/A",
-      attendees: response.attendees ? response.attendees.split(/\s*,\s*/) : [],
-      master_user_id: response.master_user_id ?? "N/A",
-      last_updated: response.last_updated ?? "N/A",
+        trip_id: response.trip_id ?? "N/A",
+        trip_name: response.trip_name ?? "N/A",
+        start_date: response.start_date ?? "N/A",
+        end_date: response.end_date ?? "N/A",
+        destination_city: response.destination_city ?? "N/A",
+        destination_curr: response.destination_curr ?? "N/A",
+        destination_timezone: response.destination_timezone ?? "N/A",
+        d_timezone_name: response.d_timezone_name ?? "N/A",
+        d_iso2: response.d_iso2 ?? "N/A",
+        dest_lat: response.dest_lat ?? "N/A",
+        dest_lng: response.dest_lng ?? "N/A",
+        description_t: response.description_t ?? "N/A",
+        cover_image_id: response.cover_image_id ?? "N/A",
+        attendees: response.attendees ? response.attendees.split(/\s*,\s*/) : [],
+        master_user_id: response.master_user_id ?? "N/A",
+        last_updated: response.last_updated ?? "N/A",
     };
-  }
+}
 
-  //how to use mapTripInfo
+//how to use mapTripInfo
 //   async fetchTrips(): Promise<TripInfo[]> {
 //     try {
 //       const response = await lastValueFrom(this.http.get<TripInfo[]>("/trip/all"));
@@ -111,10 +114,28 @@ export interface ItineraryObj {
 
 export function mapItineraryObj(response: any): ItineraryObj {
     return {
-      trip_id: response.trip_id ?? "N/A",
-      itinerary_id: response.itinerary_id ?? "N/A",
-      itn_date: response.itn_date ?? "N/A"
-     
+        trip_id: response.trip_id ?? "N/A",
+        itinerary_id: response.itinerary_id ?? "N/A",
+        itn_date: response.itn_date ?? "N/A"
+
     };
-  }
+}
+
+
+export interface GooglePlaceInfo {
+    location_id: string | null,
+    location_lat: string | null,
+    location_lng: string | null,
+    location_address: string,
+    location_name: string | null,
+    google_place_id: string | null,
+    g_biz_number: string | null,
+    g_biz_website: string | null,
+    g_opening_hrs: string[] | null
+}
+
+export interface TimeZoneSelectItem {
+    name: string,
+    code: string
+}
 

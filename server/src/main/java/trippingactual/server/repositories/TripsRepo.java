@@ -28,7 +28,7 @@ public class TripsRepo {
 
             try {
 
-// trip_id, trip_name, start_date, end_date, destination_city, destination_curr, destination_timezone, d_timezone_name, dest_lat, dest_lng, description_t, cover_image_id, attendees, master_user_id
+// trip_id, trip_name, start_date, end_date, destination_city, destination_curr, destination_timezone, d_timezone_name, d_iso2, dest_lat, dest_lng, description_t, cover_image_id, attendees, master_user_id
             int count = sqltemplate.update(SqlQueries.putNewTrip, 
             newTripInfo.getTrip_id(), 
             newTripInfo.getTrip_name(), 
@@ -38,6 +38,7 @@ public class TripsRepo {
             newTripInfo.getDestination_curr(),
             newTripInfo.getDestination_timezone(),
             newTripInfo.getD_timezone_name(),
+            newTripInfo.getD_iso2(),
             newTripInfo.getDest_lat(),
             newTripInfo.getDest_lng(),
             newTripInfo.getDescription_t(),

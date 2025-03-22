@@ -100,6 +100,7 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
         dest_lat: this.fb.control<string>(''),
         dest_lng: this.fb.control<string>(''),
         d_timezone_name: this.fb.control<string>(''),
+        d_iso2: this.fb.control<string>(''),
         description_t: this.fb.control<string | null>(null),
         cover_image_id: this.fb.control<string>('N/A'),
         attendees: this.fb.control<string>(''),
@@ -306,6 +307,7 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
               const countries = await firstValueFrom(this.countryDataStore.filterCountryInfoByNames([safeCountry]));
 
               const matchedCountry = countries.find(c => c.country_name === country);
+              console.log("match country details ", matchedCountry)
               if (!matchedCountry) {
                 console.warn("Country not found in store:", country);
 
@@ -326,6 +328,7 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
               this.newTripForm.get('destination_timezone')?.setValue(timezone ?? '');
               this.newTripForm.get('destination_curr')?.setValue(matchedCountry.currency ?? '');
               this.newTripForm.get('d_timezone_name')?.setValue(timezoneName ?? '');
+              this.newTripForm.get('d_iso2')?.setValue(matchedCountry.iso2 ?? '');
               this.printDestinationInfo$.next(`Destination Timezone: ${timezone} (${timezoneName}), Currency: ${matchedCountry.currency}`)
 
 

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 
@@ -48,6 +48,9 @@ import { DateFormatDayPipe } from './date-format-day.pipe';
 import { CardModule } from 'primeng/card';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { StepperModule } from 'primeng/stepper';
+import { SelectModule } from 'primeng/select';
+
+
 
 
 
@@ -60,7 +63,8 @@ const appRoutes: Routes = [
   {path:"unauthorized", component: UnauthorizedPageComponent},
   {path:"addedittrip/:trip_id", component: TripEditiorComponent},
   {path: "trip-details/:trip_id", component: TripDetailComponent},
-  { path: '', redirectTo: '/login', pathMatch: 'full' }
+  {path:"addeditaccomm/:acc_id", component: AccommDetailComponent},
+  {path: '', redirectTo: '/login', pathMatch: 'full' }
 ]
 
 
@@ -99,7 +103,8 @@ const appRoutes: Routes = [
     TabsModule,
     CardModule,
     AvatarGroupModule,
-    StepperModule
+    StepperModule,
+    SelectModule
  
     
     
