@@ -122,8 +122,8 @@ export class TripService {
             "Authorization": firebaseUid
         });
 
-        const params = new HttpParams();
-        params.set("trip_id", trip_id);
+        let params = new HttpParams();
+        params = params.set("trip_id", trip_id);
 
         try {
             // Make the HTTP GET request

@@ -20,6 +20,7 @@
                         </div>
                     </ng-template>
                 </p-card>
+                <!-- flight card -->
                 <p-card id="flight-info-card"
                     [style]="{ borderTop: '8px solid #2C43C4', overflow: 'hidden', padding: '8px 16px 16px 16px' }">
                     <ng-template #header>
@@ -33,7 +34,42 @@
                         </div>
                     </ng-template>
                 </p-card>
-                <!-- accommodation card -->
+                <!-- end of flight card -->
+                @if(accomms_array.length>0){
+                <!-- accommodation card if HAVE acc-->
+                <p-card id="acc-info-card"
+                    [style]="{ borderTop: '8px solid #6DCB6A', overflow: 'hidden', padding: '8px 16px 16px 16px' }">
+                    <ng-template #header>
+                        <p class="label-green-color"><i class="pi pi-calendar mr-1"></i>{{
+                            accomms_array[0].check_in_date | dateFormat }} to {{ accomms_array[0].check_out_date |
+                            dateFormat }}</p>
+                    </ng-template>
+                    <ng-template #title>{{ accomms_array[0].accommodation_name }}</ng-template>
+                    <p>{{ accomms_0_location }}</p>
+                    <div class="checkincheckoutcontainer">
+                        <div class="check-in">
+                            <label>Check In:</label>
+                            <p>{{ accomms_array[0].check_in_date | dateFormat }}</p>
+                            <p>{{ accomms_array[0].check_in_time | timeFormat}}</p>
+                        </div>
+                        <div class="check-out">
+                            <label>Check Out:</label>
+                            <p>{{ accomms_array[0].check_out_date | dateFormat }}</p>
+                            <p>{{ accomms_array[0].check_out_time | timeFormat}}</p>
+                        </div>
+                    </div>
+                    <ng-template #footer>
+                        <div class="flex gap-4 mt-1">
+                            <label>dasdasdsadas</label>
+                            <a (click)="navigateToAccommodationNew()" class="nav-link">Add Accommodation Details</a>
+                        </div>
+                    </ng-template>
+                </p-card>
+
+                <!-- end of accommodation card if HAVE acc -->
+
+                } @else {
+                <!-- accommodation card if no acc-->
                 <p-card id="acc-info-card"
                     [style]="{ borderTop: '8px solid #6DCB6A', overflow: 'hidden', padding: '8px 16px 16px 16px' }">
                     <ng-template #header>
@@ -48,7 +84,13 @@
                         </div>
                     </ng-template>
                 </p-card>
-                <!-- end of accommodation card -->
+
+                <!-- end of accommodation card if no acc -->
+
+                }
+
+
+
             </div>
 
         </div>
@@ -57,15 +99,15 @@
 <div class="trip-detail-main-body">
     <div></div>
     <div class="itinerary-builder">
-        <label>Quick jump to day:</label><br><br>
+        <label class="label-green-color">Quick jump to day:</label><br><br>
         <div class="flex justify-center gap-2 flex-wrap" [style]="{ backgroundColor: 'white'}">
             @for(tab of scrollableTabs; track tab.value){
-            <p-button (onClick)="tabValue = tab.value" rounded="true"
+            <p-button (onClick)="selectTab(tab.value)" rounded="true"
                 styleClass="flex items-center justify-center text-sm" [outlined]="tabValue !== tab.value"
                 [label]="'D' + (tab.value + 1)" />
             }
         </div>
-        <p-tabs [value]="tabValue" [style]="{ width: '100%' }">
+        <p-tabs [value]="tabValue" (valueChange)="onTabChange($event)" [style]="{ width: '100%' }">
             <p-tablist [style]="{ maxWidth: '100%', display: 'flex', overflowX: 'auto', whiteSpace: 'nowrap'}">
                 @for(tab of scrollableTabs; track tab.value){
                 <p-tab [value]="tab.value">
@@ -81,58 +123,27 @@
                 }
             </p-tabpanels>
         </p-tabs>
-        <div [style]="{ width: '100%' }">
-            <p-stepper [value]="1" [style]="{ width: '100%' }">
-                <p-step-item [value]="1">
-                    <p-step>Header I</p-step>
-                    <p-step-panel [style]="{ width: '100%' }">
-                        <ng-template #content let-activateCallback="activateCallback">
-                            <div [style]="{ width: '100%' }">
-                                <div class="card"></div>
-                            </div>
-                            <div class="py-6">
-                                <p-button label="Next" (onClick)="activateCallback(2)" />
-                            </div>
-                        </ng-template>
-                    </p-step-panel>
-                </p-step-item>
+        @if(currentActivitiesForSelectedItn!==null){
+           
+                <div [style]="{ width: '100%' }">
+                   @for(act of currentActivitiesForSelectedItn; track act.activity_id){
+                    <div>
+                        {{ act.start_time }} - {{ act.end_time }}
+                    </div>
+                    <div>
+                        {{ act.event_name }}
+                    </div>
+                   }
+                </div>
 
-                <p-step-item [value]="2">
-                    <p-step>Header II</p-step>
-                    <p-step-panel>
-                        <ng-template #content let-activateCallback="activateCallback">
-                            <div class="flex flex-col h-48">
-                                <div
-                                    class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium">
-                                    Content II
-                                </div>
-                            </div>
-                            <div class="flex py-6 gap-2">
-                                <p-button label="Back" severity="secondary" (onClick)="activateCallback(1)" />
-                                <p-button label="Next" (onClick)="activateCallback(3)" />
-                            </div>
-                        </ng-template>
-                    </p-step-panel>
-                </p-step-item>
+            
+        } @else {
+            <div [style]="{ width: '100%' }">
+               <h3>No activities for this day at the moment.</h3>
+            </div>
 
-                <p-step-item [value]="3">
-                    <p-step>Header III</p-step>
-                    <p-step-panel>
-                        <ng-template #content let-activateCallback="activateCallback">
-                            <div class="flex flex-col h-48">
-                                <div
-                                    class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium">
-                                    Content III
-                                </div>
-                            </div>
-                            <div class="py-6">
-                                <p-button label="Back" severity="secondary" (onClick)="activateCallback(2)" />
-                            </div>
-                        </ng-template>
-                    </p-step-panel>
-                </p-step-item>
-            </p-stepper>
-        </div>
+        }
+        
 
     </div>
     <div></div>

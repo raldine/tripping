@@ -1,7 +1,9 @@
 package trippingactual.server.repositories;
 
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import trippingactual.server.models.FileObject;
 import trippingactual.server.models.ItineraryObject;
+import trippingactual.server.models.TripInfo;
 import trippingactual.server.services.ItineraryBuilder;
 
 @Repository
@@ -62,6 +65,25 @@ public class ItnRepo {
             return itnyObjects;
         }, tripId);
 
+    }
+
+
+    public List<String> getItnryByTripIdAndDate(String tripId, String itn_date) {
+
+        String get_itnr_trip_id_date = "SELECT itinerary_id FROM itinerary WHERE trip_id=? AND itn_date=?";
+        
+        java.util.Date parsedDate = TripInfo.parseDate(itn_date);  // Parse the String to java.util.Date
+        java.sql.Date sqlDate = new java.sql.Date(parsedDate.getTime());
+        
+
+        return sqlTemplate.query(get_itnr_trip_id_date, (ResultSet rs) -> {
+            List<String> itineraryIds = new ArrayList<>();
+            while (rs.next()) {
+                // Add the itinerary_id to the list (as a String)
+                itineraryIds.add(rs.getString("itinerary_id"));
+            }
+            return itineraryIds;
+        }, tripId, sqlDate);
     }
 
 }

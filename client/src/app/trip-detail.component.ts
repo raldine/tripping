@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { User } from 'firebase/auth';
 import { Observable, Subscription } from 'rxjs';
 import { FireBaseAuthStore } from './FireBaseAuth.store';
-import { AuthState, ItineraryObj, TripInfo, UserFront } from './models/models';
+import { AccommodationObj, ActivityObj, AuthState, ItineraryObj, LocationObj, TripInfo, UserFront } from './models/models';
 import { UserDetailsStore } from './UserDetails.store';
 import { TripStore } from './TripsStore.store';
 import { FileUploadService } from './FileUploadService';
@@ -12,6 +12,9 @@ import { ItineraryService } from './ItineraryService';
 import { DateFormatDayPipe } from './date-format-day.pipe';
 import { DateFormatPipe } from './date-format.pipe';
 import { v4 as uuidv4 } from 'uuid';
+import { AccommodationService } from './AccommodationService';
+import { LocationService } from './LocationService';
+import { ActivityService } from './ActivityService';
 
 interface EventItem {
   status?: string;
@@ -75,9 +78,24 @@ export class TripDetailComponent implements OnInit, OnDestroy {
 
   //for retrieveing ITINERARY
   itineraryService = inject(ItineraryService);
-  itinerary_array: ItineraryObj[] | null = [];
+  itinerary_array!: ItineraryObj[] 
   dataFormatDayPipe = inject(DateFormatDayPipe)
   dataFormatPipe = inject(DateFormatPipe)
+
+  //for retrieving Accommodations
+  accommodationSvc = inject(AccommodationService);
+  accomms_array: AccommodationObj[] = [];
+  accomms_0_location!: string | null
+
+  //load locations
+  locationSvc = inject(LocationService);
+  locationsForThisTrip: LocationObj[] = [];
+
+  //for retrieving activites
+  activityService = inject(ActivityService);
+  currentItinerarySelected!: string
+  currentActivitiesForSelectedItn!: ActivityObj[] | null;
+
 
 
   //each activity
@@ -89,13 +107,12 @@ export class TripDetailComponent implements OnInit, OnDestroy {
 ];
 
   scrollableTabs = [
-    { value: 0, title: 'Tab 1', content: 'This is the content for Tab 1' },
-    { value: 1, title: 'Tab 2', content: 'This is the content for Tab 2' },
-    { value: 2, title: 'Tab 3', content: 'This is the content for Tab 3' },
-    { value: 3, title: 'Tab 4', content: 'This is the content for Tab 4' },
-    { value: 4, title: 'Tab 5', content: 'This is the content for Tab 5' }
+    { value: 0, title: 'Tab 1', content: 'This is the content for Tab 1' , itinerary_id: 'aaa'},
+    { value: 1, title: 'Tab 2', content: 'This is the content for Tab 2' , itinerary_id: 'aaa'},
+    { value: 2, title: 'Tab 3', content: 'This is the content for Tab 3' , itinerary_id: 'aaa'},
+    { value: 3, title: 'Tab 4', content: 'This is the content for Tab 4' , itinerary_id: 'aaa'},
+    { value: 4, title: 'Tab 5', content: 'This is the content for Tab 5' , itinerary_id: 'aaa'}
   ];
-
   tabValue = 0;
 
 
@@ -154,16 +171,75 @@ export class TripDetailComponent implements OnInit, OnDestroy {
       this.scrollableTabs = this.itinerary_array.map((itinerary, index) => ({
         value: index,
         title: `${this.dataFormatPipe.transform(itinerary.itn_date)}`,
-        content: `Day ${index+1} : ${this.dataFormatDayPipe.transform(itinerary.itn_date)}`
+        content: `Day ${index+1} : ${this.dataFormatDayPipe.transform(itinerary.itn_date)}`,
+        itinerary_id: itinerary.itinerary_id ?? ''
       }));
+
+      this.tabValue = 0;
+      this.currentItinerarySelected = this.scrollableTabs[0].itinerary_id ?? '';
     }
+
+    this.accomms_array = await this.accommodationSvc.getAllAccommsFromTripId(this.selected_trip_id, this.currUserDetails.firebase_uid)
 
 
     this.acc_id_generated = this.generateAccUUID();
 
 
+    //get all locations for this trip and store in location service and here
+    this.locationsForThisTrip = await this.locationSvc.getAllLocationsFromTripId(this.selected_trip_id, this.currUserDetails.firebase_uid)
+    if(this.locationsForThisTrip.length!==0){
+      this.locationSvc.setAllLocationsForTrip(this.locationsForThisTrip) //for store and retrieval later
+      console.log("locations for this trip retrieved and stored in service")
+    }
+
+    this.activityService.setAllActivitiesForTrip(await this.activityService.getAllActivitiesFromTripId(this.selected_trip_id, this.currUserDetails.firebase_uid))
+    this.currentActivitiesForSelectedItn = this.activityService.getActivitiesFromCurrentAllActivitiesForItineraryDay(this.currentItinerarySelected)
+    console.log("FIRST ACC LOCATION ID IS >>>> ", this.accomms_array[0].location_id)
+    this.accomms_0_location = this.locationSvc.getOneLocationFromCurrentAllLocationsForTrip(this.accomms_array[0].location_id)?.location_address ?? 'null';
+    console.log("address is ", this.accomms_0_location)
+
+
 
   }
+
+  selectTab(value: number): void {
+    if (value >= 0 && value < this.itinerary_array.length) {
+        // Only access the itinerary if the value is within bounds
+        const selectedItinerary = this.itinerary_array[value];
+
+        // Check if the selected itinerary exists and has an itinerary_id
+        if (selectedItinerary && selectedItinerary.itinerary_id) {
+            this.currentItinerarySelected = selectedItinerary.itinerary_id;
+            this.currentActivitiesForSelectedItn = this.activityService.getActivitiesFromCurrentAllActivitiesForItineraryDay(this.currentItinerarySelected)
+        } else {
+            this.currentItinerarySelected = '';  // Default value if no itinerary_id exists
+        }
+
+        this.tabValue = value;  // Update tabValue to the selected tab index
+        console.log("Selected Itinerary ID:", this.currentItinerarySelected);  // Debug log
+    } else {
+        // Handle the case where the value is out of bounds
+        console.warn(`Invalid tab index: ${value}. No corresponding itinerary found.`);
+        this.currentItinerarySelected = '';  // Default value if the index is invalid
+        this.currentActivitiesForSelectedItn = null;
+    }
+}
+
+// Function to handle tab change
+onTabChange(event: any): void {
+
+  console.log(event)
+  console.log("when changing tab scroll event value is ", event)
+  this.tabValue = event;
+  console.log("current tabValue is ", this.tabValue)
+  const selectedTab = this.scrollableTabs.find(tab => tab.value === event);
+  if (selectedTab) {
+    
+      this.currentItinerarySelected = selectedTab.itinerary_id;
+      console.log("Selected Itinerary ID on tab change:", this.currentItinerarySelected);  // Debug log
+      this.currentActivitiesForSelectedItn = this.activityService.getActivitiesFromCurrentAllActivitiesForItineraryDay(this.currentItinerarySelected)
+  }
+}
 
   navigateToAccommodationNew(){
 

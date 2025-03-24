@@ -762,5 +762,30 @@
     "website": "https://all.accor.com/lien_externe.svlt?goto=fiche_hotel&code_hotel=C166&merchantid=seo-maps-Japan-C166&sourceid=aw-cen&utm_medium=seo%20maps&utm_source=google%20Maps&utm_campaign=seo%20maps",
     "html_attributions": [],
     "utc_offset_minutes": 540
+},
+
+
+
+{
+    "location_id": null,
+    "location_lat": "51.51401980000001",
+    "location_lng": "-0.0757638",
+    "location_address": "9 Aldgate High St, City of London, London EC3N 1AH, UK",
+    "location_name": "Hotel Saint",
+    "google_place_id": "ChIJ7-QscLwDdkgRbi0Idy3u1Bo",
+    "g_opening_hrs": [],
+    "g_biz_number": "020 3805 1000",
+    "g_biz_website": "https://www.hotelsaint.com/?utm_source=google-gbp&utm_medium=organic&utm_campaign=gbp"
 }
+
+
+
+
+
+
+
+
+
+
+
 ]

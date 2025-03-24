@@ -139,3 +139,108 @@ export interface TimeZoneSelectItem {
     code: string
 }
 
+export interface AccommodationObj {
+    accommodation_id: string, 
+    accommodation_name: string,
+    trip_id: string,
+    check_in_date: string, 
+    check_in_time: string,
+    check_out_date: string,
+    check_out_time: string,
+    timezone_time: string,
+    event_notes: string,
+    location_id: string,
+    last_updated_by: string,
+    last_updated: string
+}
+
+export function mapAccommObj(response: any): AccommodationObj {
+    return {
+        accommodation_id: response.accommodation_id ?? "N/A",
+        accommodation_name: response.accommodation_name ?? "N/A",
+        trip_id: response.trip_id ?? "N/A",
+        check_in_date: response.check_in_date ?? "N/A",
+        check_in_time: response.check_in_time ?? "N/A",
+        check_out_date: response.check_out_date ?? "N/A",
+        check_out_time: response.check_out_time ?? "N/A",
+        timezone_time: response.timezone_time ?? "N/A",
+        event_notes: response.event_notes ?? "N/A",
+        location_id: response.location_id ?? "N/A",
+        last_updated_by: response.last_updated_by ?? "N/A",
+        last_updated: response.last_updated ?? "N/A"
+    };
+}
+
+export interface LocationObj{
+    location_id: string,
+    location_lat: string,
+    location_lng: string,
+    location_address: string,
+    location_name: string,
+    google_place_id: string,
+    g_biz_number: string,
+    g_biz_website: string,
+    g_opening_hrs: string[],
+    trip_id: string,
+    itinerary_id: string,
+    last_updated: string
+}
+
+export function mapLocationObj(response: any): LocationObj {
+    return {
+        location_id: response.location_id ?? "N/A",
+        location_lat: response.location_lat ?? "N/A",
+        location_lng: response.location_lng ?? "N/A",
+        location_address: response.location_address ?? "N/A",
+        location_name: response.location_name ?? "N/A",
+        google_place_id: response.google_place_id ?? "N/A",
+        g_biz_number: response.g_biz_number ?? "N/A",
+        g_biz_website: response.g_biz_website ?? "N/A",
+        g_opening_hrs: response.g_opening_hrs ?? ["N/A"], // Assuming it could be an array
+        trip_id: response.trip_id ?? "N/A",
+        itinerary_id: response.itinerary_id ?? "N/A",
+        last_updated: response.last_updated ?? "N/A"
+    };
+}
+
+
+export interface ActivityObj {
+    activity_id: string,
+    trip_id: string,
+    itinerary_id: string,
+    event_name: string,
+    activity_type: string,
+    start_date: string,
+    start_time: string,
+    end_date: string,
+    end_time: string,
+    timezone_time: string,
+    event_notes: string,
+    location_id: string,
+    last_updated_by: string,
+    last_updated: string
+
+}
+
+export function mapActivityObj(response: any): ActivityObj {
+    return {
+        activity_id: response.activity_id ?? "N/A",
+        trip_id: response.trip_id ?? "N/A",
+        itinerary_id: response.itinerary_id ?? "N/A",
+        event_name: response.event_name ?? "N/A",
+        activity_type: response.activity_type ?? "N/A",
+        start_date: response.start_date ?? "N/A",
+        start_time: response.start_time ?? "N/A",
+        end_date: response.end_date ?? "N/A",
+        end_time: response.end_time ?? "N/A",
+        timezone_time: response.timezone_time ?? "N/A",
+        event_notes: response.event_notes ?? "N/A",
+        location_id: response.location_id ?? "N/A",
+        last_updated_by: response.last_updated_by ?? "N/A",
+        last_updated: response.last_updated ?? "N/A"
+    };
+}
+
+
+
+

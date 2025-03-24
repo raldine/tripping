@@ -16,7 +16,7 @@ export class ItineraryService {
     private AllItineraryForTrip = new BehaviorSubject<ItineraryObj[] | null>(null);
 
     //getting backend 
-    async getAllItnByTripId(trip_id: string | null, firebaseUid: string): Promise<ItineraryObj[] | null> {
+    async getAllItnByTripId(trip_id: string | null, firebaseUid: string): Promise<ItineraryObj[]> {
         const headers = new HttpHeaders({
             "Authorization": firebaseUid
         });
@@ -26,7 +26,7 @@ export class ItineraryService {
 
             params = params.set("trip_id", trip_id)
         } else {
-            return Promise.resolve(null)
+            return []
         }
 
         try {

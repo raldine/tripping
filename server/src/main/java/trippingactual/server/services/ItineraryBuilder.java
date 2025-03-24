@@ -54,5 +54,15 @@ public class ItineraryBuilder {
         return fromRepo;
 
     }
+
+    public String getItnryIdByTripIdAndDate(String trip_id, String itn_date){
+        List<String> fromRepo = itineraryRepo.getItnryByTripIdAndDate(trip_id, itn_date);
+
+        if(fromRepo.size()!=0){
+            return fromRepo.get(0);
+        } else {
+            return null;
+        }
+    }
     
 }

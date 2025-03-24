@@ -80,6 +80,26 @@ label {
 
 }
 
+.label-green-color {
+  font-family: "Noto Sans";
+  font-size: 14px;
+  color: #6DCB6A;
+  font-style: normal;
+  font-weight: 600;
+  line-height: var(--Body-Small-Line-Height, 16px); /* 114.286% */
+
+}
+
+.label-darkblue-color {
+  font-family: "Noto Sans";
+  font-size: 14px;
+  color: #2C43C4;
+  font-style: normal;
+  font-weight: 600;
+  line-height: var(--Body-Small-Line-Height, 16px); /* 114.286% */
+
+}
+
 .p-timeline-event-opposite{
     width: 1px !important;
 }

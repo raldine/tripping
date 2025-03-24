@@ -135,7 +135,7 @@ public class UserRepo {
 
     public List<UserInfo> getManyUsersDetailsByFireBaseIDs(List<String> firebaseUids) {
 
-        // Create a dynamic IN clause with as many placeholders as there are Firebase
+        
         // UIDs
         String placeholders = String.join(",", Collections.nCopies(firebaseUids.size(), "?"));
 

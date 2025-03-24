@@ -49,6 +49,7 @@ import { CardModule } from 'primeng/card';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { StepperModule } from 'primeng/stepper';
 import { SelectModule } from 'primeng/select';
+import { TimeFormatPipe } from './time-format.pipe';
 
 
 
@@ -79,7 +80,8 @@ const appRoutes: Routes = [
     DateFormatPipe,
     TripDetailComponent,
     AccommDetailComponent,
-    DateFormatDayPipe
+    DateFormatDayPipe,
+    TimeFormatPipe
    
   ],
   imports: [

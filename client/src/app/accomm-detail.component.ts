@@ -13,6 +13,10 @@ import { UserService } from './UserService';
 import { GoogleApiCallService } from './GoogleApiCallService';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { v4 as uuidv4 } from 'uuid';
+import { ChangeDetectorRef } from '@angular/core';
+import { NgZone } from '@angular/core';
+import { AccommodationService } from './AccommodationService';
+import { MessageService } from 'primeng/api';
 
 declare global {
   interface Window {
@@ -50,6 +54,8 @@ export class AccommDetailComponent {
 
   //capture place details for container
   google_place_results!: GooglePlaceInfo;
+  cdRef = inject(ChangeDetectorRef);
+  zone = inject(NgZone)
 
 
   //to retrieve destination currency, timezone etc
@@ -110,6 +116,12 @@ export class AccommDetailComponent {
   //for timezone options
   timezones: TimeZoneSelectItem[] = []
 
+  //submit accommodation
+  accommodationService = inject(AccommodationService);
+
+    //error uploading toast
+    messagingService = inject(MessageService);
+
 
 
   isUploading = false;  // Flag to control the spinner visibility
@@ -136,11 +148,23 @@ export class AccommDetailComponent {
 
     if (this.selected_tripInfo?.d_timezone_name !== 'N/A' &&
       this.selected_tripInfo?.destination_timezone !== 'N/A') {
-      this.timezones.push(
-        {
-          name: `${this.selected_tripInfo?.d_timezone_name} (${this.selected_tripInfo?.destination_timezone})`,
-          code: `${this.selected_tripInfo?.d_timezone_name} (${this.selected_tripInfo?.destination_timezone})`
-        })
+
+        if(this.selected_tripInfo?.d_timezone_name === "Unknown Timezone"){
+          this.timezones.push(
+            {
+              name: `${this.selected_tripInfo?.destination_city} Time (${this.selected_tripInfo?.destination_timezone})`,
+              code: `${this.selected_tripInfo?.destination_city} Time  (${this.selected_tripInfo?.destination_timezone})`
+            })
+
+        } else{
+          this.timezones.push(
+            {
+              name: `${this.selected_tripInfo?.d_timezone_name} (${this.selected_tripInfo?.destination_timezone})`,
+              code: `${this.selected_tripInfo?.d_timezone_name} (${this.selected_tripInfo?.destination_timezone})`
+            })
+
+        }
+   
     }
 
     if ( this.currUserDetails?.timezone_origin !== 'N/A' &&
@@ -356,7 +380,13 @@ export class AccommDetailComponent {
             g_biz_website: place.website ?? 'N/A'
           }
 
+         
+
           console.log("CURRENT LOCAITON OBJECT IS ", this.google_place_results)
+    // Ensure that change detection happens after the Google Maps API is done
+    this.zone.run(() => {
+      this.cdRef.detectChanges();
+    });
         }
 
       });
@@ -398,8 +428,49 @@ export class AccommDetailComponent {
     return localid;
   }
 
-  onSubmit(){
+  async onSubmit(){
+    this.accForm.get("location_lat")?.setValue(this.google_place_results.location_lat ?? 'N/A');
+    this.accForm.get("location_lng")?.setValue(this.google_place_results.location_lng ?? 'N/A');
+    this.accForm.get("location_address")?.setValue(this.google_place_results.location_address ?? 'N/A')
+    this.accForm.get("location_name")?.setValue(this.google_place_results.location_name ?? "N/A");
+    this.accForm.get("google_place_id")?.setValue(this.google_place_results.google_place_id ?? 'N/A');
+    this.accForm.get("g_biz_number")?.setValue(this.google_place_results.g_biz_number ?? 'N/A');
+    this.accForm.get("g_biz_website")?.setValue(this.google_place_results.g_biz_website ?? 'N/A');
+    this.accForm.get("g_opening_hrs")?.setValue(this.google_place_results.g_opening_hrs ?? ['N/A']);
+
     console.log("CURRENT FORM WHEN SUBMITTED ", this.accForm.value)
+
+    try {
+      this.isUploading = true;
+      
+      const response = await this.accommodationService.putNewAccomm(this.accForm.value,`${this.currUser?.uid}`);
+    
+      if (response) {
+        this.messagingService.add({
+          severity: 'success',
+          summary: 'Accommodation Created',
+          detail: 'Your accommodation has been successfully created!',
+          life: 3000,
+        });
+    
+        // Wait for the toast to be visible before navigating (adjust timing if needed)
+        await new Promise(resolve => setTimeout(resolve, 3000));
+    
+        this.router.navigate(["/trip-details", this.selected_trip_id]);
+      }
+    
+    } catch (error) {
+      console.error('Error during accommodation submission:', error);
+      this.messagingService.add({
+        severity: 'error',
+        summary: 'Submission Failed',
+        detail: 'There was an error submitting your accommodation. Please try again.',
+        life: 3000,
+      });
+    } finally {
+      this.isUploading = false; // Ensure uploading state is reset
+    }
+
   }
 
 

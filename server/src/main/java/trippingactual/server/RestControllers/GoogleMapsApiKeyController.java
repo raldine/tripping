@@ -23,7 +23,9 @@ import trippingactual.server.services.GooglePlacesServiceLatLng;
 
 @RestController
 @RequestMapping("/api/googlekey")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://*",  // Allowed origin
+allowCredentials = "false"  // No need to allow credentials for Authorization header)
+)
 public class GoogleMapsApiKeyController {
 
     @Value("${google.map.key}")

@@ -78,7 +78,7 @@ select * from trips;
 truncate table trips;
 
 select * from trips where master_user_id='WvibmPm1KMT9071ynwo1oA7G7GJ3' ORDER BY last_updated DESC;
-delete from trips where trip_id='trip36ded672cdf6433ab5e2319b';
+delete from trips where trip_id='tripc2b9be0b29ba44679fb08d07';
 
 
 
@@ -93,6 +93,90 @@ constraint fk_trip_id FOREIGN KEY (trip_id) REFERENCES trips(trip_id) ON DELETE 
 select * from itinerary;
 drop table itinerary;
 truncate table itinerary;
+
+
+create table locations(
+location_id VARCHAR(64),
+location_lat VARCHAR(64),
+location_lng VARCHAR(64),
+location_address VARCHAR(225),
+location_name VARCHAR(225),
+google_place_id VARCHAR(100),
+g_biz_number VARCHAR(64),
+g_biz_website VARCHAR(255),
+g_opening_hrs TEXT,
+trip_id VARCHAR(64),
+itinerary_id VARCHAR(64),
+last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+constraint pk_location_id primary key(location_id)
+);
+
+drop table locations;
+
+truncate table locations;
+
+select * from locations;
+
+create table activities(
+activity_id VARCHAR(64),
+trip_id VARCHAR(64),
+itinerary_id VARCHAR(64),
+event_name VARCHAR(255),
+activity_type VARCHAR(56),
+start_date date,
+end_date date,
+start_time time,
+end_time time,
+timezone_time VARCHAR(64),
+event_notes TEXT,
+location_id VARCHAR(64),
+last_updated_by VARCHAR(100),
+last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+constraint pk_activity_id primary key(activity_id),
+constraint fk_last_updated_by foreign key(last_updated_by) references users(firebase_uid)
+);
+
+drop table activities;
+
+truncate table activities;
+
+select * from activities;
+
+
+create table accommodations(
+accommodation_id VARCHAR(64),
+accommodation_name VARCHAR(255),
+trip_id VARCHAR(64),
+check_in_date date,
+check_in_time time,
+check_out_date date,
+check_out_time time,
+timezone_time VARCHAR(100),
+event_notes TEXT,
+location_id VARCHAR(64),
+last_updated_by VARCHAR(100),
+last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+constraint pk_accommodation_id primary key(accommodation_id),
+constraint fk_last_updated_by_acc foreign key(last_updated_by) references users(firebase_uid)
+);
+
+drop table accommodations;
+
+truncate table accommodations;
+select * from accommodations;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
