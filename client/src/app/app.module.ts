@@ -57,6 +57,9 @@ import { ActivityViewComponent } from './activity-view.component';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ShareEditorLandingComponent } from './share-editor-landing.component';
+import { FieldsetModule } from 'primeng/fieldset';
+import { DividerModule } from 'primeng/divider';
+import { TooltipModule } from 'primeng/tooltip';
 
 
 
@@ -100,6 +103,7 @@ const appRoutes: Routes = [
     ActivityViewComponent,
     ShareEditorLandingComponent
    
+   
   ],
   imports: [
     BrowserModule,
@@ -124,7 +128,10 @@ const appRoutes: Routes = [
     AvatarGroupModule,
     StepperModule,
     SelectModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    FieldsetModule,
+    DividerModule,
+    TooltipModule
  
     
     

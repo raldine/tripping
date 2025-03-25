@@ -105,7 +105,7 @@ public class UserROLESRestController {
 
         String roleOfUser = userROLESService.getUsersRoleForParticularTrip(user_id, trip_id);
         
-        if(!roleOfUser.equals("failed")){
+        if(!roleOfUser.equals("not exist")){
           JsonObject reply = Json.createObjectBuilder()
                             .add("response", roleOfUser)
                             .build();
@@ -118,7 +118,7 @@ public class UserROLESRestController {
             .add("response", "Error: No role found")
             .build();
 
-            return ResponseEntity.status(505).body(replyForError.toString());
+            return ResponseEntity.status(204).body(replyForError.toString());
         }
 
     }

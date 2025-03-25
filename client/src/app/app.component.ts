@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { FireBaseAuthStore } from './FireBaseAuth.store';
 
 @Component({
   selector: 'app-root',
@@ -12,15 +13,18 @@ export class AppComponent {
 
   showNavBar=true;
 
-  constructor(private router: Router) {
-    this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd) {
-        // List of routes where the navbar should be hidden
-        const hiddenRoutes = ['/login', '/register', '/unauthorized', '/sharing'];
 
-        // Check if the current route is in the hiddenRoutes list
-        this.showNavBar = !hiddenRoutes.includes(event.url);
-      }
+
+  constructor(private router: Router, private firebaseAuthStore: FireBaseAuthStore) {
+    this.firebaseAuthStore.firebaseReady$.subscribe(() => {
+      this.router.events.subscribe(event => {
+        if (event instanceof NavigationEnd) {
+          const hiddenRoutePrefixes = ['/login', '/register', '/unauthorized', '/sharing'];
+          const currentUrl = event.urlAfterRedirects || event.url;
+          console.log('[Router] NavigationEnd:', currentUrl);
+          this.showNavBar = !hiddenRoutePrefixes.some(prefix => currentUrl.startsWith(prefix));
+        }
+      });
     });
   }
 

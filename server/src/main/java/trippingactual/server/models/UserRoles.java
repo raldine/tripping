@@ -120,11 +120,11 @@ public class UserRoles {
         userrole.setUser_display_name(jsonObject.getString("user_display_name"));
         userrole.setUser_email(jsonObject.getString("user_email"));
         // Use "N/A" if the key is missing or the value is null
-        userrole.setShare_id(userrolejson.containsKey("share_id") && userrolejson.getString("share_id") != null
+        userrole.setShare_id(userrolejson.containsKey("share_id") && userrolejson.getString("share_id") != ""
                 ? userrolejson.getString("share_id")
                 : "N/A");
         userrole.setShare_id_view_only(
-                userrolejson.containsKey("share_id_view_only") && userrolejson.getString("share_id_view_only") != null
+                userrolejson.containsKey("share_id_view_only") && userrolejson.getString("share_id_view_only") != ""
                         ? userrolejson.getString("share_id_view_only")
                         : "N/A");
 

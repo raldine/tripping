@@ -3,6 +3,7 @@ import { ComponentStore } from '@ngrx/component-store'
 import { AuthState } from "./models/models";
 import { Auth, User } from "@angular/fire/auth";
 import { AuthService } from "./AuthService";
+import { BehaviorSubject } from "rxjs";
 
 const INIT: AuthState = {
     user: null,
@@ -19,6 +20,9 @@ export class FireBaseAuthStore extends ComponentStore<AuthState> {
 
     authService = inject(AuthService)
 
+    private firebaseReady = new BehaviorSubject<boolean>(false);
+firebaseReady$ = this.firebaseReady.asObservable();
+
     private hasSeenAuthenticatedUser = false; 
     constructor(private auth: Auth) {
         super({ user: null, isAuthenticated: false, loading: false });
@@ -32,6 +36,7 @@ export class FireBaseAuthStore extends ComponentStore<AuthState> {
                 isAuthenticated: !!user,
                   //Logic is if user is null then isAuthenticate is false as user does not exist (is null)
             }));
+            this.firebaseReady.next(true);
 
               // Trigger backend notification
        // 🔐 Only notify login once per real login
@@ -40,7 +45,7 @@ export class FireBaseAuthStore extends ComponentStore<AuthState> {
         this.hasSeenAuthenticatedUser = true;
       }
 
-      // 🛑 Only notify logout if user was previously logged in
+      // Only notify logout if user was previously logged in
       if (!user && this.hasSeenAuthenticatedUser) {
         this.authService.notifyLogout();
         this.hasSeenAuthenticatedUser = false;

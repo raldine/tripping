@@ -15,6 +15,7 @@ import { UserService } from './UserService';
 import { ActivityService } from './ActivityService';
 import { getGoogleMapsSearchUrl } from './models/models';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { UserROLESService } from './UserROLESService';
 
 declare global {
   interface Window {
@@ -33,6 +34,15 @@ declare var google: any;
   styleUrl: './activity-view.component.scss'
 })
 export class ActivityViewComponent {
+
+      //always get from backend
+  //CHECK USR ROLE AND SET MODE TO VIEW ONLY OR EDITABLE
+  curr_user_role_in_trip!: string
+  view_mode!: string
+  userRolesService = inject(UserROLESService);
+
+
+
   //get accomm details to view
   activatedRoute = inject(ActivatedRoute)
   paramsSub!: Subscription;
@@ -191,7 +201,16 @@ export class ActivityViewComponent {
       }
     }
 
+  //get this curr user's role
+    this.curr_user_role_in_trip = await this.userRolesService.getCurrUserRoleInThisTrip(this.currUserDetails.firebase_uid, this.selected_trip_id);
 
+    if(this.curr_user_role_in_trip==="Master"){
+      this.view_mode = "Master"
+    } else if(this.curr_user_role_in_trip==="Editor"){
+      this.view_mode = "Editor"
+    } else {
+      this.view_mode = "Viewer"
+    }
 
   }
 

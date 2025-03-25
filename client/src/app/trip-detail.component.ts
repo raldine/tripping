@@ -17,6 +17,8 @@ import { LocationService } from './LocationService';
 import { ActivityService } from './ActivityService';
 import { TripService } from './TripService';
 import { UserROLESService } from './UserROLESService';
+import { SharingRedirectService } from './SharingRedirectService';
+import { getGoogleMapsSearchUrl } from './models/models';
 
 interface EventItem {
   status?: string;
@@ -33,6 +35,11 @@ interface EventItem {
   styleUrl: './trip-detail.component.scss'
 })
 export class TripDetailComponent implements OnInit, OnDestroy {
+
+    //always get from backend
+  //CHECK USR ROLE AND SET MODE TO VIEW ONLY OR EDITABLE
+  curr_user_role_in_trip!: string
+  view_mode!: string
 
 
   activatedRoute = inject(ActivatedRoute)
@@ -103,6 +110,10 @@ export class TripDetailComponent implements OnInit, OnDestroy {
   curr_trip_user_roles!: UserRoles[]
   userRolesService = inject(UserROLESService);
 
+    // Cache for activity locations 
+    locationForActivities: { [key: string]: LocationObj | null } = {};
+      getGoogleMapsSearchUrl = getGoogleMapsSearchUrl
+
 
 
   //each activity
@@ -132,12 +143,26 @@ export class TripDetailComponent implements OnInit, OnDestroy {
   //generate activity link if dh
   activity_id_generated!: string;
 
+  //sharing joureny
+  sharingRedirectService = inject(SharingRedirectService);
+
+  //this user's role for this trip (master/editor/viewer)
+
+
 
   async ngOnInit(): Promise<void> {
     this.paramsSub = this.activatedRoute.params.subscribe(params => {
       this.selected_trip_id = params["trip_id"];
 
     })
+    //for when users come in as editor or viewer(NEW)
+    this.sharingRedirectService.setCapturedTripIdForRedirect(null);
+    this.sharingRedirectService.setCheckIfUserIsSigningUpAsEditorOrViewer(null);
+    this.sharingRedirectService.setIfNewUserWhenLandOnShared(null);
+    this.sharingRedirectService.setInviter(null);
+    this.sharingRedirectService.setShare_id(null);
+    this.sharingRedirectService.setShare_id_view_only(null);
+    this.sharingRedirectService.setTrip_name(null);
 
 
     this.authStateCaptured$ = this.firebaseAuthStore.getAuthState$
@@ -172,7 +197,7 @@ export class TripDetailComponent implements OnInit, OnDestroy {
           // If trip is null, fetch data from the backend
           console.log("No trip information found. Fetching from backend...");
           try {
-              const fetchedTripInfo = await this.tripService.getTripInfoByTrip_id(this.selected_trip_id, this.currUserDetails.firebase_uid); 
+              const fetchedTripInfo = await this.tripService.getTripInfoByTrip_id(this.selected_trip_id, this.currUser?.uid ?? ''); 
               //store in trip store
               this.tripStore.setSelectedTripInfo(fetchedTripInfo);
               this.selected_tripInfo = fetchedTripInfo;
@@ -183,12 +208,12 @@ export class TripDetailComponent implements OnInit, OnDestroy {
   
       // Fetch the cover image if trip exists
       if (this.selected_tripInfo?.cover_image_id) {
-          const cover_image = await this.fileUploadService.getFileByResourceId(this.selected_tripInfo.cover_image_id, this.currUserDetails.firebase_uid);
+          const cover_image = await this.fileUploadService.getFileByResourceId(this.selected_tripInfo.cover_image_id, this.currUser?.uid ?? '');
           this.selected_trip_cover_img = cover_image?.do_url ?? '';
       }
   });
 
-    this.curr_trip_user_roles =  await this.userRolesService.getAllUsersRolesForTripFromBE(this.selected_trip_id, this.currUserDetails.firebase_uid);
+    this.curr_trip_user_roles =  await this.userRolesService.getAllUsersRolesForTripFromBE(this.selected_trip_id, this.currUser?.uid ?? '');
 
     if(this.curr_trip_user_roles.length > 0){
       this.userRolesService.setallUsersRolesForTrip(this.curr_trip_user_roles);
@@ -212,7 +237,7 @@ export class TripDetailComponent implements OnInit, OnDestroy {
       this.currentItinerarySelected = this.scrollableTabs[0].itinerary_id ?? '';
     }
 
-    this.accomms_array = await this.accommodationSvc.getAllAccommsFromTripId(this.selected_trip_id, this.currUserDetails.firebase_uid)
+    this.accomms_array = await this.accommodationSvc.getAllAccommsFromTripId(this.selected_trip_id, this.currUser?.uid ?? '')
 
 
     this.acc_id_generated = this.generateAccUUID();
@@ -220,19 +245,37 @@ export class TripDetailComponent implements OnInit, OnDestroy {
 
 
     //get all locations for this trip and store in location service and here
-    this.locationsForThisTrip = await this.locationSvc.getAllLocationsFromTripId(this.selected_trip_id, this.currUserDetails.firebase_uid)
+    this.locationsForThisTrip = await this.locationSvc.getAllLocationsFromTripId(this.selected_trip_id, this.currUser?.uid ?? '')
     if(this.locationsForThisTrip.length!==0){
       this.locationSvc.setAllLocationsForTrip(this.locationsForThisTrip) //for store and retrieval later
       console.log("locations for this trip retrieved and stored in service")
     }
 
-    this.activityService.setAllActivitiesForTrip(await this.activityService.getAllActivitiesFromTripId(this.selected_trip_id, this.currUserDetails.firebase_uid))
+    this.activityService.setAllActivitiesForTrip(await this.activityService.getAllActivitiesFromTripId(this.selected_trip_id, this.currUser?.uid ?? ''))
     this.currentActivitiesForSelectedItn = this.activityService.getActivitiesFromCurrentAllActivitiesForItineraryDay(this.currentItinerarySelected)
+
     console.log("FIRST ACC LOCATION ID IS >>>> ", this.accomms_array[0].location_id)
     this.accomms_0_location = this.locationSvc.getOneLocationFromCurrentAllLocationsForTrip(this.accomms_array[0].location_id)?.location_address ?? 'null';
     console.log("address is ", this.accomms_0_location)
 
+    if (this.currentActivitiesForSelectedItn) {
+      // Preload locations
+      for (const act of this.currentActivitiesForSelectedItn) {
+        const locat = await this.locationSvc.getLocationObjFromLocationId(act.location_id, this.currUser?.uid ?? '')
+        this.locationForActivities[act.location_id] = locat ?? null
+      }
+    }
 
+//get this curr user's role
+    this.curr_user_role_in_trip = await this.userRolesService.getCurrUserRoleInThisTrip(this.currUserDetails.firebase_uid, this.selected_trip_id);
+
+    if(this.curr_user_role_in_trip==="Master"){
+      this.view_mode = "Master"
+    } else if(this.curr_user_role_in_trip==="Editor"){
+      this.view_mode = "Editor"
+    } else {
+      this.view_mode = "Viewer"
+    }
 
   }
 
@@ -336,6 +379,7 @@ onTabChange(event: any): void {
     this.loggedInUserDetailsSub.unsubscribe();
     this.selectedTripDetailsSub.unsubscribe();
     this.paramsSub.unsubscribe();
+    
 
   }
 

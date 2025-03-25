@@ -1,7 +1,7 @@
 #header-for-tripdetail {
     width: 100vw; /* Set container size */
-    height: 45vh;
-    min-height: 45vh;
+    min-height: 50vh;
+    height: 55vh;
     overflow: hidden; /* Hides overflow */
     display: flex;
     justify-content: center;
@@ -58,7 +58,7 @@
 
 .cards-info {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* ✅ Creates 3 equal columns */
+    grid-template-columns: repeat(2, 1fr); /* ✅ Creates 3 equal columns */
     gap: 30px; /* ✅ 30px gap between cards */
     width: 100%; /* ✅ Ensures it spans full width */
     margin-top: 16px; /* ✅ Adds spacing between title and cards */

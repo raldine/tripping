@@ -1,3 +1,4 @@
+<p-toast id="toastMod"></p-toast> <!-- Toast container to show the toast notifications -->
 <div class="formPage">
     <div class="card">
         <div>
@@ -12,6 +13,9 @@
                 <h3>Welcome, {{ currUser.displayName }}</h3><br>
                 <small>Email: {{ currUser.email }}</small>
             </div>
+            @if(special_Route_For_Sharing_Link===true){
+                <h2>Before you join {{inviter}}'s trip ({{trip_name}})...</h2>
+            }
 
             <h2>Let's find out more about you!</h2><br>
 
@@ -49,6 +53,14 @@
             <div>No user</div>
             }
         </div>
+    </div>
+
+</div>
+<div>
+    <!-- Loading Spinner -->
+    <!-- Full-screen overlay when isUploading is true -->
+    <div *ngIf="isUploading" class="overlay">
+        <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
     </div>
 
 </div>

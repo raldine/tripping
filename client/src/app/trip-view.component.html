@@ -33,6 +33,20 @@
 
         </div>
 
+        @if(curr_Trip_user_roles){
+            <ul>
+                @for(user of curr_Trip_user_roles; track user.user_id){
+                    <li>{{ user.user_display_name }} | {{user.user_email}} | {{ user.role }}</li>
+                }
+            </ul>
+        }
+        @if(view_mode==="Master"){
+            <div>Share invite Editor Link: <a [href]="share_url_edit">{{ share_url_edit }}</a></div>
+            <div>Share invite Viewer Link:  <a [href]="share_url_view_only">{{ share_url_view_only }}</a></div>
+
+        }
+     
+
 
 
         <div class="flex items-center gap-5 mb-2">
@@ -43,13 +57,7 @@
             </div>
         </div>
 
-        @if(curr_Trip_user_roles){
-            <ul>
-                @for(user of curr_Trip_user_roles; track user.user_id){
-                    <li>{{ user.user_display_name }} | {{user.user_email}} | {{ user.role }}</li>
-                }
-            </ul>
-        }
+ 
 
 
 

@@ -61,17 +61,30 @@ public class TripsRepo {
 
     }
 
-    public List<TripInfo> getAllTripsByUserId(String firebaseuid) {
-        String sqlQuery = "SELECT * from trips WHERE master_user_id=? ORDER BY last_updated DESC";
-
+    public List<TripInfo> getAllTripsByUserId(String firebaseUid) {
+        String sqlQuery = """
+            (
+                SELECT * FROM trips 
+                WHERE master_user_id = ?
+            )
+            UNION
+            (
+                SELECT t.* FROM trips t
+                JOIN user_roles ur ON t.trip_id = ur.trip_id
+                WHERE ur.user_id = ? AND ur.role IN ('editor', 'viewer')
+            )
+            ORDER BY last_updated DESC
+            """;
+    
         return sqltemplate.query(sqlQuery, (ResultSet rs) -> {
-            List<TripInfo> tripsBelongingToUser = new ArrayList<>();
+            List<TripInfo> trips = new ArrayList<>();
             while (rs.next()) {
-                tripsBelongingToUser.add(TripInfo.populate(rs));
+                trips.add(TripInfo.populate(rs));
             }
-            return tripsBelongingToUser;
-        }, firebaseuid);
+            return trips;
+        }, firebaseUid, firebaseUid); // You pass it twice for the 2 placeholders
     }
+    
 
     public String deleteTripByTrip_id(String trip_id) {
         String sqlQuery = "DELETE FROM trips WHERE trip_id=?";

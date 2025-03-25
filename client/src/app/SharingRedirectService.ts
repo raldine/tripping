@@ -9,11 +9,19 @@ export class SharingRedirectService{
 
 private capturedTripIdForRedirect = new BehaviorSubject<string | null>(null);
 
-private checkIfNewUserWhenLandOnShared = new BehaviorSubject<boolean | null >(false);
+private checkIfNewUserWhenLandOnShared = new BehaviorSubject<boolean | null >(null);
 //if true forward to registration page with this set true, only when user successfully registered an account + successful registered as editor/viewer of project,
 //redirect to capturedTripIdForRedirect
 
 private checkIfUserIsSigningUpAsEditorOrViewer =  new BehaviorSubject<string | null>(null);
+
+private trip_name = new BehaviorSubject<string | null>(null);
+
+private inviter = new BehaviorSubject<string | null>(null);
+
+private share_id = new BehaviorSubject<string | null>(null);
+
+private share_id_view_only = new BehaviorSubject<string | null>(null);
 
 //passing from component to component
             //set
@@ -43,6 +51,22 @@ private checkIfUserIsSigningUpAsEditorOrViewer =  new BehaviorSubject<string | n
                 }
                
             }
+            setTrip_name(trip_name: string | null){
+                this.trip_name.next(trip_name);
+            }
+
+            setInviter(inviter_name: string | null){
+                this.inviter.next(inviter_name);
+            }
+
+            setShare_id(share_id: string | null){
+                this.share_id.next(share_id);
+            }
+
+            setShare_id_view_only(share_id: string | null){
+                this.share_id_view_only.next(share_id);
+            }
+        
         
         
             //get
@@ -57,6 +81,22 @@ private checkIfUserIsSigningUpAsEditorOrViewer =  new BehaviorSubject<string | n
         
             getIfUserIsSigningUpAsEditorOrViewer(): string | null {
                 return this.checkIfUserIsSigningUpAsEditorOrViewer.getValue();
+            }
+
+            getTrip_name(): string | null{
+                return this.trip_name.getValue();
+            }
+
+            getInviter(): string | null{
+                return this.inviter.getValue();
+            }
+
+            getShare_id(): string | null{
+                return this.share_id.getValue();
+            }
+
+            getShare_id_view_only(): string | null{
+                return this.share_id_view_only.getValue();
             }
 
 

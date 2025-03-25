@@ -3,11 +3,14 @@ import { BehaviorSubject, filter, firstValueFrom, map, Observable, Subscription,
 import { User } from 'firebase/auth';
 import { GoogleApiCallService } from './GoogleApiCallService';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { AuthState, CountryCurrTime, UserFront } from './models/models';
+import { AuthState, CountryCurrTime, UserFront, UserRoles } from './models/models';
 import { UserService } from './UserService';
 import { Router } from '@angular/router';
 import { FireBaseAuthStore } from './FireBaseAuth.store';
 import { CountryDataForAppStore } from './CountryDataForApp.store';
+import { SharingRedirectService } from './SharingRedirectService';
+import { UserROLESService } from './UserROLESService';
+import { MessageService } from 'primeng/api';
 
 
 declare global {
@@ -54,6 +57,16 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   //redirect to dashboard once successful/redirect to unauthorized if authentication expires
   router = inject(Router)
+
+  //for sharing link new user
+  isUserNewAndCameFromSharingLink!: boolean | null
+  sharingRedirectService = inject(SharingRedirectService);
+  special_Route_For_Sharing_Link!: boolean
+  trip_name!: string | null
+  inviter!: string | null
+  isUploading = false;  // Flag to control the spinner visibility
+  userRolesService = inject(UserROLESService)
+  messagingService = inject(MessageService);
 
 
   async ngOnInit(): Promise<void> {
@@ -104,10 +117,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
     try {
       console.info("Fetching Google API key...");
       this.api_key = await firstValueFrom(this.googleServiceApi.getGoogleMapApi());
-  
+
       if (this.api_key) {
         console.info("Google API key received:", this.api_key);
-  
+
         // ✅ Reload Google Maps script only if missing
         if (!window.google || !window.google.maps) {
           console.info("Google Maps script not found, loading...");
@@ -115,12 +128,22 @@ export class RegisterComponent implements OnInit, OnDestroy {
         } else {
           console.info("Google Maps script already loaded.");
         }
-  
+
         // ✅ Always reinitialize Autocomplete to avoid stale references
         setTimeout(() => this.initAutocomplete(), 500);
       }
     } catch (err) {
       console.error("Error getting API key:", err);
+    }
+
+    this.isUserNewAndCameFromSharingLink = this.sharingRedirectService.getIfNewUserWhenLandOnShared();
+
+    if (this.isUserNewAndCameFromSharingLink !== null && this.isUserNewAndCameFromSharingLink === true) {
+      this.special_Route_For_Sharing_Link = true;
+      this.trip_name = this.sharingRedirectService.getTrip_name();
+      this.inviter = this.sharingRedirectService.getInviter();
+    } else {
+      this.special_Route_For_Sharing_Link = false;
     }
 
 
@@ -186,16 +209,16 @@ export class RegisterComponent implements OnInit, OnDestroy {
           const safeCountry = country ?? "Singapore";  // Provide a default value to not break app
           this.countriesData$ = this.countryDataStore.filterCountryInfoByNames([safeCountry]);
 
-                // Convert the timezone offset in minutes to hours and fractional part
-                const hours: number = Math.floor(timezoneRaw / 60);
-                const minutes: number = timezoneRaw % 60;
-      
-                // Create the timezone offset as UTC+hours.minutes (i.e., UTC+05.45)
-                // Format the hours and minutes
-                const formattedMinutes: string = minutes < 10 ? `0${minutes}` : `${minutes}`;
-      
-                // Create the timezone offset as UTC±hh:mm
-                const timezone: string = `UTC${hours < 0 ? "-" : "+"}${Math.abs(hours).toString().padStart(2, '0')}:${formattedMinutes}`;
+          // Convert the timezone offset in minutes to hours and fractional part
+          const hours: number = Math.floor(timezoneRaw / 60);
+          const minutes: number = timezoneRaw % 60;
+
+          // Create the timezone offset as UTC+hours.minutes (i.e., UTC+05.45)
+          // Format the hours and minutes
+          const formattedMinutes: string = minutes < 10 ? `0${minutes}` : `${minutes}`;
+
+          // Create the timezone offset as UTC±hh:mm
+          const timezone: string = `UTC${hours < 0 ? "-" : "+"}${Math.abs(hours).toString().padStart(2, '0')}:${formattedMinutes}`;
 
           //get currency and timezone name
           try {
@@ -203,12 +226,12 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
             const matchedCountry = countries.find(c => c.country_name === country);
             if (!matchedCountry) {
-                console.warn("Country not found in store:", country);
-                this.registerForm.get('country_origin')?.setValue(country);
-                this.registerForm.get('timezone_origin')?.setValue(timezone);
-                this.registerForm.get('currency_origin')?.setValue('');
-                this.printTimeZoneName$.next('');
-                return;
+              console.warn("Country not found in store:", country);
+              this.registerForm.get('country_origin')?.setValue(country);
+              this.registerForm.get('timezone_origin')?.setValue(timezone);
+              this.registerForm.get('currency_origin')?.setValue('');
+              this.printTimeZoneName$.next('');
+              return;
             } // ✅ Find matching timezone based on UTC offset
             const matchingTimezone = matchedCountry.timezones.find(tz => tz.gmtOffsetName === timezone);
             const timezoneName = matchingTimezone ? matchingTimezone.tzName : "Unknown Timezone";
@@ -221,12 +244,12 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
             console.log("Country Matched:", matchedCountry);
             console.log("Final Timezone Name:", timezoneName);
-        } catch (error) {
+          } catch (error) {
             console.error("Error fetching country data:", error);
-        }
+          }
 
 
-    
+
 
 
 
@@ -261,10 +284,74 @@ export class RegisterComponent implements OnInit, OnDestroy {
     }
 
     this.userService.registerUser(newUser)
-      .then((response) => {
+      .then(async (response) => {
 
         if (response.match("OK")) {
-          this.router.navigate(['/dashboard'])
+
+          if (this.special_Route_For_Sharing_Link === true) {
+            this.isUploading = true;
+            if (this.sharingRedirectService.getIfUserIsSigningUpAsEditorOrViewer() === "Editor") {
+              const newEditor: UserRoles = {
+                trip_id: this.sharingRedirectService.getCapturedTripIdForRedirect() ?? '',
+                user_id: this.currUser?.uid ?? '',
+                user_display_name: this.registerForm.get('user_name')?.value,
+                user_email: this.currUser?.email ?? '',
+                role: "Editor",
+                share_id: this.sharingRedirectService.getShare_id() ?? '',
+                share_id_view_only: ""
+              }
+              const response = await this.userRolesService.registerNewEDITORUser(newEditor);
+              if (response === "Registered as editor") {
+                this.isUploading = false;
+                this.messagingService.add({
+                  severity: 'success',
+                  summary: 'Registered as Editor for trip',
+                  detail: 'Successfully registered as editor!',
+                  life: 3000,
+                });
+
+                // Wait for the toast to be visible before navigating (adjust timing if needed)
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                this.isUploading = false;
+                this.router.navigate(["/trip-details", this.sharingRedirectService.getCapturedTripIdForRedirect()]);
+
+              }
+
+
+            } else if (this.sharingRedirectService.getIfUserIsSigningUpAsEditorOrViewer() === "Viewer") {
+              const newViewer: UserRoles = {
+                trip_id: this.sharingRedirectService.getCapturedTripIdForRedirect() ?? '',
+                user_id: this.currUser?.uid ?? '',
+                user_display_name: this.registerForm.get('user_name')?.value,
+                user_email: this.currUser?.email ?? '',
+                role: "Viewer",
+                share_id: '',
+                share_id_view_only: this.sharingRedirectService.getShare_id_view_only() ?? ''
+              }
+              const response = await this.userRolesService.registerNewVIEWERUser(newViewer);
+              if (response === "Registered as viewer") {
+              
+                this.messagingService.add({
+                  severity: 'success',
+                  summary: 'Registered as Viewer for trip',
+                  detail: 'Successfully registered as viewer!',
+                  life: 3000,
+                });
+
+                // Wait for the toast to be visible before navigating (adjust timing if needed)
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                this.isUploading = false;
+                this.router.navigate(["/trip-details", this.sharingRedirectService.getCapturedTripIdForRedirect()]);
+              }
+
+            }
+
+          } else {
+
+            this.router.navigate(['/dashboard'])
+          }
+
+
         }
       })
 

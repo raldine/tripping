@@ -59,7 +59,7 @@ export class LocationService {
 
         } catch (error) {
             console.error("Error fetching location:", error);
-            return [];
+            return null;
         }
 
     }

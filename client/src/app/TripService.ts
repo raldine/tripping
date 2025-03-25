@@ -186,7 +186,7 @@ export class TripService {
                     destination_timezone: response.destination_timezone ?? "N/A",
                     d_timezone_name: response.d_timezone_name ?? "N/A",
                     d_iso2: response.d_iso2 ?? "N/A",
-                    dest_lat: response.dest_lat ?? ["N/A"],
+                    dest_lat: response.dest_lat ?? "N/A",
                     dest_lng: response.dest_lng ?? "N/A",
                     description_t: response.description_t ?? "N/A",
                     cover_image_id: response.cover_image_id ?? "N/A",

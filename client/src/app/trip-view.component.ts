@@ -20,6 +20,12 @@ import { UserROLESService } from './UserROLESService';
   styleUrl: './trip-view.component.scss'
 })
 export class TripViewComponent implements OnInit{
+
+  //always get from backend
+  //CHECK USR ROLE AND SET MODE TO VIEW ONLY OR EDITABLE
+  curr_user_role_in_trip!: string
+  view_mode!: string
+
  
 
   //get trip_details
@@ -150,6 +156,29 @@ private router = inject(Router)
 
     
     this.curr_Trip_user_roles = this.userRolesService.getAllUSERROLEsfromStore();
+
+    if(this.curr_Trip_user_roles === null){
+      //get from backend if not
+      this.curr_Trip_user_roles = await this.userRolesService.getAllUsersRolesForTripFromBE(this.selected_trip_id, this.currUserDetails.firebase_uid);
+
+    }
+
+    //get this curr user's role
+    this.curr_user_role_in_trip = await this.userRolesService.getCurrUserRoleInThisTrip(this.currUserDetails.firebase_uid, this.selected_trip_id);
+
+    if(this.curr_user_role_in_trip==="Master"){
+      this.view_mode = "Master"
+    } else if(this.curr_user_role_in_trip==="Editor"){
+      this.view_mode = "Editor"
+    } else {
+      this.view_mode = "Viewer"
+    }
+
+    if(this.view_mode === "Master"){
+      const invitername = this.currUserDetails.user_name.replaceAll(" ", "_");
+      this.share_url_edit = `http://localhost:4200/#/sharing/${this.selected_trip_id}/${await this.userRolesService.getThisTripShareUrl("edit", this.selected_trip_id, this.currUserDetails.firebase_uid)}?mode=edit&inviter=${invitername}`;
+      this.share_url_view_only = `http://localhost:4200/#/sharing/${this.selected_trip_id}/${await this.userRolesService.getThisTripShareUrl("view", this.selected_trip_id, this.currUserDetails.firebase_uid)}?mode=view&inviter=${invitername}`;
+    }
 
 
 

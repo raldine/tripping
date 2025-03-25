@@ -143,6 +143,9 @@ truncate table activities;
 select * from activities;
 
 
+delete from activities where activity_id='act2e4be8d751ad4fc49380e0b8';
+
+
 create table accommodations(
 accommodation_id VARCHAR(64),
 accommodation_name VARCHAR(255),
@@ -170,6 +173,7 @@ create table user_roles(
 trip_id VARCHAR(64),
 user_id VARCHAR(64),
 user_display_name VARCHAR(64),
+user_email varchar(255),
 role VARCHAR(36),
 share_id VARCHAR(64) null,
 share_id_view_only VARCHAR(64) null,
@@ -180,6 +184,13 @@ constraint pk_trip_user PRIMARY KEY(trip_id, user_id)
 
 drop table user_roles;
 
+truncate table user_roles;
+
+select * from user_roles;
+
+delete from user_roles where user_id='SFf6cow5C5alUjMt15OSo1QPjSh2' and trip_id='tripd8fa69c7f272470fb06335d1';
+
+select role from user_roles WHERE user_id='WvibmPm1KMT9071ynwo1oA7G7GJ3' AND trip_id='tripd8fa69c7f272470fb06335d1';
 
 
 

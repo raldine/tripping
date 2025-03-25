@@ -1,1 +1,51 @@
-<p>share-editor-landing works!</p>
+<p-toast id="toastMod"></p-toast> <!-- Toast container to show the toast notifications -->
+
+<div id="dashboard-body">
+    <div id="header-for-dashboard-sharing">
+        <img [src]="trip_cover_image" 
+        alt="Background Image" 
+        width="100%"
+        height="100%"
+        loading="lazy"
+        decoding="async">
+    
+    </div>
+    <div id="main-content">
+        <p-card id="trip-info-card"
+        [style]="{ borderTop: '8px solid #6B79F7', overflow: 'hidden', padding: '8px 16px 16px 16px' }">
+        <ng-template #header>
+            <h1>Welcome to </h1> <img src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/tripping_logo_large.png" style="width: 320px;">
+        </ng-template>
+        <ng-template #title>{{ inviter }} has invited you to be {{ mode_to_print }} for their trip to <br>
+            <h2>{{ trip_destination }}</h2>
+
+        </ng-template>
+        <p>You can sign up or login to see the trip details:</p>
+        <ng-template #footer>
+            <div class="flex gap-4 mt-1">
+                <!-- <label>Created by: {{ selected_trip_master_name }}</label> -->
+                @if(!user){
+                    <div>
+                
+                
+                        <button id="buttonDiv" (click)="loginWithGoogle()">Login with Google</button>
+                
+                    </div>
+                
+                
+                  
+                   
+                }
+            </div>
+        </ng-template>
+    </p-card>
+    </div>
+
+    <div>
+        <!-- Loading Spinner -->
+        <!-- Full-screen overlay when isUploading is true -->
+        <div *ngIf="isUploading" class="overlay">
+            <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
+        </div>
+
+    </div>

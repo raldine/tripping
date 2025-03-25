@@ -99,8 +99,8 @@ export class UserROLESService {
 
 
             if (response?.response === "Error: No role found") {
-                console.warn("No role found for this user in this trip. Returning an empty string.");
-                return "";
+                console.warn("No role found for this user in this trip.");
+                return "not exist";
             }
 
 

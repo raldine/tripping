@@ -303,6 +303,19 @@ public class TripEditingRestController {
         if(!tripById.isEmpty()){
             TripInfo tripgotten = tripById.get();
 
+
+            //censor info for sharing journey
+            if(firebaseUid.equals("sharingadmin")){
+                tripgotten.setAttendees("");
+                tripgotten.setD_iso2("");
+                tripgotten.setD_timezone_name("");
+                tripgotten.setDescription_t("");
+                tripgotten.setDest_lat("");
+                tripgotten.setDest_lng("");
+                tripgotten.setDestination_curr("");
+                tripgotten.setDestination_timezone("");
+            }
+
             JsonObject tripInJson = tripgotten.toJson();
 
             return ResponseEntity.ok().body(tripInJson.toString());

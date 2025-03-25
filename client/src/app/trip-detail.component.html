@@ -18,16 +18,44 @@
                     </ng-template>
                     <ng-template #title>{{ selected_tripInfo?.trip_name }}</ng-template>
                     <p>{{ selected_tripInfo?.description_t}}</p>
+   
+                    <p-avatar-group>
+                        <!-- Show first 5 avatars with tooltip -->
+                        @for (user of curr_trip_user_roles.slice(0, 4); track user.user_id) {
+                          <p-avatar 
+                            [label]="user.user_display_name.substring(0, 1)" 
+                            [pTooltip]="user.user_display_name"
+                            tooltipPosition="top"
+                            styleClass="mr-2" 
+                            shape="circle" 
+                            size="large" />
+                        }
+                      
+                        <!-- "+X" avatar with tooltip showing who else -->
+                        @if (curr_trip_user_roles.length > 4) {
+                          <p-avatar 
+                            [label]="'+' + (curr_trip_user_roles.length - 4)" 
+                            [pTooltip]="'and ' + (curr_trip_user_roles.length - 4) + ' more...'"
+                            tooltipPosition="top"
+                            shape="circle" 
+                            size="large" />
+                        }
+                      </p-avatar-group>
+                      <p>Attendees: {{ curr_trip_user_roles.length }}</p>
+                      
+                
                     <ng-template #footer>
-                        <div class="flex gap-4 mt-1">
+                  
                             <label>Created by: {{ selected_trip_master_name }}</label>
+                            <div style="width: 100%; text-align: right; margin-bottom: -12px; margin-top: 8px;">
                             <a (click)="navigateToTripDetailsViewOnly()" class="nav-link">View
                                 Trip Details</a>
-                        </div>
+                            </div>
+         
                     </ng-template>
                 </p-card>
                 <!-- flight card -->
-                <p-card id="flight-info-card"
+                <!-- <p-card id="flight-info-card"
                     [style]="{ borderTop: '8px solid #2C43C4', overflow: 'hidden', padding: '8px 16px 16px 16px' }">
                     <ng-template #header>
 
@@ -39,7 +67,7 @@
                             <label>dasdasdsadas</label>
                         </div>
                     </ng-template>
-                </p-card>
+                </p-card> -->
                 <!-- end of flight card -->
                 @if(accomms_array.length>0){
                 <!-- accommodation card if HAVE acc-->
@@ -71,11 +99,15 @@
                         </div>
                     </div>
                     <ng-template #footer>
-                        <div class="flex gap-4 mt-1">
+                        <div style="width: 100%; text-align: right; margin-bottom: -12px; margin-top: 8px;">
                             <a (click)="navigateToAccommodationViewOnly(accomms_array[0])" class="nav-link">View
                                 Accommodation Details</a>
-                            <!-- <a (click)="navigateToAccommodationNew()" class="nav-link">Add Accommodation Details</a> -->
                         </div>
+
+                        <!-- <div class="flex gap-4 mt-1">
+                            <a (click)="navigateToAccommodationViewOnly(accomms_array[0])" class="nav-link">View
+                                Accommodation Details</a>
+                        </div> -->
                     </ng-template>
                 </p-card>
 
@@ -137,31 +169,71 @@
             </p-tabpanels>
         </p-tabs>
         <div>
-            <br>
-            <a (click)="navigateToActivityNew()" class="nav-link">Add New Activity</a>
-            <br>
+
+            <div [style]="{ width: '100%', paddingRight: '48px', paddingLeft: '48px'}">
+            <p-divider align="center" type="dotted">
+                <p-button label="Add New Activity" icon="pi pi-plus-circle" severity="success" (onClick)="navigateToActivityNew()" class="mr-2 ml-2"/>
+            </p-divider>
+        </div>
+  
+
         </div>
         @if(currentActivitiesForSelectedItn!==null){
 
-        <div [style]="{ width: '100%' }">
+        <div [style]="{ width: '100%', padding: '16px'}">
             @for(act of currentActivitiesForSelectedItn; track act.activity_id){
-                <img [src]="getIconByActivityType(act.activity_type)" 
-                alt="icon" 
-                style="width: 32px; height: 32px;" />
-            <div>
-                {{ act.start_time | timeFormat }} - {{ act.end_time | timeFormat}}
-            </div>
-            <div>
-                {{ act.event_name }}
-            </div>
-            <a (click)="navigateToActivityViewOnly(act)" class="nav-link">View Activity</a>
+            <p-fieldset>
+                <ng-template #header>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0 8px;">
+                        <img [src]="getIconByActivityType(act.activity_type)" alt="icon"
+                            style="width: 32px; height: 32px;" />
+                        <span class="font-bold" style="font-size: 16px;">{{ act.event_name }}</span>
+                    </div>
+                </ng-template>
+
+                <!-- 20/80 column layout -->
+                <div style="display: flex; gap: 1rem; align-items: flex-start; padding-top: 8px;">
+                    <!-- 20% column -->
+                    <div style="width: 20%;">
+                        <label class="font-bold"> {{ act.start_time | timeFormat }} - {{ act.end_time |
+                            timeFormat}}</label><br>
+                        <small>{{ selected_tripInfo?.destination_timezone }}</small>
+                    </div>
+
+                    <!-- 80% column -->
+                    <div style="width: 80%;">
+                        <div>
+                            <p class="m-2">
+                                {{ locationForActivities[act.location_id]?.location_address }}
+                            </p>
+                            <a [href]="getGoogleMapsSearchUrl(locationForActivities[act.location_id]?.location_address ?? '', locationForActivities[act.location_id]?.google_place_id ?? '')" target="_blank">Get Directions on Google Maps</a>
+                        </div>
+                        @if(act.event_notes!=="N/A"){
+                        <div>
+                            <p class="m-1" style="font-style: italic;">
+                                {{ act.event_notes }}
+                            </p>
+                        </div>
+                        }
+                        <!-- Footer-like area -->
+                        <div style="width: 100%; text-align: right; margin-top: 8px; padding-right: 16px;">
+                            <a (click)="navigateToActivityViewOnly(act)" class="nav-link">View Activity</a>
+                        </div>
+
+                    </div>
+                </div>
+            </p-fieldset>
             }
         </div>
 
 
+
+
+
+
         } @else {
-        <div [style]="{ width: '100%' }">
-            <h3>No activities for this day at the moment.</h3>
+        <div [style]="{ width: '100%', padding: '16px' }">
+            <h3 style="width: 100%; text-align: center;">No activities for this day at the moment.</h3>
         </div>
 
         }
