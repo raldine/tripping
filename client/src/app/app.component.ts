@@ -16,7 +16,7 @@ export class AppComponent {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         // List of routes where the navbar should be hidden
-        const hiddenRoutes = ['/login', '/register', '/unauthorized'];
+        const hiddenRoutes = ['/login', '/register', '/unauthorized', '/sharing'];
 
         // Check if the current route is in the hiddenRoutes list
         this.showNavBar = !hiddenRoutes.includes(event.url);

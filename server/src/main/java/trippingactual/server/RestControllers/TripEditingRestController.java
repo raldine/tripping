@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
@@ -48,6 +50,11 @@ public class TripEditingRestController {
 
     @Autowired
     private FileManagingServiceSql sqlFileService;
+
+
+    @Autowired
+    private MeterRegistry meterRegistry;
+
 
     @PutMapping(path = "/newtrip", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> putNewTrip(
@@ -192,6 +199,8 @@ public class TripEditingRestController {
             String replyFromRepo = tripService.putNewTrip(tripBuilding, m_user_display_name, m_user_email);
 
             if (replyFromRepo != null && replyFromRepo.equals("OK")) {
+
+                meterRegistry.counter("myapp_tripping_trips_created_total").increment(); // Increment counter
                 JsonObject replyForSuccess = Json.createObjectBuilder()
                         .add("response", trip_id)
                         .build();

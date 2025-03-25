@@ -1,3 +1,5 @@
+<p-toast id="toastMod"></p-toast> <!-- Toast container to show the toast notifications -->
+<p-confirmDialog></p-confirmDialog>
 <div id="navBar">
     <p-menubar [model]="items">
         <!-- Logo Section (Start) -->
@@ -30,6 +32,8 @@
                 <!-- If no user is logged in, optionally add a login button -->
                 <!-- <button pButton label="Login" (click)="navigateToLogin()"></button> -->
                 }
+                <div><p-button icon="pi pi-sign-out" severity="danger" [outlined]="true" size="small" label="Logout" (onClick)="logout()" /></div>
+
             </div>
         </ng-template>
     </p-menubar>

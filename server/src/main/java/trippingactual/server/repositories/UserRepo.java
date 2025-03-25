@@ -12,7 +12,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-
+import io.micrometer.core.instrument.MeterRegistry;
 
 // import com.google.gson.JsonObject;
 
@@ -24,6 +24,11 @@ public class UserRepo {
 
     @Autowired
     private JdbcTemplate sqltemplate;
+
+        @Autowired
+    private MeterRegistry meterRegistry;
+
+
 
     public String checkIfUserExistElseInsert(String firebaseUid, String email) {
 
@@ -91,6 +96,8 @@ public class UserRepo {
                     userInfo.getUser_email());
 
             if (count > 0) {
+                System.out.println("new user detected incrementing total registered users");
+                meterRegistry.counter("myapp_tripping_user_fullregistered_total").increment(); // Increment counter
                 return "OK";
             } else {
                 return "error";

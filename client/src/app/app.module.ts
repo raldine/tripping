@@ -56,6 +56,7 @@ import { ActivityEditorComponent } from './activity-editor.component';
 import { ActivityViewComponent } from './activity-view.component';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
+import { ShareEditorLandingComponent } from './share-editor-landing.component';
 
 
 
@@ -75,6 +76,7 @@ const appRoutes: Routes = [
   {path: "viewaccomm/:acc_id", component: AccommViewComponent},
   {path: "addeditact/:act_id", component: ActivityEditorComponent},
   {path: "viewactivity/:act_id", component: ActivityViewComponent},
+  {path: "sharing/:trip_id/:share_id", component: ShareEditorLandingComponent},
   {path: '', redirectTo: '/login', pathMatch: 'full' }
 ]
 
@@ -95,7 +97,8 @@ const appRoutes: Routes = [
     AccommViewComponent,
     TripViewComponent,
     ActivityEditorComponent,
-    ActivityViewComponent
+    ActivityViewComponent,
+    ShareEditorLandingComponent
    
   ],
   imports: [

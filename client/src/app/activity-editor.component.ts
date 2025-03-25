@@ -504,6 +504,12 @@ export class ActivityEditorComponent {
 
   }
 
+  getIconByActivityType(activity_type: string){
+
+    return this.activityService.getIconByName(activity_type);
+
+  }
+
   ngOnDestroy(): void {
     this.authStateSubscription.unsubscribe();
     this.loggedInUserDetailsSub.unsubscribe();

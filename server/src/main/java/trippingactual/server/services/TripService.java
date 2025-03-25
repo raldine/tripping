@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import jakarta.json.JsonObject;
 import trippingactual.server.models.ItineraryObject;
 import trippingactual.server.models.LocationObject;
@@ -35,8 +38,17 @@ public class TripService {
     @Autowired
     private UserRolesRepo userRolesRepo;
 
+      @Autowired
+    private MeterRegistry meterRegistry;
+
+   
+    // @Timed(value = "myapp_tripping_trip_creation_time", description = "Time taken to create a trip")
     @Transactional(rollbackFor = Exception.class)
     public String putNewTrip(TripInfo tripInfoObj, String master_user_display_name, String master_user_email) {
+
+        Timer.Sample sample = Timer.start(meterRegistry);
+
+        try{
 
         String replyFromRepo = tripsRepo.putNewTrip(tripInfoObj);
 
@@ -65,6 +77,15 @@ public class TripService {
 
 
         return replyFromRepo;
+
+    } finally {
+        //Stop the timer and record the time
+        sample.stop(
+            Timer.builder("myapp_tripping_trip_creation_time")
+                .description("Time taken to create a trip manually")
+                .register(meterRegistry)
+        );
+    }
 
     }
 

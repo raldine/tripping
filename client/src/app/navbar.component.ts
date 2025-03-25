@@ -1,11 +1,12 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { User } from 'firebase/auth';
-import { MenuItem } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { filter, map, Observable, Subscription } from 'rxjs';
 import { FireBaseAuthStore } from './FireBaseAuth.store';
 import { AuthState, UserFront } from './models/models';
 import { Router } from '@angular/router';
 import { UserDetailsStore } from './UserDetails.store';
+import { AuthService } from './AuthService';
 
 @Component({
   selector: 'app-navbar',
@@ -18,6 +19,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   //for navbar
   items: MenuItem[] | undefined;
+
+  //for logout
+  authService = inject(AuthService)
 
   //User Authentication info
   private firebaseAuthStore = inject(FireBaseAuthStore)
@@ -48,6 +52,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   //for unauthorised path and further path
   router = inject(Router)
+
+    //confirmation for deleting
+    confirmationService = inject(ConfirmationService)
+    messagingService = inject(MessageService);
 
   ngOnInit(): void {
     this.authStateCaptured$ = this.firebaseAuthStore.getAuthState$
@@ -94,6 +102,42 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
 
 
+  }
+
+  logout() {
+
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to logout?',
+      header: 'Confirm Logout',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Yes',
+      rejectLabel: 'Cancel',
+      accept: async () => {
+
+            //reset services
+            this.authService.logout();
+                  // Wait for the toast to be visible before navigating (adjust timing if needed)
+        
+       
+          this.messagingService.add({
+            severity: 'success',
+            summary: 'Logged Out',
+            detail: 'You have been successfully logged out!',
+            life: 3000,
+          });
+          await new Promise(resolve => setTimeout(resolve, 3000));
+          // Wait for the toast to be visible before navigating (adjust timing if needed)
+      
+        
+          this.router.navigate(["/login"]);
+        
+      },
+      reject: () => {
+        // Optional: feedback on cancel
+
+      }
+    });
+  
   }
 
 
