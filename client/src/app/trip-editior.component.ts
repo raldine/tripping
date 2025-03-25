@@ -2,7 +2,7 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FireBaseAuthStore } from './FireBaseAuth.store';
 import { User } from 'firebase/auth';
 import { BehaviorSubject, filter, firstValueFrom, map, Observable, Subscription } from 'rxjs';
-import { AuthState, CountryCurrTime, FileUploadedInfo, TripInfo } from './models/models';
+import { AuthState, CountryCurrTime, FileUploadedInfo, TripInfo, UserFront } from './models/models';
 import { GoogleApiCallService } from './GoogleApiCallService';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CountryDataForAppStore } from './CountryDataForApp.store';
@@ -11,6 +11,7 @@ import { ImageFetcherService } from './ImageFetcherService';
 import { FileUploadService } from './FileUploadService';
 import { MessageService } from 'primeng/api';
 import { TripService } from './TripService';
+import { UserDetailsStore } from './UserDetails.store';
 
 declare global {
   interface Window {
@@ -49,6 +50,22 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
   countriesData$!: Observable<CountryCurrTime[]>
   countryDataStore = inject(CountryDataForAppStore);
   printDestinationInfo$ = new BehaviorSubject<string>("")
+
+  //to track user details from my backend
+    private userDetailsStore = inject(UserDetailsStore);
+    private loggedInUserDetailsSub!: Subscription;
+    protected currUserDetails!: UserFront
+    // Default user structure (fallback)
+    DEFAULT_USER: UserFront = {
+      user_id: null,
+      user_name: '',
+      firebase_uid: '',
+      user_email: '',
+      country_origin: '',
+      timezone_origin: '',
+      currency_origin: '',
+      notif: false
+    };
 
   //redirect to itineary builder once successful/redirect to unauthorized if authentication expires
   router = inject(Router)
@@ -160,6 +177,12 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
       this.newTripForm.get("attendees")?.setValue(this.currUser.uid);
       console.log('Current user:', this.currUser);
       console.log("current form before user entered details >>>>. ", this.newTripForm.value)
+    });
+
+    //sub currentUserDetails
+    this.loggedInUserDetailsSub = this.userDetailsStore.userDetails$.subscribe((user) => {
+      this.currUserDetails = { ...this.DEFAULT_USER, ...user };
+      console.log("User details loaded:", this.currUserDetails);
     });
 
 
@@ -424,7 +447,7 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
     try {
       this.isUploading = true;
       
-      const response = await this.tripService.putNewTrip(formValue, this.blob, `${this.currUser?.uid}`);
+      const response = await this.tripService.putNewTrip(formValue, this.blob, `${this.currUser?.uid}`, this.currUserDetails.user_name, this.currUserDetails.user_email);
     
       if (response) {
         this.messagingService.add({

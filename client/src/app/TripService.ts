@@ -14,7 +14,7 @@ export class TripService {
     imageFetcherService = inject(ImageFetcherService);
     http = inject(HttpClient);
 
-    async putNewTrip(form: any, filebytes: Blob | null, firebase_uid: string) {
+    async putNewTrip(form: any, filebytes: Blob | null, firebase_uid: string, user_display_name: string, user_email: string) {
         console.info("calling add new trip service");
         console.log("value of newtripform is ", form);
 
@@ -40,6 +40,8 @@ export class TripService {
         formData.set("cover_image_id", form["cover_image_id"] ?? "N/A");
         formData.set("attendees", form["attendees"] ?? "N/A");
         formData.set("master_user_id", form["master_user_id"] ?? "N/A");
+        formData.set("m_user_display_name", user_display_name);
+        formData.set("m_user_email", user_email);
 
         // ✅ Append File if exists
         if (filebytes) {
@@ -143,11 +145,66 @@ export class TripService {
             return response.deleted_id as string;
 
         } catch (error) {
-            console.error("Error fetching trips:", error);
-            return [];
+            console.error("Error deleteing trip", error);
+            return "";
         }
 
     }
+
+    async getTripInfoByTrip_id(trip_id: string, firebaseUid: string) {
+    
+            const headers = new HttpHeaders({
+                "Authorization": firebaseUid
+            });
+    
+            let params = new HttpParams();
+            params = params.set("trip_id", trip_id);
+    
+            try {
+                // Make the HTTP GET request
+                const response = await lastValueFrom(
+                    this.http.get<any>("/trip/get-trip", { headers, params })
+                );
+    
+                console.log("Raw response:", response); // Debugging
+    
+    
+                if (response?.response === "Error: No trip found") {
+                    console.warn("No trip found. Returning an empty obj.");
+                    return null;
+                }
+    
+    
+                // Map the response to LocationObj if the response structure matches
+                const tripObj: TripInfo = {
+                    trip_id: response.trip_id ?? "N/A",
+                    trip_name: response.trip_name ?? "N/A",
+                    start_date: response.start_date ?? "N/A",
+                    end_date: response.end_date ?? "N/A",
+                    destination_city: response.destination_city ?? "N/A",
+                    destination_curr: response.destination_curr ?? "N/A",
+                    destination_timezone: response.destination_timezone ?? "N/A",
+                    d_timezone_name: response.d_timezone_name ?? "N/A",
+                    d_iso2: response.d_iso2 ?? "N/A",
+                    dest_lat: response.dest_lat ?? ["N/A"],
+                    dest_lng: response.dest_lng ?? "N/A",
+                    description_t: response.description_t ?? "N/A",
+                    cover_image_id: response.cover_image_id ?? "N/A",
+                    attendees: response.description_t ?? "N/A",
+                    master_user_id: response.description_t ?? "N/A",
+                    last_updated: response.last_updated ?? "N/A"
+                };
+    
+                return tripObj;
+    
+            } catch (error) {
+                console.error("Error fetching trip:", error);
+                return null;
+            }
+    
+        }
+
+
 
 
 }

@@ -1,7 +1,7 @@
 package trippingactual.server.RestControllers;
 
 import java.io.IOException;
-import java.io.StringReader;
+
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +26,9 @@ import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import trippingactual.server.models.FileObject;
+import trippingactual.server.models.LocationObject;
 import trippingactual.server.models.TripInfo;
-import trippingactual.server.models.UserInfo;
+
 import trippingactual.server.services.FileManagingServiceSql;
 import trippingactual.server.services.FileUploadService;
 import trippingactual.server.services.TripService;
@@ -68,6 +69,8 @@ public class TripEditingRestController {
             @RequestPart(value = "attendees") String attendees,
             @RequestPart(value = "master_user_id") String master_user_id,
             @RequestPart(value = "comments") String comments,
+            @RequestPart(value = "m_user_display_name") String m_user_display_name,
+            @RequestPart(value = "m_user_email") String m_user_email,
             @RequestPart(value = "original_file_name", required = false) Optional<String> original_file_name,
             @RequestPart(value = "photourl", required = false) Optional<String> pexel_photourl,
             @RequestPart(value = "media_type", required = false) Optional<String> pexel_media_type) {
@@ -186,7 +189,7 @@ public class TripEditingRestController {
 
             }
 
-            String replyFromRepo = tripService.putNewTrip(tripBuilding);
+            String replyFromRepo = tripService.putNewTrip(tripBuilding, m_user_display_name, m_user_email);
 
             if (replyFromRepo != null && replyFromRepo.equals("OK")) {
                 JsonObject replyForSuccess = Json.createObjectBuilder()
@@ -270,6 +273,39 @@ public class TripEditingRestController {
     return ResponseEntity.status(204).body(replyForError.toString());
         }
 
+
+    }
+
+    @GetMapping(path = "/get-trip", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getLocationObjByLocationId(
+        @RequestHeader("Authorization") String firebaseUid,
+        @RequestParam("trip_id") String trip_id
+    ){
+        
+    if (firebaseUid.isEmpty()) {
+            JsonObject replyForUnAuthorized = Json.createObjectBuilder()
+                    .add("response", "Unauthorized")
+                    .build();
+            return ResponseEntity.status(401).body(replyForUnAuthorized.toString());
+        }
+
+        Optional<TripInfo> tripById = tripService.getTripDetailsByTripId(trip_id);
+        
+        if(!tripById.isEmpty()){
+            TripInfo tripgotten = tripById.get();
+
+            JsonObject tripInJson = tripgotten.toJson();
+
+            return ResponseEntity.ok().body(tripInJson.toString());
+
+
+        } else{
+            JsonObject replyForError = Json.createObjectBuilder()
+            .add("response", "Error: No trip found")
+            .build();
+
+            return ResponseEntity.status(505).body(replyForError.toString());
+        }
 
     }
 

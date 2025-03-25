@@ -34,12 +34,18 @@ export class TripStore extends ComponentStore<TripState> {
     user_trips: user_trips
   }));
 
-  readonly setSelectedTripInfo = this.updater((state, trip: TripInfo) => {
+  readonly setSelectedTripInfo = this.updater((state, trip: TripInfo | null) => {
     const newState = {
       ...state,
-      selected_tripInfo: trip
+      selected_tripInfo: trip // `trip` can now be `null` as well
     };
-    console.log("Updated selected_tripInfo:", newState.selected_tripInfo.trip_name); // Log the updated state
+  
+    if (newState.selected_tripInfo) {
+      console.log("Updated selected_tripInfo:", newState.selected_tripInfo.trip_name); // Log the updated state when `trip` is not null
+    } else {
+      console.log("Recieved null trip or Cleared selected_tripInfo: set to null");
+    }
+  
     return newState;
   });
   

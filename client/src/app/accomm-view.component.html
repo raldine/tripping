@@ -1,0 +1,103 @@
+
+<p-toast id="toastMod"></p-toast> <!-- Toast container to show the toast notifications -->
+<div class="AccDetailPage">
+    <div class="card">
+            <div class="checkin-row">
+                <div class="mb-2 field-wrapper">
+                  <label for="check_in_date" class="label-green-color block">Check In Date:</label><br>
+                  <p>{{currentAccToView?.check_in_date ?? '-' | dateFormatDay}}</p>
+                 
+                </div>
+              
+                <div class="mb-2 field-wrapper">
+                  <label for="check_in_time" class="label-green-color  block">Check In Time:</label><br>
+                  <p>{{currentAccToView?.check_in_time ?? '-' | timeFormat}}</p>
+                  
+                </div>
+              
+                <div class="mb-2 field-wrapper">
+                  <label for="timezone_time" class="label-green-color  block">Timezone:</label><br>
+                  <p>{{currentAccToView?.timezone_time ?? '-'}}</p>
+                </div>
+              </div>
+
+              <hr class="custom-line">
+
+              <div class="checkout-row">
+                <div class="mb-2 field-wrapper">
+                  <label for="check_out_date" class="label-green-color block">Check Out Date:</label><br>
+                  <p>{{currentAccToView?.check_out_date ?? '-' | dateFormatDay}}</p>
+                </div>
+              
+                <div class="mb-2 field-wrapper">
+                  <label for="check_out_time" class="label-green-color  block">Check Out Time:</label><br>
+                  <p>{{currentAccToView?.check_out_time ?? '-' | timeFormat}}</p>
+               
+                </div>
+              </div>
+              
+        <div class="mb-2">
+            <label for="accommodation_name" class="label-green-color  block">Accommodation Name:</label><br>
+            <p>{{ currentAccToView?.accommodation_name }}</p>
+        </div>
+
+        <label for="accAddress" class="label-green-color  block">Accommodation Address:</label><br>
+        <p>{{ accomm_location_details?.location_address }}</p>
+        <div class="map-place-wrapper">
+            <div id="map" class="google-map"></div>
+            @if(google_place_results){
+            <p-card id="place_overview_card" class="place-card" [style]="{ overflow: 'hidden', padding: '8px 16px 16px 16px' }">
+                <ng-template #header>
+
+                </ng-template>
+                <ng-template #title>{{ google_place_results.location_name }}</ng-template>
+                <p>{{ google_place_results.location_address }}</p>
+                <ul>
+                    <li *ngFor="let day of google_place_results.g_opening_hrs">{{ day }}</li>
+                </ul>
+                <p>Tel: {{ google_place_results.g_biz_number }}</p>
+                <p>Website: <a [href]="google_place_results.g_biz_website">{{ google_place_results.g_biz_website }}</a>
+                </p>
+                <br>
+                <br>
+                <a [href]="getGoogleMapsSearchUrl(google_place_results.location_address, google_place_results.google_place_id)" target="_blank">
+                  Get Directions on Google Maps
+                </a>
+                <ng-template #footer>
+                </ng-template>
+            </p-card>
+            }
+        </div>
+        <br>
+        <hr class="custom-line">
+        <br>
+        <div class="mb-8">
+            <label for="event_notes" class="label-green-color mb-0.5 block">Accommodation Notes (Optional):</label><br>
+            <p>{{ currentAccToView?.event_notes }}</p>
+        </div>
+
+
+        <div class="flex items-center gap-5 mb-2">
+            <div>
+                <button type="button" (click)="navigateBackToTripDetails()">Back to Trip Overview</button>
+            </div>
+            <!-- <div>
+                <button type="submit">Submit</button>
+            </div> -->
+        </div>
+
+
+        <!-- </form> -->
+    </div>
+
+
+    <div>
+        <!-- Loading Spinner -->
+        <!-- Full-screen overlay when isUploading is true -->
+        <!-- <div *ngIf="isUploading" class="overlay">
+            <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
+        </div> -->
+
+    </div>
+
+</div>

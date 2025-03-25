@@ -73,7 +73,13 @@ export class ItineraryService {
         return this.AllItineraryForTrip.getValue();
     }
 
-
+    getItineraryIdByDate(date: string): string | null {
+        const allItineraries = this.AllItineraryForTrip.getValue();
+        if (!allItineraries) return null;
+    
+        const found = allItineraries.find(itn => itn.itn_date === date);
+        return found ? found.itinerary_id : null;
+    }
 
 
 

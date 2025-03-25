@@ -127,6 +127,13 @@
 
 }
 
+.card-titles-and-label{
+    display: flex;
+    justify-content: flex-start;  /* Ensures the items are spread out across the container */
+    width: 100%;  /* Ensures the container takes up 100% width of its parent */
+    align-items: center; 
+}
+
 .check-in, .check-out {
     display: flex;
     flex-direction: column;
@@ -134,8 +141,12 @@
     width: 45%; /* Adjust width to give proper space between the columns */
 }
 
-.check-in label, .check-out label {
+.check-in label, .check-out label{
     margin-bottom: 4px; /* Space between the label and content */
+}
+
+.closer-labels p{
+   margin-top: 8px;
 }
 
 .check-in p, .check-out p {

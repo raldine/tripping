@@ -9,14 +9,20 @@
                 <p-card id="trip-info-card"
                     [style]="{ borderTop: '8px solid #6B79F7', overflow: 'hidden', padding: '8px 16px 16px 16px' }">
                     <ng-template #header>
-                        <p class="label-brand-color"><i class="pi pi-calendar mr-1"></i>{{ selected_tripInfo?.start_date
-                            ?? '' | dateFormat }} to {{ selected_tripInfo?.end_date ?? '' | dateFormat }}</p>
+                        <div class="card-titles-and-label">
+                            <p class="label-brand-color mr-4"><i class="pi pi-calendar mr-1"></i>{{
+                                selected_tripInfo?.start_date
+                                ?? '' | dateFormat }} to {{ selected_tripInfo?.end_date ?? '' | dateFormat }} </p>
+                            <p class="label-brand-color">Trip Information</p>
+                        </div>
                     </ng-template>
                     <ng-template #title>{{ selected_tripInfo?.trip_name }}</ng-template>
                     <p>{{ selected_tripInfo?.description_t}}</p>
                     <ng-template #footer>
                         <div class="flex gap-4 mt-1">
                             <label>Created by: {{ selected_trip_master_name }}</label>
+                            <a (click)="navigateToTripDetailsViewOnly()" class="nav-link">View
+                                Trip Details</a>
                         </div>
                     </ng-template>
                 </p-card>
@@ -40,12 +46,18 @@
                 <p-card id="acc-info-card"
                     [style]="{ borderTop: '8px solid #6DCB6A', overflow: 'hidden', padding: '8px 16px 16px 16px' }">
                     <ng-template #header>
-                        <p class="label-green-color"><i class="pi pi-calendar mr-1"></i>{{
-                            accomms_array[0].check_in_date | dateFormat }} to {{ accomms_array[0].check_out_date |
-                            dateFormat }}</p>
+                        <div class="card-titles-and-label">
+                            <p class="label-green-color mr-4"><i class="pi pi-calendar mr-1"></i>{{
+                                accomms_array[0].check_in_date | dateFormat }} to {{ accomms_array[0].check_out_date |
+                                dateFormat }}</p>
+                            <p class="label-green-color">Accommodation</p>
+                        </div>
                     </ng-template>
                     <ng-template #title>{{ accomms_array[0].accommodation_name }}</ng-template>
-                    <p>{{ accomms_0_location }}</p>
+                    <div class="closer-labels">
+                        <label>Address:</label>
+                        <p>{{ accomms_0_location }}</p>
+                    </div>
                     <div class="checkincheckoutcontainer">
                         <div class="check-in">
                             <label>Check In:</label>
@@ -60,8 +72,9 @@
                     </div>
                     <ng-template #footer>
                         <div class="flex gap-4 mt-1">
-                            <label>dasdasdsadas</label>
-                            <a (click)="navigateToAccommodationNew()" class="nav-link">Add Accommodation Details</a>
+                            <a (click)="navigateToAccommodationViewOnly(accomms_array[0])" class="nav-link">View
+                                Accommodation Details</a>
+                            <!-- <a (click)="navigateToAccommodationNew()" class="nav-link">Add Accommodation Details</a> -->
                         </div>
                     </ng-template>
                 </p-card>
@@ -123,27 +136,36 @@
                 }
             </p-tabpanels>
         </p-tabs>
+        <div>
+            <br>
+            <a (click)="navigateToActivityNew()" class="nav-link">Add New Activity</a>
+            <br>
+        </div>
         @if(currentActivitiesForSelectedItn!==null){
-           
-                <div [style]="{ width: '100%' }">
-                   @for(act of currentActivitiesForSelectedItn; track act.activity_id){
-                    <div>
-                        {{ act.start_time }} - {{ act.end_time }}
-                    </div>
-                    <div>
-                        {{ act.event_name }}
-                    </div>
-                   }
-                </div>
 
-            
-        } @else {
-            <div [style]="{ width: '100%' }">
-               <h3>No activities for this day at the moment.</h3>
+        <div [style]="{ width: '100%' }">
+            @for(act of currentActivitiesForSelectedItn; track act.activity_id){
+                <img [src]="getIconByActivityType(act.activity_type)" 
+                alt="icon" 
+                style="width: 32px; height: 32px;" />
+            <div>
+                {{ act.start_time | timeFormat }} - {{ act.end_time | timeFormat}}
             </div>
+            <div>
+                {{ act.event_name }}
+            </div>
+            <a (click)="navigateToActivityViewOnly(act)" class="nav-link">View Activity</a>
+            }
+        </div>
+
+
+        } @else {
+        <div [style]="{ width: '100%' }">
+            <h3>No activities for this day at the moment.</h3>
+        </div>
 
         }
-        
+
 
     </div>
     <div></div>

@@ -1,45 +1,54 @@
+<div class="formPage">
+    <div class="card">
+        <div>
+            @if (currUser) {
+            <div>
+                @if (user_pp_url) {
+                <p-avatar image="{{ user_pp_url }}" class="mr-2" size="xlarge" shape="circle" (onImageError)="user_pp_url = null"/>
+                } @else {
+                <p-avatar [label]="currUser.displayName?.substring(0,1)" styleClass="mr-2" shape="circle" size="xlarge" />
+                }
 
-<div>
-@if (currUser) {
-    <div>
-        @if (user_pp_url) {
-            <p-avatar image="{{ user_pp_url }}" class="mr-2" size="xlarge" shape="circle" />
-        } @else {
-            <p-avatar [label]="currUser.displayName?.substring(0)" styleClass="mr-2" shape="circle" size="xlarge" />
-        }
-        
-        <h3>Welcome, {{ currUser.displayName }}</h3>
-        <small>Email: {{ currUser.email }}</small>
+                <h3>Welcome, {{ currUser.displayName }}</h3><br>
+                <small>Email: {{ currUser.email }}</small>
+            </div>
+
+            <h2>Let's find out more about you!</h2><br>
+
+            <form [formGroup]="registerForm" (submit)="processForm()">
+                <div class="mb-2">
+                    <label for="username" class="block">Preferred Display Name:</label><br>
+                    <input style="width: 60%;" pInputText type="text" id="username" formControlName="user_name"><br><br>
+                </div>
+                <div class="mb-2">
+                    <label for="originCityCountry" class="block">City/Country of Origin:</label><br>
+                    <input style="width: 60%;" pInputText type="text" id="originCityCountry"
+                        placeholder="Search your city-country of residence"><br><br>
+                </div>
+                <input pInputText type="hidden" formControlName="country_origin">
+                <div class="mb-2">
+                    <label for="timezoneOrigin" class="block">Origin Timezone:</label><br>
+                    <input style="width: 60%;" pInputText type="text" id="timezoneOrigin" formControlName="timezone_origin"
+                        placeholder="(Will be auto-populated)" readonly><br>
+                    <small>{{ printTimeZoneName$ | async}}</small><br><br>
+                </div>
+                <div class="mb-2">
+                    <label for="currency_origin" class="block">Default Currency:</label>
+                    <input style="width: 60%;" pInputText type="text" formControlName="currency_origin" id="currency_origin"><br><br>
+                </div>
+                <div class="mb-8">
+                    <label for="notif" class="block">Do you prefer to receive web notifications:</label><br>
+                    <p-radiobutton [value]="true" formControlName="notif" inputId="Yes" id="notif"></p-radiobutton>
+                    <label for="Yes" class="ml-2">Yes</label><br><br>
+                    <p-radiobutton [value]="false" formControlName="notif" inputId="No"></p-radiobutton>
+                    <label for="No" class="ml-2">No</label><br>
+                </div>
+                <button type="submit">Register</button>
+            </form>
+            } @else {
+            <div>No user</div>
+            }
+        </div>
     </div>
 
-    <h2>Let's find out more about you!</h2>
-
-    <form [formGroup]="registerForm" (submit)="processForm()">
-        <label for="username">Preferred Display Name:</label><br>
-        <input pInputText type="text" id="username" formControlName="user_name"><br><br>
-
-        <label for="originCityCountry">City/Country of Origin:</label><br>
-        <input pInputText type="text" id="originCityCountry" placeholder="Search your city-country of residence"><br><br>
-
-        <input pInputText type="hidden" formControlName="country_origin"><br><br>
-
-        <label for="timezoneOrigin">Origin Timezone:</label><br>
-        <input pInputText type="text" id="timezoneOrigin" formControlName="timezone_origin" placeholder="(Will be auto-populated)" readonly><br>
-        <small>{{ printTimeZoneName$ | async}}</small><br>
-
-        Default Currency:<br>
-        <input pInputText type="text" formControlName="currency_origin"><br><br>
-
-        Do you prefer to receive notifications:<br>
-        <p-radiobutton [value]="true" formControlName="notif" inputId="Yes"></p-radiobutton>
-        <label for="Yes" class="ml-2">Yes</label>
-        <p-radiobutton [value]="false" formControlName="notif" inputId="No"></p-radiobutton>
-        <label for="No" class="ml-2">No</label><br>
-
-        <button type="submit">Register</button>
-    </form>
-} @else {
-    <div>No user</div>
-}
 </div>
-

@@ -102,14 +102,26 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
     //get google api key before form loads
     try {
+      console.info("Fetching Google API key...");
       this.api_key = await firstValueFrom(this.googleServiceApi.getGoogleMapApi());
+  
       if (this.api_key) {
-        this.loadGoogleMapsScript(this.api_key);
+        console.info("Google API key received:", this.api_key);
+  
+        // ✅ Reload Google Maps script only if missing
+        if (!window.google || !window.google.maps) {
+          console.info("Google Maps script not found, loading...");
+          await this.loadGoogleMapsScript(this.api_key);
+        } else {
+          console.info("Google Maps script already loaded.");
+        }
+  
+        // ✅ Always reinitialize Autocomplete to avoid stale references
+        setTimeout(() => this.initAutocomplete(), 500);
       }
     } catch (err) {
-      console.error('Error getting API key', err);
+      console.error("Error getting API key:", err);
     }
-
 
 
 
@@ -145,8 +157,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   initAutocomplete(): void {
-    if (this.autocomplete) {
-      return; // Don't initialize again if already initialized
+    if (!google || !google.maps || !google.maps.places) {
+      console.error("Google Maps API not loaded yet. Retrying...");
+      setTimeout(() => this.initAutocomplete(), 500); // Retry after 500ms
+      return;
     }
 
     const originInputElement = document.getElementById('originCityCountry') as HTMLInputElement;

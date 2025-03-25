@@ -9,6 +9,7 @@
 h1 {
  
     font-family: Domine;
+    // margin-bottom: -4px;
     font-size: 36px;
     font-style: normal;
     font-weight: 700;
@@ -21,6 +22,7 @@ h2 {
 
 font-family: "Noto Sans";
 font-size: 28px;
+// margin-bottom: -4px;
 font-style: normal;
 font-weight: 600;
 line-height: var(--Display-Small-Line-Height, 32px); /* 157.143% */
@@ -31,6 +33,7 @@ h3 {
 
 font-family: "Noto Sans";
 font-size: 24px;
+// margin-bottom: -4px;
 font-style: normal;
 font-weight: 500;
 line-height: var(--Display-Small-Line-Height, 26px); /* 183.333% */
@@ -40,6 +43,7 @@ h4 {
 
 font-family: "Noto Sans";
 font-size: 18px;
+// margin-bottom: -4px;
 font-style: normal;
 font-weight: 400;
 line-height: 20px; /* 111.111% */
@@ -73,6 +77,7 @@ label {
 .label-brand-color {
     font-family: "Noto Sans";
     font-size: 14px;
+    margin-bottom: 8px;
     color: #6B79F7;
     font-style: normal;
     font-weight: 600;
@@ -83,7 +88,8 @@ label {
 .label-green-color {
   font-family: "Noto Sans";
   font-size: 14px;
-  color: #6DCB6A;
+  margin-bottom: 8px;
+  color: #10B981;
   font-style: normal;
   font-weight: 600;
   line-height: var(--Body-Small-Line-Height, 16px); /* 114.286% */
@@ -93,6 +99,7 @@ label {
 .label-darkblue-color {
   font-family: "Noto Sans";
   font-size: 14px;
+  margin-bottom: 8px;
   color: #2C43C4;
   font-style: normal;
   font-weight: 600;

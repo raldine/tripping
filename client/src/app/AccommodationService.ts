@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { lastValueFrom } from "rxjs";
+import { BehaviorSubject, lastValueFrom } from "rxjs";
 import { AccommodationObj, mapAccommObj } from "./models/models";
 
 @Injectable({
@@ -9,6 +9,10 @@ import { AccommodationObj, mapAccommObj } from "./models/models";
 export class AccommodationService {
 
     http = inject(HttpClient);
+
+    //for sharing across components
+    private oneAccommSubject = new BehaviorSubject<AccommodationObj | null>(null);
+    private allAccommForTripSubject = new BehaviorSubject<AccommodationObj[] | null>(null);
 
 
     async putNewAccomm(form: any, firebase_uid: string) {
@@ -114,6 +118,28 @@ export class AccommodationService {
         }
 
     }
+
+    //passing from component to component
+            //set
+            setOneAccommObj(oneAccomm: AccommodationObj | null) {
+                this.oneAccommSubject.next(oneAccomm);
+            }
+        
+        
+            setAllAccommsforTrip(allAccoms: AccommodationObj[] | null) {
+                this.allAccommForTripSubject.next(allAccoms);
+                console.log("stored in service ", this.allAccommForTripSubject.getValue())
+            }
+        
+        
+            //get
+            getOneAccommSet(): AccommodationObj | null {
+                return this.oneAccommSubject.getValue();
+            }
+        
+            getAllAccommsForTrip(): AccommodationObj[] | null {
+                return this.allAccommForTripSubject.getValue();
+            }
 
 
 

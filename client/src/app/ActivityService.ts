@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { BehaviorSubject, lastValueFrom } from "rxjs";
-import { ActivityObj, mapActivityObj } from "./models/models";
+import { ActivityObj, ActivityTypeOption, mapActivityObj } from "./models/models";
 
 @Injectable({
     providedIn: "root"
@@ -10,8 +10,89 @@ export class ActivityService {
 
     http = inject(HttpClient);
 
+    private activityTypesOptions: ActivityTypeOption[] = [
+        { name: "Nature / Sightseeing", icon: "https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/sightsee.png" },
+        { name: "Shopping", icon: "https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/shopping.png" },
+        { name: "Food / Restaurant", icon: "https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/food.png"},
+        { name: "Guided Tour", icon: "https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/tour.png"},
+        { name: "Theme Park", icon: "https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/themepark.png"},
+        { name: "Museum / War Memorial", icon: "https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/museum.png"},
+        { name: "Concert / Theater", icon: "https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/concert.png"},
+        { name: "Zoo / Aquarium", icon: "https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/zooaqua.png"},
+        { name: "Transport", icon: "https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/transport.png"},
+        { name: "Check In - Flight", icon: "https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/check-in-flight.png"},
+        { name: "Check In - Accomm", icon: "https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/acc-check-in.png"},
+        { name: "Check Out - Accomm", icon: "https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/acc-check-out.png"},
+        { name: "Others", icon: "https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/others.png"}
+     ];
+
     private oneActivitySubject = new BehaviorSubject<ActivityObj | null>(null);
     private allActivitiesForTripSubject = new BehaviorSubject<ActivityObj[] | null>(null);
+
+        async putNewActivity(form: any, firebase_uid: string) {
+    
+    
+            const headers = new HttpHeaders({
+                'Authorization': firebase_uid
+            });
+    
+            const formData = new FormData();
+    
+    
+    
+            formData.set("activity_id", form["activity_id"] ?? "N/A");
+            formData.set("trip_id", form["trip_id"] ?? "N/A");
+            formData.set("itinerary_id", form["itinerary_id"] ?? "N/A");
+            formData.set("event_name", form["event_name"] ?? "N/A");
+            formData.set("activity_type", form["activity_type"] ?? "N/A");
+            formData.set("start_date", form["start_date"] ?? "N/A");
+            formData.set("end_date", form["end_date"] ?? "N/A");
+            formData.set("start_time", form["start_time"] ?? "N/A");
+            formData.set("end_time", form["end_time"] ?? "N/A");
+            formData.set("timezone_time", form["timezone_time"] ?? "N/A");
+            formData.set("event_notes", form["event_notes"] ?? "N/A");
+            formData.set("location_id", form["location_id"] ?? "N/A");
+            formData.set("location_lat", form["location_lat"] ?? "N/A");
+            formData.set("location_lng", form["location_lng"] ?? "N/A");
+            formData.set("location_address", form["location_address"] ?? "N/A");
+            formData.set("location_name", form["location_name"] ?? "N/A");
+            formData.set("google_place_id", form["google_place_id"] ?? "N/A");
+            formData.set("g_biz_number", form["g_biz_number"] ?? "N/A");
+            formData.set("g_biz_website", form["g_biz_website"] ?? "N/A");
+    
+            // If g_opening_hrs is an array, join it into a comma-separated string
+            const openingHoursArray = form["g_opening_hrs"] ?? ["N/A"];
+            const openingHoursString = openingHoursArray.join(","); // Convert array to string
+    
+            // Set the g_opening_hrs field as a string
+            formData.set("g_opening_hrs", openingHoursString);
+    
+    
+            // Debugging: Log all FormData keys & values
+            console.log("FROM ACTIVITY SERVICE >>>>>>>>>>> ")
+            formData.forEach((value, key) => console.log(`${key}: ${value}`));
+    
+    
+            try {
+                const response = await lastValueFrom(
+                    this.http.put<any>("/api/activities/addnewActi", formData, { headers })
+                );
+                console.info("Response received: ", response);
+               
+                if (response?.response === "Error registering activity") {
+                    console.warn("FAILED TO SUBMIT ACTIVITYY");
+                    return null;
+                }
+    
+                return response.response as string;
+            } catch (error) {
+                console.error("Error during adding activity:", error);
+                throw error;  // Re-throwing error after logging
+            }
+    
+    
+    
+        }
 
     // Fetch a single activity by activity_id
     // async getActivityObjFromActivityId(activity_id: string, firebaseUid: string) {
@@ -123,6 +204,50 @@ export class ActivityService {
         }
         return null;
     }
-    
+
+
+     // get icon by name
+  getIconByName(name: string): string | undefined {
+    return this.activityTypesOptions.find(type => type.name === name)?.icon;
+  }
+
+     // get names only
+  getActivityTypeNames(): string[] {
+    return this.activityTypesOptions.map(type => type.name);
+  }
+
+
+  async deleteActivityByActivityid(firebaseUid: string, activity_id: string){
+
+    const headers = new HttpHeaders({
+        "Authorization": firebaseUid
+    });
+
+    let params = new HttpParams();
+    params = params.set("activity_id", activity_id);
+
+    try {
+        // Make the HTTP GET request
+        const response = await lastValueFrom(
+            this.http.delete<any>("/api/activities/delete", { headers, params })
+        );
+
+        console.log("Raw response:", response); // Debugging
+
+        // ✅ Check if API returned "No trips found"
+        if (response?.response === "No activity deleted") {
+            console.warn("No activity deleted. Returning an empty string.");
+            return "";
+        }
+
+        
+        return response.deleted_id as string;
+
+    } catch (error) {
+        console.error("Error deleteing activity", error);
+        return "";
+    }
+
+}
     
 }

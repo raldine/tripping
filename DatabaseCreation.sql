@@ -166,6 +166,19 @@ truncate table accommodations;
 select * from accommodations;
 
 
+create table user_roles(
+trip_id VARCHAR(64),
+user_id VARCHAR(64),
+user_display_name VARCHAR(64),
+role VARCHAR(36),
+share_id VARCHAR(64) null,
+share_id_view_only VARCHAR(64) null,
+constraint fk_trip_id_roles foreign key(trip_id) references trips(trip_id),
+constraint pk_trip_user PRIMARY KEY(trip_id, user_id)
+);
+
+
+drop table user_roles;
 
 
 

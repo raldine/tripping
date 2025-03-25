@@ -1,0 +1,68 @@
+<div id="dashboard-body">
+    <div id="header-for-dashboard">
+        <img [src]="selected_trip_cover_img" 
+        alt="Background Image" 
+        width="100%"
+        height="100%"
+        loading="lazy"
+        decoding="async">
+    
+    </div>
+<div class="formPage">
+    <div class="card">
+        <div class="mb-2">
+            <label for="trip_name" class="block">Name of this Trip:</label><br>
+
+        </div>
+        <div class="mb-2">
+            <label for="destinationCity" class="block">Destination City:</label><br>
+        </div>
+
+        <div class="mb-2">
+            <label for="start_date" class="block">Start Date of Trip:</label><br>
+
+
+        </div>
+        <div class="mb-4">
+            <label for="end_date" class="block">End Date of Trip:</label><br>
+
+        </div>
+
+        <div class="mb-2">
+            <label for="description_t" class="mb-0.5 block">Description for this Trip:</label><br>
+
+        </div>
+
+
+
+        <div class="flex items-center gap-5 mb-2">
+            <div>
+                <button type="button" (click)="navigateBackToTripDetails()">Back to Trip Overview</button>
+            </div>
+            <div>
+            </div>
+        </div>
+
+        @if(curr_Trip_user_roles){
+            <ul>
+                @for(user of curr_Trip_user_roles; track user.user_id){
+                    <li>{{ user.user_display_name }} | {{user.user_email}} | {{ user.role }}</li>
+                }
+            </ul>
+        }
+
+
+
+    </div>
+
+
+    <!-- <div> -->
+    <!-- Loading Spinner -->
+    <!-- Full-screen overlay when isUploading is true -->
+    <!-- <div *ngIf="isUploading" class="overlay">
+            <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
+        </div> -->
+    <!-- 
+    </div> -->
+
+</div>

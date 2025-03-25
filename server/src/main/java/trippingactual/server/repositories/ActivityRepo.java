@@ -10,8 +10,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import trippingactual.server.models.ActivityObj;
-import trippingactual.server.models.LocationObject;
-import trippingactual.server.models.TripInfo;
 
 @Repository
 public class ActivityRepo {
@@ -64,6 +62,27 @@ public class ActivityRepo {
             }
             return activites;
         }, trip_id);
+    }
+
+    public String deleteActivityById(String activity_id) {
+        String sqlQuery = "DELETE FROM activities WHERE activity_id=?";
+
+        try {
+
+            int status = sqlTemplate.update(sqlQuery, activity_id);
+
+            if (status == 1) {
+                return activity_id;
+            } else {
+                return "Error";
+            }
+
+        } catch (DataAccessException ex) {
+            System.out.println("Error on sql side when deleting");
+
+            return "Error";
+        }
+
     }
 
 

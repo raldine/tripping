@@ -50,6 +50,12 @@ import { AvatarGroupModule } from 'primeng/avatargroup';
 import { StepperModule } from 'primeng/stepper';
 import { SelectModule } from 'primeng/select';
 import { TimeFormatPipe } from './time-format.pipe';
+import { AccommViewComponent } from './accomm-view.component';
+import { TripViewComponent } from './trip-view.component';
+import { ActivityEditorComponent } from './activity-editor.component';
+import { ActivityViewComponent } from './activity-view.component';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 
 
 
@@ -64,7 +70,11 @@ const appRoutes: Routes = [
   {path:"unauthorized", component: UnauthorizedPageComponent},
   {path:"addedittrip/:trip_id", component: TripEditiorComponent},
   {path: "trip-details/:trip_id", component: TripDetailComponent},
+  {path: "viewtripdeets/:trip_id", component: TripViewComponent},
   {path:"addeditaccomm/:acc_id", component: AccommDetailComponent},
+  {path: "viewaccomm/:acc_id", component: AccommViewComponent},
+  {path: "addeditact/:act_id", component: ActivityEditorComponent},
+  {path: "viewactivity/:act_id", component: ActivityViewComponent},
   {path: '', redirectTo: '/login', pathMatch: 'full' }
 ]
 
@@ -81,7 +91,11 @@ const appRoutes: Routes = [
     TripDetailComponent,
     AccommDetailComponent,
     DateFormatDayPipe,
-    TimeFormatPipe
+    TimeFormatPipe,
+    AccommViewComponent,
+    TripViewComponent,
+    ActivityEditorComponent,
+    ActivityViewComponent
    
   ],
   imports: [
@@ -106,7 +120,8 @@ const appRoutes: Routes = [
     CardModule,
     AvatarGroupModule,
     StepperModule,
-    SelectModule
+    SelectModule,
+    ConfirmDialogModule
  
     
     
@@ -129,6 +144,7 @@ const appRoutes: Routes = [
     TripStore,
     DateFormatDayPipe,
     DateFormatPipe,
+    ConfirmationService,
     // {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     // provideNativeDateAdapter(),
     // // provideDateFnsAdapter(),

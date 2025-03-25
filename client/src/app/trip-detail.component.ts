@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { User } from 'firebase/auth';
 import { Observable, Subscription } from 'rxjs';
 import { FireBaseAuthStore } from './FireBaseAuth.store';
-import { AccommodationObj, ActivityObj, AuthState, ItineraryObj, LocationObj, TripInfo, UserFront } from './models/models';
+import { AccommodationObj, ActivityObj, AuthState, ItineraryObj, LocationObj, TripInfo, UserFront, UserRoles } from './models/models';
 import { UserDetailsStore } from './UserDetails.store';
 import { TripStore } from './TripsStore.store';
 import { FileUploadService } from './FileUploadService';
@@ -15,6 +15,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { AccommodationService } from './AccommodationService';
 import { LocationService } from './LocationService';
 import { ActivityService } from './ActivityService';
+import { TripService } from './TripService';
+import { UserROLESService } from './UserROLESService';
 
 interface EventItem {
   status?: string;
@@ -63,6 +65,7 @@ export class TripDetailComponent implements OnInit, OnDestroy {
   selected_trip_cover_img!: string | null
   selected_trip_master_name!: string | null
   userService = inject(UserService);
+  tripService = inject(TripService);
 
   // Default user structure (fallback)
   DEFAULT_USER: UserFront = {
@@ -96,6 +99,10 @@ export class TripDetailComponent implements OnInit, OnDestroy {
   currentItinerarySelected!: string
   currentActivitiesForSelectedItn!: ActivityObj[] | null;
 
+  //track user attendees and user roles!
+  curr_trip_user_roles!: UserRoles[]
+  userRolesService = inject(UserROLESService);
+
 
 
   //each activity
@@ -121,6 +128,9 @@ export class TripDetailComponent implements OnInit, OnDestroy {
 
   //generate accommodation link if dh
   acc_id_generated!: string;
+
+  //generate activity link if dh
+  activity_id_generated!: string;
 
 
   async ngOnInit(): Promise<void> {
@@ -155,12 +165,35 @@ export class TripDetailComponent implements OnInit, OnDestroy {
     });
 
     this.selectedTripDetailsSub = await this.tripStore.selected_tripInfo$.subscribe(async (trip) => {
-      this.selected_tripInfo = trip;
+      if (trip) {
+          // If trip exists, use it
+          this.selected_tripInfo = trip;
+      } else {
+          // If trip is null, fetch data from the backend
+          console.log("No trip information found. Fetching from backend...");
+          try {
+              const fetchedTripInfo = await this.tripService.getTripInfoByTrip_id(this.selected_trip_id, this.currUserDetails.firebase_uid); 
+              //store in trip store
+              this.tripStore.setSelectedTripInfo(fetchedTripInfo);
+              this.selected_tripInfo = fetchedTripInfo;
+          } catch (error) {
+              console.error("Error fetching trip info from backend:", error);
+          }
+      }
+  
+      // Fetch the cover image if trip exists
+      if (this.selected_tripInfo?.cover_image_id) {
+          const cover_image = await this.fileUploadService.getFileByResourceId(this.selected_tripInfo.cover_image_id, this.currUserDetails.firebase_uid);
+          this.selected_trip_cover_img = cover_image?.do_url ?? '';
+      }
+  });
 
-      const cover_image = await this.fileUploadService.getFileByResourceId(this.selected_tripInfo?.cover_image_id ?? null, this.currUserDetails.firebase_uid);
-      this.selected_trip_cover_img = cover_image?.do_url ?? '';
+    this.curr_trip_user_roles =  await this.userRolesService.getAllUsersRolesForTripFromBE(this.selected_trip_id, this.currUserDetails.firebase_uid);
 
-    })
+    if(this.curr_trip_user_roles.length > 0){
+      this.userRolesService.setallUsersRolesForTrip(this.curr_trip_user_roles);
+
+    }
 
     const masterUser = await this.userService.getUserbyFirebaseId(this.selected_tripInfo?.master_user_id ?? null)
     this.selected_trip_master_name = masterUser?.user_name ?? '';
@@ -183,6 +216,7 @@ export class TripDetailComponent implements OnInit, OnDestroy {
 
 
     this.acc_id_generated = this.generateAccUUID();
+    this.activity_id_generated = this.generateActivityUUID();
 
 
     //get all locations for this trip and store in location service and here
@@ -245,6 +279,41 @@ onTabChange(event: any): void {
 
     this.itineraryService.setAllItineraryForTrip(this.itinerary_array);
     this.router.navigate(["/addeditaccomm", this.acc_id_generated]);
+ 
+  }
+
+  navigateToActivityNew(){
+
+    this.itineraryService.setAllItineraryForTrip(this.itinerary_array);
+    this.router.navigate(["/addeditact", this.activity_id_generated]);
+ 
+  }
+
+  navigateToAccommodationViewOnly(accomodationObj: AccommodationObj){
+
+    this.accommodationSvc.setOneAccommObj(accomodationObj);
+    this.locationSvc.setOneLocation(this.locationSvc.getOneLocationFromCurrentAllLocationsForTrip(accomodationObj.location_id))
+    this.router.navigate(["/viewaccomm", accomodationObj.accommodation_id]);
+
+  }
+
+  navigateToActivityViewOnly(activityObj: ActivityObj){
+
+    this.activityService.setOneActivity(activityObj);
+    this.locationSvc.setOneLocation(this.locationSvc.getOneLocationFromCurrentAllLocationsForTrip(activityObj.location_id))
+    this.router.navigate(["/viewactivity", activityObj.activity_id]);
+
+  }
+
+  navigateToTripDetailsViewOnly(){
+
+    this.router.navigate(["/viewtripdeets", this.selected_trip_id]);
+
+  }
+
+  getIconByActivityType(activity_type: string){
+
+    return this.activityService.getIconByName(activity_type);
 
   }
 
@@ -253,6 +322,13 @@ onTabChange(event: any): void {
     const accId = "acc" + newUUID;
     console.log(newUUID + " created for accommodation capture");
     return accId;
+  }
+
+  generateActivityUUID(): string {
+    const newUUID = uuidv4().replaceAll("-", "").substring(0, 24);
+    const act_id = "act" + newUUID;
+    console.log(newUUID + " created for activity capture");
+    return act_id;
   }
 
   ngOnDestroy(): void {

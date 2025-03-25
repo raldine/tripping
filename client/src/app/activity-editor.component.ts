@@ -1,22 +1,22 @@
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, NgZone } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { firstValueFrom, Observable, Subscription } from 'rxjs';
-import { FireBaseAuthStore } from './FireBaseAuth.store';
 import { User } from 'firebase/auth';
-import { AuthState, GooglePlaceInfo, ItineraryObj, TimeZoneSelectItem, TripInfo, UserFront } from './models/models';
-import { TripStore } from './TripsStore.store';
-import { ItineraryService } from './ItineraryService';
+import { firstValueFrom, Observable, Subscription } from 'rxjs';
 import { DateFormatDayPipe } from './date-format-day.pipe';
 import { DateFormatPipe } from './date-format.pipe';
+import { FireBaseAuthStore } from './FireBaseAuth.store';
+import { GoogleApiCallService } from './GoogleApiCallService';
+import { ItineraryService } from './ItineraryService';
+import { GooglePlaceInfo, TripInfo, ItineraryObj, AuthState, UserFront, TimeZoneSelectItem } from './models/models';
+import { TripStore } from './TripsStore.store';
 import { UserDetailsStore } from './UserDetails.store';
 import { UserService } from './UserService';
-import { GoogleApiCallService } from './GoogleApiCallService';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { v4 as uuidv4 } from 'uuid';
-import { ChangeDetectorRef } from '@angular/core';
-import { NgZone } from '@angular/core';
-import { AccommodationService } from './AccommodationService';
 import { MessageService } from 'primeng/api';
+import { v4 as uuidv4 } from 'uuid';
+import { ActivityService } from './ActivityService';
+
+
 
 declare global {
   interface Window {
@@ -29,19 +29,17 @@ declare global {
 declare var google: any;
 
 
-
-
 @Component({
-  selector: 'app-accomm-detail',
+  selector: 'app-activity-editor',
   standalone: false,
-  templateUrl: './accomm-detail.component.html',
-  styleUrl: './accomm-detail.component.scss'
+  templateUrl: './activity-editor.component.html',
+  styleUrl: './activity-editor.component.scss'
 })
-export class AccommDetailComponent {
+export class ActivityEditorComponent {
 
   activatedRoute = inject(ActivatedRoute)
   paramsSub!: Subscription;
-  accommodation_id_generated!: string;
+  activity_id_generated!: string;
 
   //to load google autocomplete
   autocomplete: any;
@@ -75,6 +73,7 @@ export class AccommDetailComponent {
   dataFormatDayPipe = inject(DateFormatDayPipe)
   dataFormatPipe = inject(DateFormatPipe)
   initDateOptionsFromItn!: string[] | null;
+  CURR_DAY_ITN_INFO!: ItineraryObj | null;
 
   //User Authentication info
   private firebaseAuthStore = inject(FireBaseAuthStore)
@@ -109,18 +108,21 @@ export class AccommDetailComponent {
 
   //init form
   fb = inject(FormBuilder)
-  accForm!: FormGroup
+  activityForm!: FormGroup
   locationId_generated!: string
-
 
   //for timezone options
   timezones: TimeZoneSelectItem[] = []
 
-  //submit accommodation
-  accommodationService = inject(AccommodationService);
+  //submit activity
+  activityService = inject(ActivityService);
 
-    //error uploading toast
-    messagingService = inject(MessageService);
+  //icons 
+  activityTypesOptions = this.activityService.getActivityTypeNames();
+  curr_selected_activity_type!: string
+
+  //error uploading toast
+  messagingService = inject(MessageService);
 
 
 
@@ -128,7 +130,7 @@ export class AccommDetailComponent {
 
   async ngOnInit(): Promise<void> {
     this.paramsSub = this.activatedRoute.params.subscribe(params => {
-      this.accommodation_id_generated = params["acc_id"];
+      this.activity_id_generated = params["act_id"];
 
     })
 
@@ -149,25 +151,25 @@ export class AccommDetailComponent {
     if (this.selected_tripInfo?.d_timezone_name !== 'N/A' &&
       this.selected_tripInfo?.destination_timezone !== 'N/A') {
 
-        if(this.selected_tripInfo?.d_timezone_name === "Unknown Timezone"){
-          this.timezones.push(
-            {
-              name: `${this.selected_tripInfo?.destination_city} Time (${this.selected_tripInfo?.destination_timezone})`,
-              code: `${this.selected_tripInfo?.destination_city} Time  (${this.selected_tripInfo?.destination_timezone})`
-            })
+      if (this.selected_tripInfo?.d_timezone_name === "Unknown Timezone") {
+        this.timezones.push(
+          {
+            name: `${this.selected_tripInfo?.destination_city} Time (${this.selected_tripInfo?.destination_timezone})`,
+            code: `${this.selected_tripInfo?.destination_city} Time  (${this.selected_tripInfo?.destination_timezone})`
+          })
 
-        } else{
-          this.timezones.push(
-            {
-              name: `${this.selected_tripInfo?.d_timezone_name} (${this.selected_tripInfo?.destination_timezone})`,
-              code: `${this.selected_tripInfo?.d_timezone_name} (${this.selected_tripInfo?.destination_timezone})`
-            })
+      } else {
+        this.timezones.push(
+          {
+            name: `${this.selected_tripInfo?.d_timezone_name} (${this.selected_tripInfo?.destination_timezone})`,
+            code: `${this.selected_tripInfo?.d_timezone_name} (${this.selected_tripInfo?.destination_timezone})`
+          })
 
-        }
-   
+      }
+
     }
 
-    if ( this.currUserDetails?.timezone_origin !== 'N/A' &&
+    if (this.currUserDetails?.timezone_origin !== 'N/A' &&
       this.currUserDetails?.country_origin !== 'N/A') {
       this.timezones.push({
         name: `${this.currUserDetails?.country_origin} (${this.currUserDetails?.timezone_origin})`,
@@ -179,17 +181,31 @@ export class AccommDetailComponent {
 
     this.locationId_generated = this.generateLocationUUID();
 
+    this.itinerary_array = this.itineraryService.getAllItineraryForTrip();
+    //get CURRENT DAY itinerary info
+    // this.CURR_DAY_ITN_INFO = this.itineraryService.getOneItinerary();
+
+
+    if (this.itinerary_array && this.itinerary_array?.length > 0) {
+      this.initDateOptionsFromItn = this.itinerary_array.map((itinerary) => (
+        `${this.dataFormatDayPipe.transform(itinerary.itn_date)}`
+      ));
+    }
+
+    //to build form here:
     //init form
-    this.accForm = this.fb.group(
+    this.activityForm = this.fb.group(
       {
-        accommodation_id: this.fb.control<string>(this.accommodation_id_generated),
+        activity_id: this.fb.control<string>(this.activity_id_generated),
         trip_id: this.fb.control<string>(this.selected_trip_id),
-        check_in_date: this.fb.control<string>(''),
-        check_in_time: this.fb.control<string>(''),
-        check_out_date: this.fb.control<string>(''),
-        check_out_time: this.fb.control<string>(''),
+        itinerary_id: this.fb.control<string>(''),
+        event_name: this.fb.control<string>(''),
+        activity_type: this.fb.control<string>(''),
+        start_date: this.fb.control<string>(''),
+        end_date: this.fb.control<string>(''),
+        start_time: this.fb.control<string>(''),
+        end_time: this.fb.control<string>(''),
         timezone_time: this.fb.control<string>(this.timezones[0].code ?? ''),
-        accommodation_name: this.fb.control<string>(''),
         event_notes: this.fb.control<string>(''),
         location_id: this.fb.control<string>(this.locationId_generated),
         location_lat: this.fb.control<string>('N/A'),
@@ -203,12 +219,10 @@ export class AccommDetailComponent {
       }
     )
 
+
     //set calendar limits:
     this.min_date = this.selected_tripInfo?.start_date ?? ''
     this.max_date = this.selected_tripInfo?.end_date ?? ''
-
-
-
 
     this.authStateCaptured$ = this.firebaseAuthStore.getAuthState$
     this.authStateSubscription = this.authStateCaptured$.subscribe((authState) => {
@@ -231,13 +245,7 @@ export class AccommDetailComponent {
 
 
 
-    this.itinerary_array = this.itineraryService.getAllItineraryForTrip();
 
-    if (this.itinerary_array && this.itinerary_array?.length > 0) {
-      this.initDateOptionsFromItn = this.itinerary_array.map((itinerary) => (
-        `${this.dataFormatDayPipe.transform(itinerary.itn_date)}`
-      ));
-    }
 
     //get google api key before form loads
     try {
@@ -269,9 +277,8 @@ export class AccommDetailComponent {
 
 
 
+
   }
-
-
 
   loadGoogleMapsScript(apiKey: string): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -380,13 +387,13 @@ export class AccommDetailComponent {
             g_biz_website: place.website ?? 'N/A'
           }
 
-         
+
 
           console.log("CURRENT LOCAITON OBJECT IS ", this.google_place_results)
-    // Ensure that change detection happens after the Google Maps API is done
-    this.zone.run(() => {
-      this.cdRef.detectChanges();
-    });
+          // Ensure that change detection happens after the Google Maps API is done
+          this.zone.run(() => {
+            this.cdRef.detectChanges();
+          });
         }
 
       });
@@ -419,7 +426,22 @@ export class AccommDetailComponent {
   }
 
 
+  changeCurrSelectedActivity(event: Event){
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    console.log("event value ", selectedValue)
+    // this.curr_selected_activity_type = event
 
+  }
+
+  detectWhichItineraryItBelongsto(event: Event){
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    console.log("start_Date event value ", selectedValue)
+    const itinerary_id_to_set = this.itineraryService.getItineraryIdByDate(selectedValue);
+
+    this.activityForm.get("itinerary_id")?.setValue(itinerary_id_to_set);
+    console.log("this activity now belongs to ", this.activityForm.get("itinerary_id")?.value);
+
+  }
 
   generateLocationUUID(): string {
     const newUUID = uuidv4().replaceAll("-", "").substring(0, 24);
@@ -428,28 +450,37 @@ export class AccommDetailComponent {
     return localid;
   }
 
-  async onSubmit(){
-    this.accForm.get("location_lat")?.setValue(this.google_place_results.location_lat ?? 'N/A');
-    this.accForm.get("location_lng")?.setValue(this.google_place_results.location_lng ?? 'N/A');
-    this.accForm.get("location_address")?.setValue(this.google_place_results.location_address ?? 'N/A')
-    this.accForm.get("location_name")?.setValue(this.google_place_results.location_name ?? "N/A");
-    this.accForm.get("google_place_id")?.setValue(this.google_place_results.google_place_id ?? 'N/A');
-    this.accForm.get("g_biz_number")?.setValue(this.google_place_results.g_biz_number ?? 'N/A');
-    this.accForm.get("g_biz_website")?.setValue(this.google_place_results.g_biz_website ?? 'N/A');
-    this.accForm.get("g_opening_hrs")?.setValue(this.google_place_results.g_opening_hrs ?? ['N/A']);
+  getIconForType(type: string): string | undefined {
+    return this.activityService.getIconByName(type);
+  }
 
-    console.log("CURRENT FORM WHEN SUBMITTED ", this.accForm.value)
+  navigateBackToTripDetails(){
+
+    this.router.navigate(["/trip-details", this.selected_trip_id]);
+  }
+
+  async onSubmit(){
+    this.activityForm.get("location_lat")?.setValue(this.google_place_results.location_lat ?? 'N/A');
+    this.activityForm.get("location_lng")?.setValue(this.google_place_results.location_lng ?? 'N/A');
+    this.activityForm.get("location_address")?.setValue(this.google_place_results.location_address ?? 'N/A')
+    this.activityForm.get("location_name")?.setValue(this.google_place_results.location_name ?? "N/A");
+    this.activityForm.get("google_place_id")?.setValue(this.google_place_results.google_place_id ?? 'N/A');
+    this.activityForm.get("g_biz_number")?.setValue(this.google_place_results.g_biz_number ?? 'N/A');
+    this.activityForm.get("g_biz_website")?.setValue(this.google_place_results.g_biz_website ?? 'N/A');
+    this.activityForm.get("g_opening_hrs")?.setValue(this.google_place_results.g_opening_hrs ?? ['N/A']);
+
+    console.log("CURRENT FORM WHEN SUBMITTED ", this.activityForm.value)
 
     try {
       this.isUploading = true;
       
-      const response = await this.accommodationService.putNewAccomm(this.accForm.value,`${this.currUser?.uid}`);
+      const response = await this.activityService.putNewActivity(this.activityForm.value,`${this.currUser?.uid}`);
     
       if (response) {
         this.messagingService.add({
           severity: 'success',
-          summary: 'Accommodation Created',
-          detail: 'Your accommodation has been successfully created!',
+          summary: 'Activity Created',
+          detail: 'Your activity has been successfully saved!',
           life: 3000,
         });
     
@@ -460,11 +491,11 @@ export class AccommDetailComponent {
       }
     
     } catch (error) {
-      console.error('Error during accommodation submission:', error);
+      console.error('Error during activity submission:', error);
       this.messagingService.add({
         severity: 'error',
         summary: 'Submission Failed',
-        detail: 'There was an error submitting your accommodation. Please try again.',
+        detail: 'There was an error submitting your activity. Please try again.',
         life: 3000,
       });
     } finally {
@@ -473,13 +504,6 @@ export class AccommDetailComponent {
 
   }
 
-
-  navigateBackToTripDetails(){
-
-    this.router.navigate(["/trip-details", this.selected_trip_id]);
-  }
-
-  
   ngOnDestroy(): void {
     this.authStateSubscription.unsubscribe();
     this.loggedInUserDetailsSub.unsubscribe();
@@ -490,4 +514,8 @@ export class AccommDetailComponent {
   }
 
 
+
+
 }
+
+

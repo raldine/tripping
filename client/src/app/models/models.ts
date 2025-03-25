@@ -140,10 +140,10 @@ export interface TimeZoneSelectItem {
 }
 
 export interface AccommodationObj {
-    accommodation_id: string, 
+    accommodation_id: string,
     accommodation_name: string,
     trip_id: string,
-    check_in_date: string, 
+    check_in_date: string,
     check_in_time: string,
     check_out_date: string,
     check_out_time: string,
@@ -171,7 +171,7 @@ export function mapAccommObj(response: any): AccommodationObj {
     };
 }
 
-export interface LocationObj{
+export interface LocationObj {
     location_id: string,
     location_lat: string,
     location_lng: string,
@@ -242,5 +242,57 @@ export function mapActivityObj(response: any): ActivityObj {
 }
 
 
+export interface UserRoles {
+    trip_id: string,
+    user_id: string,
+    user_display_name: string,
+    user_email: string,
+    role: string,
+    share_id: string,
+    share_id_view_only: string
+
+}
+
+export function mapUserRoles(response: any): UserRoles {
+    return {
+        trip_id: response.trip_id ?? "N/A",
+        user_id: response.user_id ?? "N/A",
+        user_display_name: response.user_display_name ?? "N/A",
+        user_email: response.user_email ?? "N/A",
+        role: response.role ?? "N/A",
+        share_id: response.share_id ?? "N/A", // Set "N/A" if share_id is null or undefined
+        share_id_view_only: response.share_id_view_only ?? "N/A" // Set "N/A" if share_id_view_only is null or undefined
+    };
+}
 
 
+export interface ActivityTypeOption {
+    name: string;
+    icon: string;
+}
+
+export function encodeAddressForGoogleMaps(address: string): string {
+    return encodeURIComponent(address.trim());
+}
+
+export function getGoogleMapsSearchUrl(address: string, google_place_id: string | null): string {
+    const encodedAddress = encodeAddressForGoogleMaps(address);
+
+    if(google_place_id!==null){
+
+        const wDestinationId = `https://www.google.com/maps/dir/?api=1&destination_place_id=${google_place_id}&destination=${encodedAddress}`;
+
+        return wDestinationId;
+
+    }
+
+    if(google_place_id!=="N/A"){
+
+        const wDestinationId = `https://www.google.com/maps/dir/?api=1&destination_place_id=${google_place_id}&destination=${encodedAddress}`;
+
+        return wDestinationId;
+
+    }
+    
+    return `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`;
+  }

@@ -34,6 +34,7 @@ public class RegistrationController {
         //read Json
         JsonReader reader = Json.createReader(new StringReader(payload));
         JsonObject userInfo = reader.readObject();
+        System.out.println("received user info is " + userInfo.toString());
 
 
         String replyFromRepo = userService.furtherRegisterUser(userInfo);

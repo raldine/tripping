@@ -3,16 +3,29 @@
 
 <div class="formPageAcc">
     <div class="card">
-        <form [formGroup]="accForm" (submit)="onSubmit()">
+        <form [formGroup]="activityForm" (submit)="onSubmit()">
+            <div class="mb-2">
+                <label for="event_name" class="block">Event Name:</label><br>
+                <input style="width: 60%;" pInputText type="text" id="event_name"
+                    formControlName="event_name"><br><br>
+            </div>
+            <div class="mb-2 field-wrapper">
+                <label for="activity_type" class="block">Activity Type:</label><br>
+                <select class="uniform-input" id="activity_type" formControlName="activity_type" placeholder="Select an activity type" (change)="changeCurrSelectedActivity($event)">
+                  @for(option of activityTypesOptions; track option){
+                      <option [value]="option">{{ option }}</option>
+                  }
+                </select>
+              </div>
             <div class="checkin-row">
                 <div class="mb-2 field-wrapper">
-                  <label for="check_in_date" class="block">Check In Date:</label><br>
-                  <input class="uniform-input" type="date" formControlName="check_in_date" [min]="min_date" [max]="max_date">
+                  <label for="start_date" class="block">Start Date:</label><br>
+                  <input class="uniform-input" type="date" formControlName="start_date" [min]="min_date" [max]="max_date" (change)="detectWhichItineraryItBelongsto($event)">
                 </div>
               
                 <div class="mb-2 field-wrapper">
-                  <label for="check_in_time" class="block">Check In Time:</label><br>
-                  <input class="uniform-input" type="time" formControlName="check_in_time">
+                  <label for="start_time" class="block">Start Time:</label><br>
+                  <input class="uniform-input" type="time" formControlName="start_time">
                 </div>
               
                 <div class="mb-2 field-wrapper">
@@ -29,23 +42,24 @@
 
               <div class="checkout-row">
                 <div class="mb-2 field-wrapper">
-                  <label for="check_out_date" class="block">Check Out Date:</label><br>
-                  <input class="uniform-input" type="date" formControlName="check_out_date" [min]="min_date" [max]="max_date">
+                  <label for="end_date" class="block">End Date:</label><br>
+                  <input class="uniform-input" type="date" formControlName="end_date" [min]="min_date" [max]="max_date">
                 </div>
               
                 <div class="mb-2 field-wrapper">
-                  <label for="check_out_time" class="block">Check Out Time:</label><br>
-                  <input class="uniform-input" type="time" formControlName="check_out_time">
+                  <label for="end_time" class="block">End Time:</label><br>
+                  <input class="uniform-input" type="time" formControlName="end_time">
                 </div>
               </div>
               
-        <div class="mb-2">
-            <label for="accommodation_name" class="block">Accommodation Name:</label><br>
-            <input style="width: 60%;" pInputText type="text" id="accommodation_name"
-                formControlName="accommodation_name"><br><br>
-        </div>
+              <div class="mb-2">
+                <label for="event_notes" class="mb-0.5 block">Event Notes (Optional):</label><br>
+                <textarea class="mb-4" style="width: 60%;" rows="4" cols="30" pTextarea formControlName="event_notes"
+                    placeholder="Enter optional notes here, like confirmation booking number and links."></textarea><br>
+    
+            </div>
 
-        <label for="accAddress" class="block">Accommodation Address:</label><br>
+        <label for="accAddress" class="block">Activity Address:</label><br>
         <input style="width: 60%; margin-bottom: 2px;" pInputText type="text" id="accAddress"
         placeholder="Search a place or address"><br>
         <div class="map-place-wrapper">
@@ -67,15 +81,6 @@
                 </ng-template>
             </p-card>
             }
-        </div>
-        <br>
-        <hr class="custom-line">
-        <br>
-        <div class="mb-2">
-            <label for="event_notes" class="mb-0.5 block">Accommodation Notes (Optional):</label><br>
-            <textarea class="mb-4" style="width: 60%;" rows="4" cols="30" pTextarea formControlName="event_notes"
-                placeholder="Enter optional notes here, like confirmation booking number and links."></textarea><br>
-
         </div>
 
 

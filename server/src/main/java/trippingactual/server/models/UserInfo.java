@@ -90,11 +90,11 @@ public class UserInfo {
         }
 
 
-        if (jsonObject.containsKey("user_id")) {
-            user.user_id = jsonObject.getString("user_id");
-        } else {
-            user.user_id = null;
-        }
+        // if (jsonObject.containsKey("user_id") && jsonObject.getString("user_id")!= null) {
+        //     user.user_id = jsonObject.getString("user_id");
+        // } else {
+        //     user.user_id = null;
+        // }
 
         if (jsonObject.containsKey("user_email")) {
             user.user_email = jsonObject.getString("user_email");
