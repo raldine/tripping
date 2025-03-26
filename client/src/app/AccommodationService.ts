@@ -59,7 +59,7 @@ export class AccommodationService {
 
         try {
             const response = await lastValueFrom(
-                this.http.put<any>("/api/accomm/newaccomm", formData, { headers })
+                this.http.put<any>("https://industrious-perfection-production.up.railway.app/api/accomm/newaccomm", formData, { headers })
             );
             console.info("Response received: ", response);
             const objectReturned: AccommodationObj = {
@@ -98,7 +98,7 @@ export class AccommodationService {
         try {
             // Make the HTTP GET request
             const response = await lastValueFrom(
-                this.http.get<any>("/api/accomm/get-accomms", { headers, params })
+                this.http.get<any>("https://industrious-perfection-production.up.railway.app/api/accomm/get-accomms", { headers, params })
             );
 
             console.log("Raw response:", response); // Debugging
