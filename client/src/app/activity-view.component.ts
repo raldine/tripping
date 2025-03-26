@@ -309,7 +309,7 @@ export class ActivityViewComponent {
             severity: 'success',
             summary: 'Activity Deleted',
             detail: 'Your activity has been successfully deleted!',
-            life: 3000,
+            life: 1000,
           });
 
           // Wait for the toast to be visible before navigating (adjust timing if needed)
