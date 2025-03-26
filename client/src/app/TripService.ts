@@ -78,7 +78,7 @@ export class TripService {
         // Always attempt to send formData to the backend
         try {
             const response = await lastValueFrom(
-                this.http.put<{ response: string }>("/trip/newtrip", formData, { headers })
+                this.http.put<{ response: string }>("https://industrious-perfection-production.up.railway.app/trip/newtrip", formData, { headers })
             );
             console.info("Response received: ", response);
             return response.response;
@@ -98,7 +98,7 @@ export class TripService {
         try {
             // Make the HTTP GET request
             const response = await lastValueFrom(
-                this.http.get<any>("/trip/get-trips/" + firebaseUid, { headers })
+                this.http.get<any>("https://industrious-perfection-production.up.railway.app/trip/get-trips/" + firebaseUid, { headers })
             );
 
             console.log("Raw response:", response); // Debugging
@@ -130,7 +130,7 @@ export class TripService {
         try {
             // Make the HTTP GET request
             const response = await lastValueFrom(
-                this.http.delete<any>("/trip/delete", { headers, params })
+                this.http.delete<any>("https://industrious-perfection-production.up.railway.app/trip/delete", { headers, params })
             );
 
             console.log("Raw response:", response); // Debugging
@@ -163,7 +163,7 @@ export class TripService {
             try {
                 // Make the HTTP GET request
                 const response = await lastValueFrom(
-                    this.http.get<any>("/trip/get-trip", { headers, params })
+                    this.http.get<any>("https://industrious-perfection-production.up.railway.app/trip/get-trip", { headers, params })
                 );
     
                 console.log("Raw response:", response); // Debugging

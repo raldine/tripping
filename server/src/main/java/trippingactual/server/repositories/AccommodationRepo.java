@@ -12,8 +12,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import trippingactual.server.models.AccommObject;
-import trippingactual.server.models.UserInfo;
-import trippingactual.server.queries.SqlQueries;
 
 @Repository
 public class AccommodationRepo {

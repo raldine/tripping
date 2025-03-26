@@ -18,7 +18,7 @@ export class ImageFetcherService {
 
     try {
       const response = await firstValueFrom(
-        this.http.get<{ photourl?: string, error?: string }>("/api/pexels", { params })
+        this.http.get<{ photourl?: string, error?: string }>("https://industrious-perfection-production.up.railway.app/api/pexels", { params })
       );
 
       if (response.photourl) {

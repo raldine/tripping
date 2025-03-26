@@ -31,9 +31,9 @@ import trippingactual.server.services.FileUploadService;
 
 @RestController
 @RequestMapping
-@CrossOrigin(origins = "http://*",  // Allowed origin
-allowCredentials = "false"  // No need to allow credentials for Authorization header)
-)
+@CrossOrigin(origins = "https://tripping-app.com/", // Allowed origin
+        allowCredentials = "false" // No need to allow credentials for Authorization header)
+) // Allowed origin
 public class FileUploadController {
 
     @Autowired

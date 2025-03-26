@@ -296,3 +296,8 @@ export function getGoogleMapsSearchUrl(address: string, google_place_id: string 
     
     return `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`;
   }
+
+  export interface FirstAuth{
+    firebaseUid: string,
+    email: string
+  }

@@ -1,18 +1,18 @@
 {
   "/api": {
-    "target": "http://localhost:8080",
+    "target": "https://industrious-perfection-production.up.railway.app",
     "secure": false
   },
   "/authen": {
-    "target": "http://localhost:8080",
+    "target": "https://industrious-perfection-production.up.railway.app",
     "secure": false
   },
   "/user": {
-    "target": "http://localhost:8080",
+    "target": "https://industrious-perfection-production.up.railway.app",
     "secure": false
   },
   "/trip": {
-    "target": "http://localhost:8080",
+    "target": "https://industrious-perfection-production.up.railway.app",
     "secure": false
   }
 }

@@ -31,7 +31,7 @@ import trippingactual.server.utils.TimeManipulator;
 
 @RestController
 @RequestMapping("/api/accomm")
-@CrossOrigin(origins = "http://*", // Allowed origin
+@CrossOrigin(origins = "https://tripping-app.com/", // Allowed origin
         allowCredentials = "false" // No need to allow credentials for Authorization header)
 ) // Allowed origin
 public class AccommodationRestController {

@@ -13,7 +13,7 @@ export class BackendDataService {
 
     getCountrySummaries(): Promise<CountryCurrTime[]> {
         console.info("backend service for country called")
-        return lastValueFrom(this.http.get<CountryCurrTime[]>('/api/getCountryData'))
+        return lastValueFrom(this.http.get<CountryCurrTime[]>('https://industrious-perfection-production.up.railway.app/api/getCountryData'))
 
     
 

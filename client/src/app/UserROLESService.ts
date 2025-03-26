@@ -27,7 +27,7 @@ export class UserROLESService {
         try {
             // Make the HTTP GET request
             const response = await lastValueFrom(
-                this.http.get<any>("/api/roles/get-all-userRoles", { headers, params })
+                this.http.get<any>("https://industrious-perfection-production.up.railway.app/api/roles/get-all-userRoles", { headers, params })
             );
 
             console.log("Raw response:", response); // Debugging
@@ -53,7 +53,7 @@ export class UserROLESService {
         console.info("calling register service");
         console.log("value of user ROLE is ", userRoleInfo);
 
-        return lastValueFrom(this.http.put<{ response: string }>("/api/roles/registerEditor", userRoleInfo))
+        return lastValueFrom(this.http.put<{ response: string }>("https://industrious-perfection-production.up.railway.app/api/roles/registerEditor", userRoleInfo))
             .then((response) => {
                 console.info("Response received: ", response);
                 return response.response;
@@ -68,7 +68,7 @@ export class UserROLESService {
         console.info("calling register service");
         console.log("value of user ROLE is ", userRoleInfo);
 
-        return lastValueFrom(this.http.put<{ response: string }>("/api/roles/registerViewer", userRoleInfo))
+        return lastValueFrom(this.http.put<{ response: string }>("https://industrious-perfection-production.up.railway.app/api/roles/registerViewer", userRoleInfo))
             .then((response) => {
                 console.info("Response received: ", response);
                 return response.response;
@@ -92,7 +92,7 @@ export class UserROLESService {
         try {
             // Make the HTTP GET request
             const response = await lastValueFrom(
-                this.http.get<any>("/api/roles/get-user-role", { headers, params })
+                this.http.get<any>("https://industrious-perfection-production.up.railway.app/api/roles/get-user-role", { headers, params })
             );
 
             console.log("Raw response:", response); // Debugging
@@ -126,7 +126,7 @@ export class UserROLESService {
         try {
             // Make the HTTP GET request
             const response = await lastValueFrom(
-                this.http.get<any>("/api/roles/get-trip-shareId", { headers, params })
+                this.http.get<any>("https://industrious-perfection-production.up.railway.app/api/roles/get-trip-shareId", { headers, params })
             );
 
             console.log("Raw response:", response); // Debugging

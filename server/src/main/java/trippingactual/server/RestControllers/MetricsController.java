@@ -10,7 +10,7 @@ import trippingactual.server.services.MetricsService;
 
 @RestController
 @RequestMapping("/api/metrics")
-@CrossOrigin(origins = "http://*", // Allowed origin
+@CrossOrigin(origins = "https://tripping-app.com/", // Allowed origin
         allowCredentials = "false" // No need to allow credentials for Authorization header)
 ) // Allowed origin
 public class MetricsController {

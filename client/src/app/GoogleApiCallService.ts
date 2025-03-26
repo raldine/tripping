@@ -12,7 +12,7 @@ export class GoogleApiCallService{
 
   private http = inject(HttpClient);  // Using inject to inject HttpClient
 
-  private get_google_map_url = "/api/googlekey";  // URL to your backend endpoint
+  private get_google_map_url = "https://industrious-perfection-production.up.railway.app/api/googlekey";  // URL to your backend endpoint
 
   private apikey!: string
 
@@ -43,7 +43,7 @@ export class GoogleApiCallService{
               .set("place_id", placeId)
 
     try {
-      const response: any = await firstValueFrom(this.http.get<any>("/api/googlekey/getlatlng", { params }));
+      const response: any = await firstValueFrom(this.http.get<any>("https://industrious-perfection-production.up.railway.app/api/googlekey/getlatlng", { params }));
 
 
         if (response && response.result) {

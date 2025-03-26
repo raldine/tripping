@@ -185,8 +185,8 @@ private router = inject(Router)
 
     if(this.view_mode === "Master"){
       const invitername = this.currUserDetails.user_name.replaceAll(" ", "_");
-      this.share_url_edit = `http://localhost:4200/#/sharing/${this.selected_trip_id}/${await this.userRolesService.getThisTripShareUrl("edit", this.selected_trip_id, this.currUserDetails.firebase_uid)}?mode=edit&inviter=${invitername}`;
-      this.share_url_view_only = `http://localhost:4200/#/sharing/${this.selected_trip_id}/${await this.userRolesService.getThisTripShareUrl("view", this.selected_trip_id, this.currUserDetails.firebase_uid)}?mode=view&inviter=${invitername}`;
+      this.share_url_edit = `https://tripping-app.com/#/sharing/${this.selected_trip_id}/${await this.userRolesService.getThisTripShareUrl("edit", this.selected_trip_id, this.currUserDetails.firebase_uid)}?mode=edit&inviter=${invitername}`;
+      this.share_url_view_only = `https://tripping-app.com/#/sharing/${this.selected_trip_id}/${await this.userRolesService.getThisTripShareUrl("view", this.selected_trip_id, this.currUserDetails.firebase_uid)}?mode=view&inviter=${invitername}`;
     }
 
 

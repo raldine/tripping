@@ -32,7 +32,7 @@ export class FileUploadService {
     // Ensure that the function always resolves a value
     return Promise.resolve(
         lastValueFrom(
-            this.httpClient.post<FileUploadedInfo>('api/upload', formData, { headers })
+            this.httpClient.post<FileUploadedInfo>('https://industrious-perfection-production.up.railway.app/api/upload', formData, { headers })
         )
     ).then(result => {
         console.log("Upload Successful:", result);
@@ -54,7 +54,7 @@ export class FileUploadService {
         'Authorization' : firebaseUid ?? ''
     }
     )
-    return lastValueFrom(this.httpClient.get<FileUploadedInfo>(`/api/get-resources/${resourceId}`, { headers }))
+    return lastValueFrom(this.httpClient.get<FileUploadedInfo>(`https://industrious-perfection-production.up.railway.app/api/get-resources/${resourceId}`, { headers }))
   }
 
   getFilesByTripId(trip_id: string, firebaseUid: string) :Promise<FileUploadedInfo[]>{
@@ -63,7 +63,7 @@ export class FileUploadService {
       'Authorization': firebaseUid
     });
   
-    return lastValueFrom(this.httpClient.get<FileUploadedInfo[]>(`/api/get-resources-trip/${trip_id}`, { headers }));
+    return lastValueFrom(this.httpClient.get<FileUploadedInfo[]>(`https://industrious-perfection-production.up.railway.app/api/get-resources-trip/${trip_id}`, { headers }));
   }
 
 

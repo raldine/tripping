@@ -14,7 +14,7 @@ export class UserService {
         console.info("calling register service");
         console.log("value of user is ", userInfo);
 
-        return lastValueFrom(this.http.post<{ response: string }>("/api/register", userInfo))
+        return lastValueFrom(this.http.post<{ response: string }>("https://industrious-perfection-production.up.railway.app/api/register", userInfo))
             .then((response) => {
                 console.info("Response received: ", response);
                 return response.response;
@@ -37,7 +37,7 @@ export class UserService {
         }
         )
 
-        return lastValueFrom(this.http.get<UserFront>(`/user/get-user/${firebaseId}`, { headers }))
+        return lastValueFrom(this.http.get<UserFront>(`https://industrious-perfection-production.up.railway.app/user/get-user/${firebaseId}`, { headers }))
 
     }
 
@@ -50,7 +50,7 @@ export class UserService {
         )
         const firebaseIdsParam = firebaseIds.join(',');
 
-        return lastValueFrom(this.http.get<UserFront[]>(`/user/get-user/${firebaseIdsParam}`, { headers }))
+        return lastValueFrom(this.http.get<UserFront[]>(`https://industrious-perfection-production.up.railway.app/user/get-user/${firebaseIdsParam}`, { headers }))
 
     }
 

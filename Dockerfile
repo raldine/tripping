@@ -1,16 +1,16 @@
-# build angular
-FROM node:23 AS ng-build
+# # build angular
+# FROM node:23 AS ng-build
 
-WORKDIR /src
+# WORKDIR /src
 
-RUN npm i -g @angular/cli
+# RUN npm i -g @angular/cli
 
 
-COPY client/public public
-COPY client/src src
-COPY client/*.json .
+# COPY client/public public
+# COPY client/src src
+# COPY client/*.json .
 
-RUN npm ci && ng build
+# RUN npm ci && ng build
 
 #build spring boot
 FROM openjdk:23-jdk AS j-build
@@ -22,9 +22,9 @@ COPY server/src src
 COPY server/mvnw .
 COPY server/pom.xml .
 
-# copy angular files to static
-COPY --from=ng-build \
-        /src/dist/client/browser src/main/resources/static
+# # copy angular files to static
+# COPY --from=ng-build \
+#         /src/dist/client/browser src/main/resources/static
 
 RUN chmod a+x mvnw && ./mvnw package -Dmaven.test.skip=true
 

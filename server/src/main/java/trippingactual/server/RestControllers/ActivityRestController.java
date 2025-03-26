@@ -30,9 +30,9 @@ import trippingactual.server.services.ActivityService;
 
 @RestController
 @RequestMapping("/api/activities")
-@CrossOrigin(origins = "http://*", // Allowed origin
+@CrossOrigin(origins = "https://tripping-app.com/", // Allowed origin
         allowCredentials = "false" // No need to allow credentials for Authorization header)
-)
+) // Allowed origin
 public class ActivityRestController {
 
     @Autowired

@@ -32,7 +32,7 @@ export class ItineraryService {
         try {
             // Make the HTTP GET request
             const response = await lastValueFrom(
-                this.http.get<any>("/api/itnry/itnrys-fromtrip", { headers, params })
+                this.http.get<any>("https://industrious-perfection-production.up.railway.app/api/itnry/itnrys-fromtrip", { headers, params })
             );
 
             console.log("Raw response:", response); // Debugging

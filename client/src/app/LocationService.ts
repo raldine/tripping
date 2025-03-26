@@ -27,7 +27,7 @@ export class LocationService {
         try {
             // Make the HTTP GET request
             const response = await lastValueFrom(
-                this.http.get<any>("/api/locations/get-location", { headers, params })
+                this.http.get<any>("https://industrious-perfection-production.up.railway.app/api/locations/get-location", { headers, params })
             );
 
             console.log("Raw response:", response); // Debugging
@@ -108,7 +108,7 @@ export class LocationService {
                 try {
                     // Make the HTTP GET request
                     const response = await lastValueFrom(
-                        this.http.get<any>("/api/locations/get-all-locations", { headers, params })
+                        this.http.get<any>("https://industrious-perfection-production.up.railway.app/api/locations/get-all-locations", { headers, params })
                     );
         
                     console.log("Raw response:", response); // Debugging

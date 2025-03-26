@@ -75,7 +75,7 @@ export class ActivityService {
     
             try {
                 const response = await lastValueFrom(
-                    this.http.put<any>("/api/activities/addnewActi", formData, { headers })
+                    this.http.put<any>("https://industrious-perfection-production.up.railway.app/api/activities/addnewActi", formData, { headers })
                 );
                 console.info("Response received: ", response);
                
@@ -135,7 +135,7 @@ export class ActivityService {
 
         try {
             const response = await lastValueFrom(
-                this.http.get<any>("/api/activities/get-all-activities", { headers, params })
+                this.http.get<any>("https://industrious-perfection-production.up.railway.app/api/activities/get-all-activities", { headers, params })
             );
 
             console.log("Raw response:", response);
@@ -229,7 +229,7 @@ export class ActivityService {
     try {
         // Make the HTTP GET request
         const response = await lastValueFrom(
-            this.http.delete<any>("/api/activities/delete", { headers, params })
+            this.http.delete<any>("https://industrious-perfection-production.up.railway.app/api/activities/delete", { headers, params })
         );
 
         console.log("Raw response:", response); // Debugging

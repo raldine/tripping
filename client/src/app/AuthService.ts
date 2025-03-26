@@ -1,9 +1,10 @@
-import { HttpClient, HttpResponse } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpResponse } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 
 import { Auth, onAuthStateChanged, signOut, User } from '@angular/fire/auth'
 import { Router } from "@angular/router";
 import { BehaviorSubject, lastValueFrom, Observable } from "rxjs";
+import { FirstAuth } from "./models/models";
 
 @Injectable({
     providedIn: 'root'
@@ -21,25 +22,29 @@ export class AuthService {
 
       //has become check user if existing or new to my database
       async getUserNewOrExisting(user: User) {
+
+        console.log("user received is ", user)
+
+        
+
+
         try {
-            const response: HttpResponse<any> = await lastValueFrom(
-                this.http.post('/authen', {},
-                    {
-                        headers: {
-                            "firebaseUid": user.uid,
-                            "email": user.email as string
-                        }
-                    ,
-                        observe: 'response'
-                    })
-            );
+
+          
+            const response = await lastValueFrom(
+              this.http.post<any>('https://industrious-perfection-production.up.railway.app/authen', {
+                firebaseUid: user.uid,
+                email: user.email ?? ''
+              }));
+                
             
-      
-            const responeBody = response.body as string;
-            console.log("response body is " +  responeBody)
+                console.log("Raw response:", response); // Debugging
+          
+         
+          
             // Access headers from the response
-            const userStatus = response.headers.get('userstatus');
-            const fullyRegistered = response.headers.get('furtherReg')
+            const userStatus = response.userstatus
+            const fullyRegistered = response.furtherReg
             console.log("this user is " + userStatus + "-" + fullyRegistered)
     
    
@@ -68,12 +73,12 @@ export class AuthService {
           });
       }
     notifyLogin(): void {
-        this.http.post('/api/metrics/user-login', {}).subscribe();
+        this.http.post('https://industrious-perfection-production.up.railway.app/api/metrics/user-login', {}).subscribe();
       }
 
 
       notifyLogout(): void {
-        this.http.post('/api/metrics/user-logout', {}).subscribe();
+        this.http.post('https://industrious-perfection-production.up.railway.app/api/metrics/user-logout', {}).subscribe();
       }
 
 }
