@@ -102,7 +102,8 @@ const appRoutes: Routes = [
     TripViewComponent,
     ActivityEditorComponent,
     ActivityViewComponent,
-    ShareEditorLandingComponent
+    ShareEditorLandingComponent,
+    LoginAppComponent
    
    
   ],
@@ -172,6 +173,7 @@ const appRoutes: Routes = [
   ],
   bootstrap: [AppComponent]
 })
+
 export class AppModule { }
 function provideDateFnsAdapter(): import("@angular/core").Provider | import("@angular/core").EnvironmentProviders {
   throw new Error('Function not implemented.');

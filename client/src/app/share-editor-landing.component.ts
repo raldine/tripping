@@ -12,6 +12,7 @@ import { AuthService } from './AuthService';
 import { UserService } from './UserService';
 import { UserROLESService } from './UserROLESService';
 import { MessageService } from 'primeng/api';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-share-editor-landing',
@@ -20,6 +21,8 @@ import { MessageService } from 'primeng/api';
   styleUrl: './share-editor-landing.component.scss'
 })
 export class ShareEditorLandingComponent implements OnInit {
+
+  titleService = inject(Title);
 
 
   retrieved_partial_trip_info!: TripInfo | null
@@ -64,6 +67,10 @@ export class ShareEditorLandingComponent implements OnInit {
     this.trip_id = this.activatedRoute.snapshot.paramMap.get('trip_id');
     this.sharingRedirectService.setCapturedTripIdForRedirect(this.trip_id);
     this.retrieved_partial_trip_info = await this.tripService.getTripInfoByTrip_id(this.trip_id ?? '', "sharingadmin");
+
+  
+      this.titleService.setTitle('Joining Trip | Tripping');
+
 
     if (this.retrieved_partial_trip_info !== null) {
       this.trip_name = this.retrieved_partial_trip_info.trip_name;

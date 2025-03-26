@@ -13,6 +13,7 @@ import { UserDetailsStore } from './UserDetails.store';
 import { TripStore } from './TripsStore.store';
 import { UserROLESService } from './UserROLESService';
 import { UserService } from './UserService';
+import { Title } from '@angular/platform-browser';
 
 
 @Component({
@@ -22,6 +23,9 @@ import { UserService } from './UserService';
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements OnInit, OnDestroy {
+
+  titleService = inject(Title);
+
 
   //User Authentication info
   private firebaseAuthStore = inject(FireBaseAuthStore)
@@ -133,6 +137,9 @@ tripUserRolesMap: { [trip_id: string]: UserRoles[] } = {};
 
       }
     })
+   
+      this.titleService.setTitle('Dashboard | Tripping');
+
 
     //sub currentUserDetails
     this.loggedInUserDetailsSub = this.userDetailsStore.userDetails$.subscribe((user) => {

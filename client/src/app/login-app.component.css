@@ -1,0 +1,93 @@
+.page-container{
+    width: 100%;
+    /* border: 1px red solid; */
+    background-image: url('https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/trippinglandingNEW.jpg');
+    background-size: cover;     
+    background-position: center; 
+    background-repeat: no-repeat;
+    padding: 40px;              
+    min-height: 90vh;      
+    
+}
+.sub-container{
+    width: 100%;
+    /* border: 1px red solid; */
+    min-height:400px;   
+
+}
+
+.login-content{
+    margin-left: auto;
+    margin-right: 98px;
+    margin-top: 100px;
+    width:80vw;
+    /* border: 1px red solid; */
+    position: relative;
+    z-index: 2; /* ensure it sits above the overlay */
+    color: white; /* for better contrast */
+    display: flex;
+    text-align: right;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 90vh;
+    width: 100%;
+    min-height: 90vh;
+    background: rgba(0, 0, 0, 0.6); /* adjust opacity as needed */
+    z-index: 1;
+  }
+
+  .sub-container {
+    width: 100%;
+    padding: 40px;
+    background-color: #f9f9f9;
+    text-align: center;
+  }
+
+  .sub-container-two {
+    width: 100%;
+    padding: 40px;
+    background-color: #E9EBFF;
+    text-align: center;
+  }
+  
+  .section-header {
+    margin-bottom: 40px;
+    color: #6B79F7;
+  }
+  
+  .feature-columns {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .feature-box {
+    padding: 20px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  }
+
+  @media (max-width: 768px) {
+    .feature-columns {
+      grid-template-columns: 1fr; /* Stack columns on smaller screens */
+    }
+  }
+
+  .feature-img {
+    width: 260px;
+    height: auto;
+    object-fit: contain;
+    margin-bottom: 8px;
+  }
+  
+  
+

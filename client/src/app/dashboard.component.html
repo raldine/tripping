@@ -6,7 +6,7 @@
 
     <div id="main-content">
 
-        <h1>Welcome, {{ currUserDetails?.user_name }}</h1>
+        <h1>Welcome, {{ currUserDetails.user_name }}</h1>
         <div class="card">
             <p-toolbar>
                 <ng-template #start>
@@ -50,10 +50,14 @@
                       <p class="mb-4 leading-normal w-full">
                         {{ trip.destination_city.replaceAll("-", ", ") }}
                       </p>
-                  
-                      <p class="mb-4 leading-normal w-full">
-                        {{ trip.description_t }}
-                      </p>
+                      
+                      @if(trip.description_t!=="N/A"){
+                        <p class="mb-4 leading-normal w-full">
+                          {{ trip.description_t }}
+                        </p>
+
+                      }
+                
                   
                       @if (tripUserRolesMap[trip.trip_id]) {
                         <p-avatar-group>

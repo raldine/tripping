@@ -17,6 +17,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { NgZone } from '@angular/core';
 import { AccommodationService } from './AccommodationService';
 import { MessageService } from 'primeng/api';
+import { Title } from '@angular/platform-browser';
 
 declare global {
   interface Window {
@@ -38,6 +39,9 @@ declare var google: any;
   styleUrl: './accomm-detail.component.scss'
 })
 export class AccommDetailComponent {
+
+  titleService = inject(Title);
+
 
   activatedRoute = inject(ActivatedRoute)
   paramsSub!: Subscription;
@@ -131,6 +135,10 @@ export class AccommDetailComponent {
       this.accommodation_id_generated = params["acc_id"];
 
     })
+
+
+      this.titleService.setTitle('Add Accomm | Tripping');
+
 
     this.selectedTripDetailsSub = await this.tripStore.selected_tripInfo$.subscribe(async (trip) => {
       this.selected_tripInfo = trip;

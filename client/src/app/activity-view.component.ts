@@ -16,6 +16,7 @@ import { ActivityService } from './ActivityService';
 import { getGoogleMapsSearchUrl } from './models/models';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { UserROLESService } from './UserROLESService';
+import { Title } from '@angular/platform-browser';
 
 declare global {
   interface Window {
@@ -35,6 +36,8 @@ declare var google: any;
 })
 export class ActivityViewComponent {
 
+
+  titleService = inject(Title);
       //always get from backend
   //CHECK USR ROLE AND SET MODE TO VIEW ONLY OR EDITABLE
   curr_user_role_in_trip!: string
@@ -124,6 +127,10 @@ export class ActivityViewComponent {
       this.activity_selected_view_id = params["act_id"];
 
     })
+
+
+      this.titleService.setTitle('View Activity Details | Tripping');
+
 
     //get from service getter
     this.currentActivityToView = this.activityService.getOneActivitySet();

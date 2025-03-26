@@ -16,7 +16,7 @@
     overflow: hidden; /* Hides overflow */
 }
 
-#header-for-dashboard img{
+#header-for-dashboard-sharing img{
     width: 100%;
     height: 100%;
     max-height: 100%; /* Ensures it fits within the container */
@@ -35,6 +35,7 @@
     flex-direction: column;
     flex-grow: 1;
     height: 100%;
+    text-align:center;
 
 }
 

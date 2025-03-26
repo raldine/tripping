@@ -11,6 +11,7 @@ import { CountryDataForAppStore } from './CountryDataForApp.store';
 import { SharingRedirectService } from './SharingRedirectService';
 import { UserROLESService } from './UserROLESService';
 import { MessageService } from 'primeng/api';
+import { Title } from '@angular/platform-browser';
 
 
 declare global {
@@ -28,6 +29,9 @@ declare var google: any;
   styleUrl: './register.component.css'
 })
 export class RegisterComponent implements OnInit, OnDestroy {
+
+  titleService = inject(Title);
+
 
   //to load google autocomplete
   autocomplete: any;
@@ -83,6 +87,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
     if (!window['initAutocomplete']) {
       window['initAutocomplete'] = this.initAutocomplete.bind(this);
     }
+
+
+      this.titleService.setTitle('Sign Up | Tripping');
+
 
     //intialise form
     this.registerForm = this.fb.group(

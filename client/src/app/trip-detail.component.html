@@ -17,7 +17,13 @@
                         </div>
                     </ng-template>
                     <ng-template #title>{{ selected_tripInfo?.trip_name }}</ng-template>
-                    <p>{{ selected_tripInfo?.description_t}}</p>
+
+                    @if(selected_tripInfo?.description_t!=="N/A"){
+                        <p>{{ selected_tripInfo?.description_t}}</p>
+                    } @else {
+                        <p style="font-style: italic;">No description provided.</p>
+                    }
+                   
 
                     <div style="display: flex; align-items: center; gap: 2px; flex-wrap: wrap;">
                         <p-avatar-group>
@@ -214,6 +220,9 @@
                     <!-- 80% column -->
                     <div style="width: 80%;">
                         <div>
+                            <p class="m-2" style="font-weight: bold;">
+                                {{ locationForActivities[act.location_id]?.location_name }}
+                            </p>
                             <p class="m-2">
                                 {{ locationForActivities[act.location_id]?.location_address }}
                             </p>

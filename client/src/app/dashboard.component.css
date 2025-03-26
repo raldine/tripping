@@ -35,6 +35,7 @@
     flex-direction: column;
     flex-grow: 1;
     height: 100%;
+    text-align: center;
 
 }
 
@@ -54,4 +55,13 @@
         grid-template-columns: 1fr;
     }
   }
+
+  #trip-info-card {
+    /* text-align: center; */
+  }
   
+  #trip-info-card img {
+    margin: 0 auto;
+    display: block;
+}
+

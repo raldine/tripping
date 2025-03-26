@@ -1,13 +1,160 @@
-@if(!user){
-    <div>
 
 
-        <img src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/web_light_sq_ctn@4x.png" style="width: 240px; height: auto" (click)="loginWithGoogle()">
-        <!-- <button id="buttonDiv" (click)="loginWithGoogle()">Login with Google</button> -->
+<div class="landing-page-body">
+    <div class="page-container">
+
+        <div class="overlay"></div>
+        <div class="login-content">
+
+            <img style="max-width: 48%;"
+                src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/tripping-logo-large-white.png">
+            <h1>Start your trip planning with us!</h1>
+
+            <div style="max-width: 640px;">
+                <h3 style="line-height: 36px;">At tripping, we travel together. Tripping is a collaborative trip
+                    planning platform. Invite your travel
+                    buddies and go explore the world!
+                </h3>
+            </div>
+
+
+            <div>
+                <img src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/web_light_sq_ctn@4x.png"
+                    style="width: 240px; height: auto" (click)="loginWithGoogle()">
+                <!-- <button id="buttonDiv" (click)="loginWithGoogle()">Login with Google</button> -->
+            </div>
+
+        </div>
+
+
+
 
     </div>
+    <div class="sub-container">
+        <h1 class="section-header">Why Tripping?</h1>
+        <div class="feature-columns">
+            <div class="feature-box">
+                <img src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/plantogether.jpg"
+                    alt="Plan Together Icon" class="feature-img" />
+                <h2>Plan Together</h2>
+                <p>Collaborate with your friends or family to plan your perfect trip.</p>
+            </div>
+            <div class="feature-box">
+                <img src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/organiseee.jpg"
+                    alt="Plan Together Icon" class="feature-img" />
+                <h2>Organise Everything</h2>
+                <p>Keep flights check in times, accommodations, and activities, notes and links all in one shared space
+                </p>
+            </div>
+            <div class="feature-box">
+                <img src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/mapsfeature.jpg"
+                    alt="Plan Together Icon" class="feature-img" />
+                <h2>Never get lost</h2>
+                <p>Get directions and view key location details on Google Maps. Don't get lost unless you want to.</p>
+            </div>
+        </div>
+    </div>
 
+    <div class="sub-container-two">
+        <div>
+            <h1 class="section-header">Future features 🚀</h1>
+            <h3 style="max-width: 80%; margin: auto;">Tripping is a work in progress. We are in the midst of developing
+                such features for a better experience!</h3><br><br>
+        </div>
+        <div class="card">
+            <p-fieldset>
+                <ng-template #header>
+                    <div class="flex items-center gap-2 px-2">
+                        <!-- <p-avatar
+                        image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+                        shape="circle" /> -->
+                        <h3>Budgeting for each Accommodation and Activity</h3>
+                    </div>
+                </ng-template>
+                <p class="m-6" style="font-size: 16px; line-height: 18px;">
+                    We have <strong>country data</strong> and users' <strong>origin currencies</strong> captured to help
+                    you record <strong>estimated costs</strong> of each of your activities/accommodations. You need not
+                    worry about what currencies and costs may incur, as our integrated <strong>Google Maps Places
+                        API</strong> can also receive <strong>estimated costs</strong> of meals and activities.
+                </p><br><br>
 
-  
-   
-}
+                <img src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/illustrate_budget.png" style="max-width: 640px;">
+                <br><br><br>
+            </p-fieldset>
+        </div>
+
+        <div class="card">
+            <p-fieldset>
+                <ng-template #header>
+                    <div class="flex items-center gap-2">
+                        <!-- <p-avatar
+                        image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+                        shape="circle" /> -->
+                        <img style="width: 48px; height: 48px;" src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/proicon.png">
+                        <h3>Upload of Documents for Activities and ccommodation (PRO)</h3>
+                    </div>
+                </ng-template>
+                <p class="m-6" style="font-size: 16px; line-height: 18px;">
+                  Enabling upload of documents depending on membership tier.
+                </p>
+                
+        
+                    <li><strong>Free:</strong> Max of one document per activity/accommodation detail.</li><br>
+
+                    <li><strong>PRO:</strong> Unlimited uploads of documents pertaining activity/accommodation</li>
+              <br><br>
+
+                <img src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/upload_wireframe.png" style="max-width: 640px;">
+
+            </p-fieldset>
+        </div>
+        <div class="card">
+            <p-fieldset>
+                <ng-template #header>
+                    <div class="flex items-center gap-2">
+                        <!-- <p-avatar
+                        image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+                        shape="circle" /> -->
+                        <img style="width: 48px; height: 48px;" src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/proicon.png">
+                        <h3>Voting Segments</h3>
+                    </div>
+                </ng-template>
+                <p class="m-6" style="font-size: 16px; line-height: 18px;">
+                 Suggest possible accommodations, activities and even flights and get attendees of this trip to vote. The best way to relay information and make the right decisions!
+             
+                
+                </p>
+                
+                <li><strong>Free:</strong> Max of 3 Suggestions for each Voting Segment.</li><br>
+
+                <li><strong>PRO:</strong> Up to 7 Suggestions for each Voting Segment.</li>
+              <br><br><br>
+
+                <img src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/votingcorrected.png" style="max-width: 640px;">
+
+            </p-fieldset>
+        </div>
+        <div class="card">
+            <p-fieldset>
+                <ng-template #header>
+                    <div class="flex items-center gap-2">
+                        <!-- <p-avatar
+                        image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+                        shape="circle" /> -->
+                        <img style="width: 48px; height: 48px;" src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/proicon.png">
+                        <h3>Task List and Assigning Tasks</h3>
+                    </div>
+                </ng-template>
+                <p class="m-6" style="font-size: 16px; line-height: 18px;">
+                    <strong>PRO ONLY</strong><br><br><br>
+                 Task list to assign attendees of the trip for the preparation of activities/itinerary and other planning needed. Assignees and those assigned get notfications on changes and progress updates plus reminders.
+                </p>
+            
+
+                <img src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/task_sample.png" style="max-width: 640px;">
+
+            </p-fieldset>
+        </div>
+    </div>
+
+</div>

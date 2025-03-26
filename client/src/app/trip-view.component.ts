@@ -12,6 +12,7 @@ import { UserService } from './UserService';
 import { FileUploadService } from './FileUploadService';
 import { TripService } from './TripService';
 import { UserROLESService } from './UserROLESService';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-trip-view',
@@ -26,7 +27,8 @@ export class TripViewComponent implements OnInit{
   curr_user_role_in_trip!: string
   view_mode!: string
 
- 
+  titleService = inject(Title);
+
 
   //get trip_details
   activatedRoute = inject(ActivatedRoute)
@@ -104,6 +106,10 @@ private router = inject(Router)
       this.selected_trip_id = params["trip_id"];
 
     })
+
+
+      this.titleService.setTitle('View Trip Details | Tripping');
+
 
 
     this.authStateCaptured$ = this.firebaseAuthStore.getAuthState$

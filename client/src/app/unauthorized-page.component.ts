@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-unauthorized-page',
@@ -6,6 +7,12 @@ import { Component } from '@angular/core';
   templateUrl: './unauthorized-page.component.html',
   styleUrl: './unauthorized-page.component.css'
 })
-export class UnauthorizedPageComponent {
+export class UnauthorizedPageComponent implements OnInit{
+
+  titleService = inject(Title);
+  ngOnInit(): void {
+    this.titleService.setTitle('Logged Out / UnAuthorised | Tripping');
+  }
+
 
 }

@@ -12,6 +12,7 @@ import { FileUploadService } from './FileUploadService';
 import { MessageService } from 'primeng/api';
 import { TripService } from './TripService';
 import { UserDetailsStore } from './UserDetails.store';
+import { Title } from '@angular/platform-browser';
 
 declare global {
   interface Window {
@@ -29,6 +30,9 @@ declare var google: any;
   styleUrl: './trip-editior.component.css'
 })
 export class TripEditiorComponent implements OnInit, OnDestroy {
+
+  titleService = inject(Title);
+
 
 
   //to load google autocomplete
@@ -52,20 +56,20 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
   printDestinationInfo$ = new BehaviorSubject<string>("")
 
   //to track user details from my backend
-    private userDetailsStore = inject(UserDetailsStore);
-    private loggedInUserDetailsSub!: Subscription;
-    protected currUserDetails!: UserFront
-    // Default user structure (fallback)
-    DEFAULT_USER: UserFront = {
-      user_id: null,
-      user_name: '',
-      firebase_uid: '',
-      user_email: '',
-      country_origin: '',
-      timezone_origin: '',
-      currency_origin: '',
-      notif: false
-    };
+  private userDetailsStore = inject(UserDetailsStore);
+  private loggedInUserDetailsSub!: Subscription;
+  protected currUserDetails!: UserFront
+  // Default user structure (fallback)
+  DEFAULT_USER: UserFront = {
+    user_id: null,
+    user_name: '',
+    firebase_uid: '',
+    user_email: '',
+    country_origin: '',
+    timezone_origin: '',
+    currency_origin: '',
+    notif: false
+  };
 
   //redirect to itineary builder once successful/redirect to unauthorized if authentication expires
   router = inject(Router)
@@ -103,6 +107,9 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
   tripService = inject(TripService);
 
   async ngOnInit(): Promise<void> {
+
+
+    this.titleService.setTitle('Adding Trip | Tripping');
 
     //initialise form
     this.newTripForm = this.fb.group(
@@ -191,10 +198,10 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
     try {
       console.info("Fetching Google API key...");
       this.api_key = await firstValueFrom(this.googleServiceApi.getGoogleMapApi());
-  
+
       if (this.api_key) {
         console.info("Google API key received:", this.api_key);
-  
+
         // ✅ Reload Google Maps script only if missing
         if (!window.google || !window.google.maps) {
           console.info("Google Maps script not found, loading...");
@@ -202,7 +209,7 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
         } else {
           console.info("Google Maps script already loaded.");
         }
-  
+
         // ✅ Always reinitialize Autocomplete to avoid stale references
         setTimeout(() => this.initAutocomplete(), 500);
       }
@@ -267,7 +274,7 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
         google.maps.event.clearInstanceListeners(this.autocomplete);
         this.autocomplete = null;
       }
-    
+
       // ✅ Initialize a new Autocomplete instance
       this.autocomplete = new google.maps.places.Autocomplete(originInputElement, {
         types: ['(cities)'],
@@ -314,57 +321,57 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
           }
 
 
-            // Convert the timezone offset in minutes to hours and fractional part
-            const hours: number = Math.floor(timezoneRaw / 60);
-            const minutes: number = timezoneRaw % 60;
+          // Convert the timezone offset in minutes to hours and fractional part
+          const hours: number = Math.floor(timezoneRaw / 60);
+          const minutes: number = timezoneRaw % 60;
 
-            // Create the timezone offset as UTC+hours.minutes (i.e., UTC+05.45)
-            // Format the hours and minutes
-            const formattedMinutes: string = minutes < 10 ? `0${minutes}` : `${minutes}`;
+          // Create the timezone offset as UTC+hours.minutes (i.e., UTC+05.45)
+          // Format the hours and minutes
+          const formattedMinutes: string = minutes < 10 ? `0${minutes}` : `${minutes}`;
 
-            // Create the timezone offset as UTC±hh:mm
-            const timezone: string = `UTC${hours < 0 ? "-" : "+"}${Math.abs(hours).toString().padStart(2, '0')}:${formattedMinutes}`;
+          // Create the timezone offset as UTC±hh:mm
+          const timezone: string = `UTC${hours < 0 ? "-" : "+"}${Math.abs(hours).toString().padStart(2, '0')}:${formattedMinutes}`;
 
-            //get currency and timezone name
-            try {
-              const countries = await firstValueFrom(this.countryDataStore.filterCountryInfoByNames([safeCountry]));
+          //get currency and timezone name
+          try {
+            const countries = await firstValueFrom(this.countryDataStore.filterCountryInfoByNames([safeCountry]));
 
-              const matchedCountry = countries.find(c => c.country_name === country);
-              console.log("match country details ", matchedCountry)
-              if (!matchedCountry) {
-                console.warn("Country not found in store:", country);
+            const matchedCountry = countries.find(c => c.country_name === country);
+            console.log("match country details ", matchedCountry)
+            if (!matchedCountry) {
+              console.warn("Country not found in store:", country);
 
-                // If country is not found, set default values for form controls
-                this.newTripForm.get('destination_city')?.setValue(city + "-" + country);
-                this.newTripForm.get('destination_timezone')?.setValue('');  // or some default value
-                this.newTripForm.get('destination_curr')?.setValue('');  // or some default value
-                this.newTripForm.get('d_timezone_name')?.setValue('');
-                this.printDestinationInfo$.next('')
-
-                return;
-              } // Find matching timezone based on UTC offset
-              const matchingTimezone = matchedCountry.timezones.find(tz => tz.gmtOffsetName === timezone);
-              const timezoneName = matchingTimezone ? matchingTimezone.tzName : "Unknown Timezone";
-
-              // ✅ Update form fields
+              // If country is not found, set default values for form controls
               this.newTripForm.get('destination_city')?.setValue(city + "-" + country);
-              this.newTripForm.get('destination_timezone')?.setValue(timezone ?? '');
-              this.newTripForm.get('destination_curr')?.setValue(matchedCountry.currency ?? '');
-              this.newTripForm.get('d_timezone_name')?.setValue(timezoneName ?? '');
-              this.newTripForm.get('d_iso2')?.setValue(matchedCountry.iso2 ?? '');
-              this.printDestinationInfo$.next(`Destination Timezone: ${timezone} (${timezoneName}), Currency: ${matchedCountry.currency}`)
+              this.newTripForm.get('destination_timezone')?.setValue('');  // or some default value
+              this.newTripForm.get('destination_curr')?.setValue('');  // or some default value
+              this.newTripForm.get('d_timezone_name')?.setValue('');
+              this.printDestinationInfo$.next('')
+
+              return;
+            } // Find matching timezone based on UTC offset
+            const matchingTimezone = matchedCountry.timezones.find(tz => tz.gmtOffsetName === timezone);
+            const timezoneName = matchingTimezone ? matchingTimezone.tzName : "Unknown Timezone";
+
+            // ✅ Update form fields
+            this.newTripForm.get('destination_city')?.setValue(city + "-" + country);
+            this.newTripForm.get('destination_timezone')?.setValue(timezone ?? '');
+            this.newTripForm.get('destination_curr')?.setValue(matchedCountry.currency ?? '');
+            this.newTripForm.get('d_timezone_name')?.setValue(timezoneName ?? '');
+            this.newTripForm.get('d_iso2')?.setValue(matchedCountry.iso2 ?? '');
+            this.printDestinationInfo$.next(`Destination Timezone: ${timezone} (${timezoneName}), Currency: ${matchedCountry.currency}`)
 
 
-              console.log("Country Matched:", matchedCountry);
-              console.log("Final Timezone Name:", timezoneName);
-            } catch (error) {
-              console.error("Error fetching country data:", error);
-            }
-
-
-
+            console.log("Country Matched:", matchedCountry);
+            console.log("Final Timezone Name:", timezoneName);
+          } catch (error) {
+            console.error("Error fetching country data:", error);
           }
-        });
+
+
+
+        }
+      });
     }
   }
 
@@ -446,9 +453,9 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
 
     try {
       this.isUploading = true;
-      
+
       const response = await this.tripService.putNewTrip(formValue, this.blob, `${this.currUser?.uid}`, this.currUserDetails.user_name, this.currUserDetails.user_email);
-    
+
       if (response) {
         this.messagingService.add({
           severity: 'success',
@@ -456,13 +463,13 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
           detail: 'Your trip has been successfully created!',
           life: 3000,
         });
-    
+
         // Wait for the toast to be visible before navigating (adjust timing if needed)
         await new Promise(resolve => setTimeout(resolve, 3000));
-    
+
         this.router.navigate(["/dashboard"]);
       }
-    
+
     } catch (error) {
       console.error('Error during trip submission:', error);
       this.messagingService.add({
@@ -474,7 +481,7 @@ export class TripEditiorComponent implements OnInit, OnDestroy {
     } finally {
       this.isUploading = false; // Ensure uploading state is reset
     }
-    
+
 
 
   }

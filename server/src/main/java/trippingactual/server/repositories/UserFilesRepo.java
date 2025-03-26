@@ -28,7 +28,7 @@ public class UserFilesRepo {
     public static final String uploadq = "INSERT INTO resources(resource_id, trip_id, activity_id, accommodation_id, flight_id, user_id_pp, original_file_name, media_type, do_src_link) VALUES(?, ?,?,?,?,?,?,?,?)";
 
     // get uploaded file query
-    public static final String getfile = "SELECT * FROM Resources where resource_id=?";
+    public static final String getfile = "SELECT * FROM resources where resource_id=?";
 
     public static final String getFilesByTripId = "SELECT * from resources where trip_id=?";
 

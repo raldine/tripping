@@ -13,6 +13,7 @@ import { UserService } from './UserService';
 import { AccommodationService } from './AccommodationService';
 import { LocationService } from './LocationService';
 import { getGoogleMapsSearchUrl } from './models/models';
+import { Title } from '@angular/platform-browser';
 
 declare global {
   interface Window {
@@ -31,6 +32,8 @@ declare var google: any;
   styleUrl: './accomm-view.component.scss'
 })
 export class AccommViewComponent implements OnInit {
+
+  titleService = inject(Title);
 
 
   //get accomm details to view
@@ -112,6 +115,10 @@ export class AccommViewComponent implements OnInit {
       this.accomm_selected_view_id = params["acc_id"];
 
     })
+
+
+      this.titleService.setTitle('View Accomm | Tripping');
+    
 
     //get from service getter
     this.currentAccToView = this.accommService.getOneAccommSet();

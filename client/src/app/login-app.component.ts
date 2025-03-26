@@ -4,6 +4,7 @@ import { AuthService } from './AuthService';
 import { Router } from '@angular/router';
 import { FireBaseAuthStore } from './FireBaseAuth.store';
 import { AuthState } from './models/models';
+import { Title } from '@angular/platform-browser';
 
 declare const gapi: any; // Declare gapi globally
 
@@ -14,6 +15,9 @@ declare const gapi: any; // Declare gapi globally
   styleUrl: './login-app.component.css'
 })
 export class LoginAppComponent implements OnInit{
+
+  titleService = inject(Title);
+
 
 
   auth = inject(Auth);
@@ -29,6 +33,10 @@ export class LoginAppComponent implements OnInit{
 
 
   ngOnInit(): void {
+
+
+      this.titleService.setTitle('Main | Tripping');
+
 
 
   }

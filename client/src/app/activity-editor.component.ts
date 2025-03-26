@@ -15,6 +15,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { v4 as uuidv4 } from 'uuid';
 import { ActivityService } from './ActivityService';
+import { Title } from '@angular/platform-browser';
 
 
 
@@ -36,6 +37,9 @@ declare var google: any;
   styleUrl: './activity-editor.component.scss'
 })
 export class ActivityEditorComponent {
+
+  titleService = inject(Title);
+
 
   activatedRoute = inject(ActivatedRoute)
   paramsSub!: Subscription;
@@ -136,6 +140,11 @@ export class ActivityEditorComponent {
       this.activity_id_generated = params["act_id"];
 
     })
+
+   
+  
+      this.titleService.setTitle('Add Activity | Tripping');
+   
 
     this.selectedTripDetailsSub = await this.tripStore.selected_tripInfo$.subscribe(async (trip) => {
       this.selected_tripInfo = trip;

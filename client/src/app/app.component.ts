@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { FireBaseAuthStore } from './FireBaseAuth.store';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',

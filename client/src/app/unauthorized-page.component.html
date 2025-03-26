@@ -1,2 +1,16 @@
-<h2>Hi please login again</h2>
-<a routerLink="/login">Go to login</a>
+<div class="unauthorized-container">
+    <img
+      src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/unauthorised.jpg"
+      alt="Unauthorized"
+      class="unauthorized-image"
+    />
+    <h2>Oops, it seems like you been logged out or are trying to access a forbidden route.</h2>
+    <p>Please login again.</p>
+    <p-button
+      label="Go to Login"
+      icon="pi pi-sign-in"
+      styleClass="mt-2"
+      [routerLink]="['/login']"
+    ></p-button>
+  </div>
+  

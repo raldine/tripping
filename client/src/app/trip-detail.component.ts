@@ -19,6 +19,7 @@ import { TripService } from './TripService';
 import { UserROLESService } from './UserROLESService';
 import { SharingRedirectService } from './SharingRedirectService';
 import { getGoogleMapsSearchUrl } from './models/models';
+import { Title } from '@angular/platform-browser';
 
 interface EventItem {
   status?: string;
@@ -35,6 +36,8 @@ interface EventItem {
   styleUrl: './trip-detail.component.scss'
 })
 export class TripDetailComponent implements OnInit, OnDestroy {
+
+  titleService = inject(Title);
 
     //always get from backend
   //CHECK USR ROLE AND SET MODE TO VIEW ONLY OR EDITABLE
@@ -155,6 +158,10 @@ export class TripDetailComponent implements OnInit, OnDestroy {
       this.selected_trip_id = params["trip_id"];
 
     })
+
+
+      this.titleService.setTitle('Trip Details | Tripping');
+ 
     //for when users come in as editor or viewer(NEW)
     this.sharingRedirectService.setCapturedTripIdForRedirect(null);
     this.sharingRedirectService.setCheckIfUserIsSigningUpAsEditorOrViewer(null);

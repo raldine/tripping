@@ -22,20 +22,17 @@
         </ng-template>
         <p>You can sign up or login to see the trip details:</p>
         <ng-template #footer>
-            <div class="flex gap-4 mt-1">
-                <!-- <label>Created by: {{ selected_trip_master_name }}</label> -->
-                @if(!user){
-                    <div>
-                
-                
-                        <button id="buttonDiv" (click)="loginWithGoogle()">Login with Google</button>
-                
-                    </div>
-                
-                
-                   
+            <div class="flex justify-center">
+                @if (!user) {
+                  <div style="width: 100%; display: flex; justify-content: center; margin-bottom: 16px">
+                    <img
+                      src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/web_light_sq_ctn@4x.png"
+                      style="width: 240px; height: auto; cursor: pointer;"
+                      (click)="loginWithGoogle()"
+                    />
+                  </div>
                 }
-            </div>
+              </div>
         </ng-template>
     </p-card>
     </div>
