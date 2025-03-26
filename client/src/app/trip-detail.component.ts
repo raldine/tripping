@@ -254,9 +254,13 @@ export class TripDetailComponent implements OnInit, OnDestroy {
     this.activityService.setAllActivitiesForTrip(await this.activityService.getAllActivitiesFromTripId(this.selected_trip_id, this.currUser?.uid ?? ''))
     this.currentActivitiesForSelectedItn = this.activityService.getActivitiesFromCurrentAllActivitiesForItineraryDay(this.currentItinerarySelected)
 
-    console.log("FIRST ACC LOCATION ID IS >>>> ", this.accomms_array[0].location_id)
-    this.accomms_0_location = this.locationSvc.getOneLocationFromCurrentAllLocationsForTrip(this.accomms_array[0].location_id)?.location_address ?? 'null';
-    console.log("address is ", this.accomms_0_location)
+    if(this.accomms_array.length>0){
+      console.log("FIRST ACC LOCATION ID IS >>>> ", this.accomms_array[0].location_id)
+      this.accomms_0_location = this.locationSvc.getOneLocationFromCurrentAllLocationsForTrip(this.accomms_array[0].location_id)?.location_address ?? 'null';
+      console.log("address is ", this.accomms_0_location)
+
+    }
+
 
     if (this.currentActivitiesForSelectedItn) {
       // Preload locations
@@ -276,10 +280,11 @@ export class TripDetailComponent implements OnInit, OnDestroy {
     } else {
       this.view_mode = "Viewer"
     }
-
+    console.log("view mode is", this.view_mode)
   }
 
-  selectTab(value: number): void {
+
+  async selectTab(value: number): Promise<void> {
     if (value >= 0 && value < this.itinerary_array.length) {
         // Only access the itinerary if the value is within bounds
         const selectedItinerary = this.itinerary_array[value];
@@ -288,6 +293,11 @@ export class TripDetailComponent implements OnInit, OnDestroy {
         if (selectedItinerary && selectedItinerary.itinerary_id) {
             this.currentItinerarySelected = selectedItinerary.itinerary_id;
             this.currentActivitiesForSelectedItn = this.activityService.getActivitiesFromCurrentAllActivitiesForItineraryDay(this.currentItinerarySelected)
+            if(this.currentActivitiesForSelectedItn!==null)
+            for (const act of this.currentActivitiesForSelectedItn) {
+              const locat = await this.locationSvc.getLocationObjFromLocationId(act.location_id, this.currUser?.uid ?? '')
+              this.locationForActivities[act.location_id] = locat ?? null
+            }
         } else {
             this.currentItinerarySelected = '';  // Default value if no itinerary_id exists
         }
@@ -303,7 +313,7 @@ export class TripDetailComponent implements OnInit, OnDestroy {
 }
 
 // Function to handle tab change
-onTabChange(event: any): void {
+  async onTabChange(event: any): Promise<void> {
 
   console.log(event)
   console.log("when changing tab scroll event value is ", event)
@@ -315,7 +325,12 @@ onTabChange(event: any): void {
       this.currentItinerarySelected = selectedTab.itinerary_id;
       console.log("Selected Itinerary ID on tab change:", this.currentItinerarySelected);  // Debug log
       this.currentActivitiesForSelectedItn = this.activityService.getActivitiesFromCurrentAllActivitiesForItineraryDay(this.currentItinerarySelected)
-  }
+      if(this.currentActivitiesForSelectedItn!==null)
+        for (const act of this.currentActivitiesForSelectedItn) {
+          const locat = await this.locationSvc.getLocationObjFromLocationId(act.location_id, this.currUser?.uid ?? '')
+          this.locationForActivities[act.location_id] = locat ?? null
+        }
+    }
 }
 
   navigateToAccommodationNew(){

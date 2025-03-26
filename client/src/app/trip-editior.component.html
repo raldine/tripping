@@ -5,8 +5,9 @@
     </div>
 </div>
 <div class="formPage">
+    <h1>Create a New Trip</h1>
     <div class="card">
-        <form [formGroup]="newTripForm" (submit)="onSubmit()">
+        <form [formGroup]="newTripForm">
             <div class="mb-2">
                 <label for="trip_name" class="block">Name of this Trip:</label><br>
                 <input style="width: 60%;" pInputText type="text" id="trip_name" formControlName="trip_name"><br><br>
@@ -25,7 +26,8 @@
             </div>
             <div class="mb-4">
                 <label for="end_date" class="block">End Date of Trip:</label><br>
-                <input class="uniform-input" style="width: 30%;" type="date" formControlName="end_date" [min]="minEndDate()"><br>
+                <input class="uniform-input" style="width: 30%;" type="date" formControlName="end_date"
+                    [min]="minEndDate()"><br>
             </div>
 
             <div class="mb-2">
@@ -36,26 +38,36 @@
             </div>
             <label for="cover_image" class="mb-0.5 block">Upload an Image to set a Cover Image for this Trip
                 (Optional):</label><br>
-            <div class="flex items-center gap-0.5 mb-8">
+            <div class="flex items-center gap-4 mb-8">
                 <div>
                     <!-- Image Upload Section -->
-                    <input type="file" accept=".png, .jpeg, .jpg" (change)="onFileSelected($event)">
+                    <input type="file" accept=".png, .jpeg, .jpg" (change)="onFileSelected($event)"
+                        style="display: none" #fileInput>
+                    <!-- PrimeNG styled button -->
+                    <p-button label="Choose Image" icon="pi pi-upload" (onClick)="fileInput.click()"
+                        severity="primary"></p-button>
+                    {{ fileNameHolder }}
                 </div>
 
 
 
                 <!-- Image Preview -->
                 <div *ngIf="dataUri.length!=0" class="mb-2">
-                    <button type="button" (click)="cancelImage()">Remove image</button>
+                    <!-- <button type="button" (click)="cancelImage()">Remove image</button> -->
+                    <p-button label="Remove Image" variant="outlined" severity="danger" (onClick)="cancelImage()" />
                 </div>
             </div>
 
             <div class="flex items-center gap-5 mb-2">
                 <div>
-                    <button type="button" routerLink="/dashboard">Back to Dashboard</button>
+                    <p-button label="Back to Dashboard" severity="secondary" 
+                        [routerLink]="['/dashboard']"></p-button>
+
+
+                    <!-- <button type="button" routerLink="/dashboard">Back to Dashboard</button> -->
                 </div>
                 <div>
-                    <button type="submit">Submit</button>
+                    <p-button label="Submit" severity="success" (onClick)="onSubmit()"/>
                 </div>
             </div>
 

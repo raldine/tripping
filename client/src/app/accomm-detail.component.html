@@ -2,8 +2,9 @@
 
 
 <div class="formPageAcc">
+  <h1>Add Accommodation Details</h1>
     <div class="card">
-        <form [formGroup]="accForm" (submit)="onSubmit()">
+        <form [formGroup]="accForm">
             <div class="checkin-row">
                 <div class="mb-2 field-wrapper">
                   <label for="check_in_date" class="block">Check In Date:</label><br>
@@ -81,10 +82,10 @@
 
         <div class="flex items-center gap-5 mb-2">
             <div>
-                <button type="button" (click)="navigateBackToTripDetails()">Back to Trip Overview</button>
+              <p-button label="Back to Trip Overview" severity="secondary" (click)="navigateBackToTripDetails()" />
             </div>
             <div>
-                <button type="submit">Submit</button>
+              <p-button label="Submit" severity="success" (onClick)="onSubmit()"/>
             </div>
         </div>
 

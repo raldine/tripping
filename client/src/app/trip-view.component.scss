@@ -20,3 +20,49 @@
     align-content: center;
     padding: 60px;
   }
+
+  .copy-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  
+  .copy-input {
+    flex-grow: 1;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .tooltip-text {
+    visibility: hidden;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  button:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+//   button {
+//     position: relative;
+//     padding: 6px 12px;
+//     border: none;
+//     background-color: #6b79f7;
+//     color: white;
+//     border-radius: 4px;
+//     cursor: pointer;
+//   }
+  

@@ -1,76 +1,126 @@
 <div id="dashboard-body">
     <div id="header-for-dashboard">
-        <img [src]="selected_trip_cover_img" 
-        alt="Background Image" 
-        width="100%"
-        height="100%"
-        loading="lazy"
-        decoding="async">
-    
-    </div>
-<div class="formPage">
-    <div class="card">
-        <div class="mb-2">
-            <label for="trip_name" class="block">Name of this Trip:</label><br>
-
-        </div>
-        <div class="mb-2">
-            <label for="destinationCity" class="block">Destination City:</label><br>
-        </div>
-
-        <div class="mb-2">
-            <label for="start_date" class="block">Start Date of Trip:</label><br>
-
-
-        </div>
-        <div class="mb-4">
-            <label for="end_date" class="block">End Date of Trip:</label><br>
-
-        </div>
-
-        <div class="mb-2">
-            <label for="description_t" class="mb-0.5 block">Description for this Trip:</label><br>
-
-        </div>
-
-        @if(curr_Trip_user_roles){
-            <ul>
-                @for(user of curr_Trip_user_roles; track user.user_id){
-                    <li>{{ user.user_display_name }} | {{user.user_email}} | {{ user.role }}</li>
-                }
-            </ul>
-        }
-        @if(view_mode==="Master"){
-            <div>Share invite Editor Link: <a [href]="share_url_edit">{{ share_url_edit }}</a></div>
-            <div>Share invite Viewer Link:  <a [href]="share_url_view_only">{{ share_url_view_only }}</a></div>
-
-        }
-     
-
-
-
-        <div class="flex items-center gap-5 mb-2">
-            <div>
-                <button type="button" (click)="navigateBackToTripDetails()">Back to Trip Overview</button>
-            </div>
-            <div>
-            </div>
-        </div>
-
- 
-
-
+        <img [src]="selected_trip_cover_img" alt="Background Image" width="100%" height="100%" loading="lazy"
+            decoding="async">
 
     </div>
+    <div class="formPage">
+        <h1>Trip Information</h1>
+        <div class="card">
+          <div class="mb-2">
+            <label for="trip_name" class="block">Name of this Trip:</label>
+            <h3>{{ selected_tripInfo?.trip_name }}</h3>
+          </div>
+      
+          <div style="display: flex; gap: 16px;" class="mb-2">
+            <div style="width: 50%;">
+              <label for="destinationCity" class="block">Destination City:</label>
+              <p>{{ selected_tripInfo?.destination_city?.replaceAll("-", ", ") }}</p>
+            </div>
+      
+            <div style="width: 50%;">
+              <label for="description_t" class="block mb-0.5">Description for this Trip:</label>
+              @if (selected_tripInfo?.description_t !== 'N/A') {
+                <p>{{ selected_tripInfo?.description_t }}</p>
+              } @else {
+                <p style="font-style: italic;">No description provided.</p>
+              }
+            </div>
+          </div>
+      
+          <div style="display: flex; gap: 16px;" class="mb-4">
+            <div style="width: 50%;">
+              <label for="start_date" class="block">Start Date of Trip:</label>
+              <p>{{ selected_tripInfo?.start_date ?? '' | dateFormatDay }}</p>
+            </div>
+      
+            <div style="width: 50%;">
+              <label for="end_date" class="block">End Date of Trip:</label>
+              <p>{{ selected_tripInfo?.end_date ?? '' | dateFormatDay }}</p>
+            </div>
+          </div>
+      
+          <br />
+          <p-divider></p-divider>
 
-
-    <!-- <div> -->
-    <!-- Loading Spinner -->
-    <!-- Full-screen overlay when isUploading is true -->
-    <!-- <div *ngIf="isUploading" class="overlay">
-            <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
-        </div> -->
-    <!-- 
-    </div> -->
-
-</div>
+          <h3>Trip Attendees</h3>
+      
+          @if (curr_Trip_user_roles) {
+            <p-table [value]="curr_Trip_user_roles" [tableStyle]="{ 'min-width': '40rem' }">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-user>
+                  <tr>
+                    <td>{{ user.user_display_name }}</td>
+                    <td>{{ user.user_email }}</td>
+                    <td>{{ user.role }}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+          }
+          <br><br><br>
+      
+          @if (view_mode === "Master") {
+            <div class="mb-8">
+              <!-- Editor Share Link -->
+              <div class="mb-3">
+                <label class="block font-semibold mb-1">Invite travel buddies as Editors:</label>
+                <div class="flex gap-2" style="max-width: 400px;">
+                  <input
+                    type="text"
+                    [value]="share_url_edit"
+                    readonly
+                    class="p-inputtext w-full"
+                    #editorInput
+                  />
+                  <button
+                    pButton
+                    type="button"
+                    icon="pi pi-copy"
+                    label="Copy"
+                    [pTooltip]="editorTooltipText"
+                    tooltipPosition="top"
+                    (click)="copyToClipboard(editorInput, 'editor')"
+                  ></button>
+                </div>
+              </div>
+          
+              <!-- Viewer Share Link -->
+              <div>
+                <label class="block font-semibold mb-1">Invite travel buddies as Viewers only:</label>
+                <div class="flex gap-2" style="max-width: 400px;">
+                  <input
+                    type="text"
+                    [value]="share_url_view_only"
+                    readonly
+                    class="p-inputtext w-full"
+                    #viewerInput
+                  />
+                  <button
+                    pButton
+                    type="button"
+                    icon="pi pi-copy"
+                    label="Copy"
+                    [pTooltip]="viewerTooltipText"
+                    tooltipPosition="top"
+                    (click)="copyToClipboard(viewerInput, 'viewer')"
+                  ></button>
+                </div>
+              </div>
+            </div>
+          }
+          
+          
+          
+      
+          <div class="flex items-center gap-5 mb-4 mt-4">
+            <p-button label="Back to Trip Overview" severity="secondary" (click)="navigateBackToTripDetails()" />
+          </div>
+        </div>
+      </div>
+      

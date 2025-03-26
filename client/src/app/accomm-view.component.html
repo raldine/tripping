@@ -1,7 +1,13 @@
 
 <p-toast id="toastMod"></p-toast> <!-- Toast container to show the toast notifications -->
 <div class="AccDetailPage">
+    <h1>Accommodation Details</h1>
     <div class="card">
+
+      <div class="mb-2">
+        <label for="accommodation_name" class="label-green-color  block">Accommodation Name:</label><br>
+        <h3>{{ currentAccToView?.accommodation_name }}</h3>
+    </div>
             <div class="checkin-row">
                 <div class="mb-2 field-wrapper">
                   <label for="check_in_date" class="label-green-color block">Check In Date:</label><br>
@@ -36,10 +42,7 @@
                 </div>
               </div>
               
-        <div class="mb-2">
-            <label for="accommodation_name" class="label-green-color  block">Accommodation Name:</label><br>
-            <p>{{ currentAccToView?.accommodation_name }}</p>
-        </div>
+       
 
         <label for="accAddress" class="label-green-color  block">Accommodation Address:</label><br>
         <p>{{ accomm_location_details?.location_address }}</p>
@@ -52,11 +55,19 @@
                 </ng-template>
                 <ng-template #title>{{ google_place_results.location_name }}</ng-template>
                 <p>{{ google_place_results.location_address }}</p>
-                <ul>
+                @if(google_place_results.g_opening_hrs!==null && !!google_place_results.g_opening_hrs.includes("N/A")){
+                  <ul>
                     <li *ngFor="let day of google_place_results.g_opening_hrs">{{ day }}</li>
                 </ul>
+
+                }
+      
                 <p>Tel: {{ google_place_results.g_biz_number }}</p>
-                <p>Website: <a [href]="google_place_results.g_biz_website">{{ google_place_results.g_biz_website }}</a>
+                <p>Website: <a
+                  [href]="google_place_results.g_biz_website"
+                  target="_blank"
+                  style="word-break: break-word; white-space: normal;"
+                >{{ google_place_results.g_biz_website }}</a>
                 </p>
                 <br>
                 <br>
@@ -77,27 +88,17 @@
         </div>
 
 
-        <div class="flex items-center gap-5 mb-2">
+        <div class="flex items-center gap-5 mb-4">
             <div>
-                <button type="button" (click)="navigateBackToTripDetails()">Back to Trip Overview</button>
+              <p-button label="Back to Trip Overview" severity="secondary" (click)="navigateBackToTripDetails()" />
             </div>
-            <!-- <div>
-                <button type="submit">Submit</button>
-            </div> -->
+     
         </div>
 
 
-        <!-- </form> -->
     </div>
 
 
-    <div>
-        <!-- Loading Spinner -->
-        <!-- Full-screen overlay when isUploading is true -->
-        <!-- <div *ngIf="isUploading" class="overlay">
-            <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
-        </div> -->
-
-    </div>
+   
 
 </div>

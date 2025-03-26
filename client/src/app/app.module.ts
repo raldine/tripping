@@ -60,6 +60,7 @@ import { ShareEditorLandingComponent } from './share-editor-landing.component';
 import { FieldsetModule } from 'primeng/fieldset';
 import { DividerModule } from 'primeng/divider';
 import { TooltipModule } from 'primeng/tooltip';
+import { TableModule } from 'primeng/table';
 
 
 
@@ -131,7 +132,8 @@ const appRoutes: Routes = [
     ConfirmDialogModule,
     FieldsetModule,
     DividerModule,
-    TooltipModule
+    TooltipModule,
+    TableModule
  
     
     

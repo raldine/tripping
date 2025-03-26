@@ -2,100 +2,122 @@
 <p-confirmDialog></p-confirmDialog>
 
 <div class="ActivityDetailPage">
-    <div class="card">
-        <p-button label="Delete this Activity" variant="outlined" severity="danger" (onClick)="deleteActivity(this.activity_selected_view_id)"/>
-            <div class="mb-2">
-                <label for="event_name" class="block">Event Name:</label><br>
-                    {{ currentActivityToView?.event_name ?? '-'}}
-            </div>
-            <div class="mb-2 field-wrapper">
-                <img [src]="getIconByActivityType(currentActivityToView?.activity_type ?? '-')" 
-                alt="icon" 
-                style="width: 32px; height: 32px;" />
-                <label for="activity_type" class="block">Activity Type:</label><br>
-                {{ currentActivityToView?.activity_type ?? '-'}}
-              </div>
-            <div class="checkin-row">
-                <div class="mb-2 field-wrapper">
-                  <label for="start_date" class="block">Start Date:</label><br>
-                  {{ currentActivityToView?.start_date ?? '-' | dateFormatDay }}
-                </div>
-              
-                <div class="mb-2 field-wrapper">
-                  <label for="start_time" class="block">Start Time:</label><br>
-                    {{ currentActivityToView?.start_time ?? '-' | timeFormat}}
-                </div>
-              
-                <div class="mb-2 field-wrapper">
-                  <label for="timezone_time" class="block">Timezone:</label><br>
-                    {{ currentActivityToView?.timezone_time ?? '-' }}
-                </div>
-              </div>
+  <h1>Activity Details</h1>
+  <div class="card">
+    @if(view_mode!=="Viewer"){
+      <div style="display: flex; justify-content: flex-end; width: 100%; margin-bottom: 1rem;">
+        <p-button label="Delete this Activity" variant="outlined" severity="danger"
+          (onClick)="deleteActivity(this.activity_selected_view_id)"></p-button>
+      </div>
 
-              <hr class="custom-line">
-
-              <div class="checkout-row">
-                <div class="mb-2 field-wrapper">
-                  <label for="end_date" class="block">End Date:</label><br>
-                  {{ currentActivityToView?.end_date ?? '-' | dateFormatDay }}
-                </div>
-              
-                <div class="mb-2 field-wrapper">
-                  <label for="end_time" class="block">End Time:</label><br>
-                  {{ currentActivityToView?.end_time ?? '-' | timeFormat}}
-                </div>
-              </div>
-              
-              <div class="mb-2">
-                <label for="event_notes" class="mb-0.5 block">Event Notes (Optional):</label><br>
-                {{ currentActivityToView?.event_notes ?? '-' }}
+    }
+    <div class="mb-2">
+      <label for="event_name" class="label-green-color">Event Name:</label>
+      <h3>{{ currentActivityToView?.event_name ?? '-'}}</h3>
+    </div>
+    <div class="mb-2 field-wrapper" style="display: flex; align-items: center; gap: 12px;">
+      <div>
+        <label for="activity_type" class="label-green-color">Activity Type:</label>
+        <p>{{ currentActivityToView?.activity_type ?? '-' }}</p>
+      </div>
+      <div>
+        <img
+          [src]="getIconByActivityType(currentActivityToView?.activity_type ?? '-')"
+          alt="icon"
+          style="width: 32px; height: 32px;"
+        />
+      </div>
+    </div>
     
-            </div>
+    <div class="checkin-row">
+      <div class="mb-2 field-wrapper">
+        <label for="start_date" class="label-green-color">Start Date:</label>
+        <p>{{ currentActivityToView?.start_date ?? '-' | dateFormatDay }}</p>
+      </div>
 
-        <label for="accAddress" class="block">Activity Address:</label><br>
-        {{ activity_location_details?.location_address ?? '-'}}
-        <div class="map-place-wrapper">
-            <div id="map" class="google-map"></div>
-            @if(google_place_results){
-            <p-card id="place_overview_card" class="place-card" [style]="{ overflow: 'hidden', padding: '8px 16px 16px 16px' }">
-                <ng-template #header>
+      <div class="mb-2 field-wrapper">
+        <label for="start_time" class="label-green-color">Start Time:</label>
+        <p>{{ currentActivityToView?.start_time ?? '-' | timeFormat}}</p>
+      </div>
 
-                </ng-template>
-                <ng-template #title>{{ google_place_results.location_name }}</ng-template>
-                <p>{{ google_place_results.location_address }}</p>
-                <ul>
-                    <li *ngFor="let day of google_place_results.g_opening_hrs">{{ day }}</li>
-                </ul>
-                <p>Tel: {{ google_place_results.g_biz_number }}</p>
-                <p>Website: <a [href]="google_place_results.g_biz_website">{{ google_place_results.g_biz_website }}</a>
-                </p>
-                <br>
-                <br>
-                <a [href]="getGoogleMapsSearchUrl(google_place_results.location_address, google_place_results.google_place_id)" target="_blank">
-                    Get Directions on Google Maps
-                  </a>
-                  
-                <ng-template #footer>
-                </ng-template>
-            </p-card>
-            }
-        </div>
+      <div class="mb-2 field-wrapper">
+        <label for="timezone_time" class="label-green-color">Timezone:</label><br>
+        <p>{{ currentActivityToView?.timezone_time ?? '-' }}</p>
+      </div>
 
 
-        <div class="flex items-center gap-5 mb-2">
-            <div>
-                <button type="button" (click)="navigateBackToTripDetails()">Back to Trip Overview</button>
-            </div>
-            <!-- <div>
-                <button type="submit">Submit</button>
-            </div> -->
-        </div>
-
-
-      
     </div>
 
 
-  
+    <hr class="custom-line">
+
+    <div class="checkout-row">
+      <div class="mb-2 field-wrapper">
+        <label for="end_date" class="label-green-color">End Date:</label><br>
+        <p>{{ currentActivityToView?.end_date ?? '-' | dateFormatDay }}</p>
+      </div>
+
+      <div class="mb-2 field-wrapper">
+        <label for="end_time" class="label-green-color">End Time:</label><br>
+        <p>{{ currentActivityToView?.end_time ?? '-' | timeFormat}}</p>
+      </div>
+    </div>
+
+    <div class="mb-2">
+      <label for="event_notes" class="label-green-color block">Event Notes (Optional):</label>
+      <p>{{ currentActivityToView?.event_notes ?? '-' }}</p>
+
+    </div>
+
+    <label for="accAddress" class="label-green-color block">Activity Address:</label><br>
+    <p>{{ activity_location_details?.location_address ?? '-'}}</p>
+    <div class="map-place-wrapper">
+      <div id="map" class="google-map"></div>
+      @if(google_place_results){
+      <p-card id="place_overview_card" class="place-card"
+        [style]="{ overflow: 'hidden', padding: '8px 16px 16px 16px' }">
+        <ng-template #header>
+
+        </ng-template>
+        <ng-template #title>{{ google_place_results.location_name }}</ng-template>
+        <p>{{ google_place_results.location_address }}</p>
+        @if(google_place_results.g_opening_hrs!==null && google_place_results.g_opening_hrs[0]!=="N/A"){
+        <ul>
+          <li *ngFor="let day of google_place_results.g_opening_hrs">{{ day }}</li>
+        </ul>
+
+        }
+        <p>Tel: {{ google_place_results.g_biz_number }}</p>
+        <p>Website: <a [href]="google_place_results.g_biz_website">{{ google_place_results.g_biz_website }}</a>
+        </p>
+        <br>
+        <br>
+        <a [href]="getGoogleMapsSearchUrl(google_place_results.location_address, google_place_results.google_place_id)"
+          target="_blank">
+          Get Directions on Google Maps
+        </a>
+
+        <ng-template #footer>
+        </ng-template>
+      </p-card>
+      }
+    </div>
+    <br>
+    <br>
+    <br>
+
+
+    <div class="flex items-center gap-5 mb-4">
+      <div>
+        <p-button label="Back to Trip Overview" severity="secondary" (click)="navigateBackToTripDetails()" />
+      </div>
+
+    </div>
+
+
+  </div>
+
+
+
 
 </div>

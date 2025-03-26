@@ -79,6 +79,9 @@ export class TripViewComponent implements OnInit{
  share_url_edit!: string
  share_url_view_only!:string
 
+ editorTooltipText = 'Copy to clipboard';
+viewerTooltipText = 'Copy to clipboard';
+
 
   // Default user structure (fallback)
   DEFAULT_USER: UserFront = {
@@ -191,6 +194,26 @@ private router = inject(Router)
     this.router.navigate(["/trip-details", this.selected_trip_id]);
   }
 
+  copyToClipboard(inputElement: HTMLInputElement, identifier: string) {
+    inputElement.select();
+    inputElement.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(inputElement.value);
+  
+    if (identifier === 'editor') {
+      this.editorTooltipText = 'Copied!';
+      setTimeout(() => {
+        this.editorTooltipText = 'Copy to clipboard';
+      }, 2000);
+    }
+  
+    if (identifier === 'viewer') {
+      this.viewerTooltipText = 'Copied!';
+      setTimeout(() => {
+        this.viewerTooltipText = 'Copy to clipboard';
+      }, 2000);
+    }
+  }
+  
 
   ngOnDestroy(): void {
     this.authStateSubscription.unsubscribe();

@@ -41,8 +41,8 @@
 }
 
 .trip-details-info{
-    border: 2px dotted;
-    border-color: red;
+    // border: 2px dotted;
+    // border-color: red;
     position: absolute;
     top: 0;
     left: 2.5%;
@@ -68,14 +68,15 @@
 
 .trip-detail-main-body {
     display: grid;
-    border: 1px dotted;
-    border-color: red;
-    grid-template-columns: 15% 60% 25%;
+    // border: 1px dotted;
+    // border-color: red;
+    grid-template-columns: 15% 70% 15%;
     gap: 16px; /* ✅ Space between columns */
     width: 100%; /* ✅ Ensures full width */
-    height: 95vh; /* ✅ Takes up 95% of parent's height */
+    height: auto; /* ✅ Takes up 95% of parent's height */
     
     /* ✅ Vertically center align */
+    padding-bottom: 80px;
     align-items: stretch;
     justify-content: stretch; 
 }

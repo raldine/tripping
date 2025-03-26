@@ -18,40 +18,40 @@
                     </ng-template>
                     <ng-template #title>{{ selected_tripInfo?.trip_name }}</ng-template>
                     <p>{{ selected_tripInfo?.description_t}}</p>
-   
-                    <p-avatar-group>
-                        <!-- Show first 5 avatars with tooltip -->
-                        @for (user of curr_trip_user_roles.slice(0, 4); track user.user_id) {
-                          <p-avatar 
-                            [label]="user.user_display_name.substring(0, 1)" 
-                            [pTooltip]="user.user_display_name"
-                            tooltipPosition="top"
-                            styleClass="mr-2" 
-                            shape="circle" 
-                            size="large" />
+
+                    <div style="display: flex; align-items: center; gap: 2px; flex-wrap: wrap;">
+                        <p-avatar-group>
+                            @for (user of curr_trip_user_roles.slice(0, 4); track user.user_id) {
+                            <p-avatar [label]="user.user_display_name.substring(0, 1)"
+                                [pTooltip]="user.user_display_name" tooltipPosition="top" styleClass="mr-2"
+                                shape="circle" size="large" />
+                            }
+
+                            @if (curr_trip_user_roles.length > 4) {
+                            <p-avatar [label]="'+' + (curr_trip_user_roles.length - 4)"
+                                [pTooltip]="'and ' + (curr_trip_user_roles.length - 4) + ' more...'"
+                                tooltipPosition="top" shape="circle" size="large" />
+                            }
+                        </p-avatar-group>
+                        @if(view_mode==="Master"){
+                        <p-button icon="pi pi-user-plus" [rounded]="true" severity="success"
+                            [pTooltip]="'Invite more trip buddies'" tooltipPosition="top"
+                            (onClick)="navigateToTripDetailsViewOnly()" />
                         }
-                      
-                        <!-- "+X" avatar with tooltip showing who else -->
-                        @if (curr_trip_user_roles.length > 4) {
-                          <p-avatar 
-                            [label]="'+' + (curr_trip_user_roles.length - 4)" 
-                            [pTooltip]="'and ' + (curr_trip_user_roles.length - 4) + ' more...'"
-                            tooltipPosition="top"
-                            shape="circle" 
-                            size="large" />
-                        }
-                      </p-avatar-group>
-                      <p>Attendees: {{ curr_trip_user_roles.length }}</p>
-                      
-                
+
+                    </div>
+
+                    <p>Attendees: {{ curr_trip_user_roles.length }}</p>
+
+
                     <ng-template #footer>
-                  
-                            <label>Created by: {{ selected_trip_master_name }}</label>
-                            <div style="width: 100%; text-align: right; margin-bottom: -12px; margin-top: 8px;">
+
+                        <label>Created by: {{ selected_trip_master_name }}</label>
+                        <div style="width: 100%; text-align: right; margin-bottom: -12px; margin-top: 8px;">
                             <a (click)="navigateToTripDetailsViewOnly()" class="nav-link">View
                                 Trip Details</a>
-                            </div>
-         
+                        </div>
+
                     </ng-template>
                 </p-card>
                 <!-- flight card -->
@@ -120,13 +120,20 @@
                     <ng-template #header>
 
                     </ng-template>
-                    <ng-template #title>nonono</ng-template>
-                    <p>helosodasdadsa</p>
+                    <ng-template #title>No accommodation details at the moment.</ng-template>
+                    <img src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/acomm_empty_state.jpg"
+                        style="width: 200px; height: auto;" class="block mx-auto">
                     <ng-template #footer>
-                        <div class="flex gap-4 mt-1">
+                        @if(view_mode!=="Viewer"){
+                            <div style="width: 100%; text-align: right; margin-bottom: -12px; margin-top: 8px;">
+                                <a (click)="navigateToAccommodationNew()" class="nav-link">Add Accommodation Details</a>
+                            </div>
+                        }
+            
+                        <!-- <div class="flex gap-4 mt-1">
                             <label>dasdasdsadas</label>
                             <a (click)="navigateToAccommodationNew()" class="nav-link">Add Accommodation Details</a>
-                        </div>
+                        </div> -->
                     </ng-template>
                 </p-card>
 
@@ -170,12 +177,16 @@
         </p-tabs>
         <div>
 
-            <div [style]="{ width: '100%', paddingRight: '48px', paddingLeft: '48px'}">
-            <p-divider align="center" type="dotted">
-                <p-button label="Add New Activity" icon="pi pi-plus-circle" severity="success" (onClick)="navigateToActivityNew()" class="mr-2 ml-2"/>
-            </p-divider>
-        </div>
-  
+            @if(view_mode!=="Viewer"){
+                <div [style]="{ width: '100%', paddingRight: '48px', paddingLeft: '48px'}">
+                    <p-divider align="center" type="dotted">
+                        <p-button label="Add New Activity" icon="pi pi-plus-circle" severity="success"
+                            (onClick)="navigateToActivityNew()" class="mr-2 ml-2" />
+                    </p-divider>
+                </div>
+            }
+
+
 
         </div>
         @if(currentActivitiesForSelectedItn!==null){
@@ -206,7 +217,8 @@
                             <p class="m-2">
                                 {{ locationForActivities[act.location_id]?.location_address }}
                             </p>
-                            <a [href]="getGoogleMapsSearchUrl(locationForActivities[act.location_id]?.location_address ?? '', locationForActivities[act.location_id]?.google_place_id ?? '')" target="_blank">Get Directions on Google Maps</a>
+                            <a [href]="getGoogleMapsSearchUrl(locationForActivities[act.location_id]?.location_address ?? '', locationForActivities[act.location_id]?.google_place_id ?? '')"
+                                target="_blank">Get Directions on Google Maps</a>
                         </div>
                         @if(act.event_notes!=="N/A"){
                         <div>
@@ -234,6 +246,8 @@
         } @else {
         <div [style]="{ width: '100%', padding: '16px' }">
             <h3 style="width: 100%; text-align: center;">No activities for this day at the moment.</h3>
+            <img src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/empty_state_activity.jpg"
+                width="320px" style="display: block; margin: 0 auto;">
         </div>
 
         }

@@ -3,7 +3,7 @@
 
 <div class="formPageAcc">
     <div class="card">
-        <form [formGroup]="activityForm" (submit)="onSubmit()">
+        <form [formGroup]="activityForm">
             <div class="mb-2">
                 <label for="event_name" class="block">Event Name:</label><br>
                 <input style="width: 60%;" pInputText type="text" id="event_name"
@@ -83,13 +83,18 @@
             }
         </div>
 
+        <br>
+        <br>
+        <br>
+        <br>
+
 
         <div class="flex items-center gap-5 mb-2">
             <div>
-                <button type="button" (click)="navigateBackToTripDetails()">Back to Trip Overview</button>
+              <p-button label="Back to Trip Overview" severity="secondary" (click)="navigateBackToTripDetails()" />
             </div>
             <div>
-                <button type="submit">Submit</button>
+                <p-button label="Submit" severity="success" (onClick)="onSubmit()"/>
             </div>
         </div>
 

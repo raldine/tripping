@@ -1,5 +1,9 @@
 <p-toast id="toastMod"></p-toast> <!-- Toast container to show the toast notifications -->
 <div class="formPage">
+    <div>
+        <img src="https://trippingresources.sgp1.cdn.digitaloceanspaces.com/webresources/tripping_logo_large.png" style="width: 200px; height: auto;">
+        <h2>Registration</h2>
+    </div>
     <div class="card">
         <div>
             @if (currUser) {
@@ -10,7 +14,7 @@
                 <p-avatar [label]="currUser.displayName?.substring(0,1)" styleClass="mr-2" shape="circle" size="xlarge" />
                 }
 
-                <h3>Welcome, {{ currUser.displayName }}</h3><br>
+                <h3>Welcome, {{ currUser.displayName }}</h3>
                 <small>Email: {{ currUser.email }}</small>
             </div>
             @if(special_Route_For_Sharing_Link===true){
@@ -19,7 +23,7 @@
 
             <h2>Let's find out more about you!</h2><br>
 
-            <form [formGroup]="registerForm" (submit)="processForm()">
+            <form [formGroup]="registerForm">
                 <div class="mb-2">
                     <label for="username" class="block">Preferred Display Name:</label><br>
                     <input style="width: 60%;" pInputText type="text" id="username" formControlName="user_name"><br><br>
@@ -36,18 +40,18 @@
                         placeholder="(Will be auto-populated)" readonly><br>
                     <small>{{ printTimeZoneName$ | async}}</small><br><br>
                 </div>
-                <div class="mb-2">
-                    <label for="currency_origin" class="block">Default Currency:</label>
-                    <input style="width: 60%;" pInputText type="text" formControlName="currency_origin" id="currency_origin"><br><br>
+                <div class="mb-6">
+                    <label for="currency_origin" class="block">Default Currency:</label><br>
+                    <input style="width: 60%;" pInputText type="text" formControlName="currency_origin" id="currency_origin"  placeholder="(Will be auto-populated)"><br><br>
                 </div>
-                <div class="mb-8">
+                <!-- <div class="mb-8">
                     <label for="notif" class="block">Do you prefer to receive web notifications:</label><br>
                     <p-radiobutton [value]="true" formControlName="notif" inputId="Yes" id="notif"></p-radiobutton>
                     <label for="Yes" class="ml-2">Yes</label><br><br>
                     <p-radiobutton [value]="false" formControlName="notif" inputId="No"></p-radiobutton>
                     <label for="No" class="ml-2">No</label><br>
-                </div>
-                <button type="submit">Register</button>
+                </div> -->
+                <p-button label="Submit" severity="success" (onClick)="processForm()"/>
             </form>
             } @else {
             <div>No user</div>

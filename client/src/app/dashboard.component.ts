@@ -3,7 +3,7 @@ import { AuthService } from './AuthService';
 import { filter, map, Observable, Subscription } from 'rxjs';
 import { User } from 'firebase/auth';
 import { FireBaseAuthStore } from './FireBaseAuth.store';
-import { AuthState, TripInfo, UserFront } from './models/models';
+import { AuthState, TripInfo, UserFront, UserRoles } from './models/models';
 import { Router } from '@angular/router';
 import { MenuItem, PrimeIcons } from 'primeng/api';
 import { v4 as uuidv4 } from 'uuid';
@@ -11,6 +11,8 @@ import { TripService } from './TripService';
 import { FileUploadService } from './FileUploadService';
 import { UserDetailsStore } from './UserDetails.store';
 import { TripStore } from './TripsStore.store';
+import { UserROLESService } from './UserROLESService';
+import { UserService } from './UserService';
 
 
 @Component({
@@ -77,6 +79,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // Cache for trip cover images
   tripCoverImages: { [key: string]: string } = {};
 
+  tripMasterNames: { [key: string]: string } = {};
+  userService = inject(UserService)
+
+tripUserRolesMap: { [trip_id: string]: UserRoles[] } = {};
+
+
+  userRolesService = inject(UserROLESService)
+
   //for action submenubar
   nestedMenuItems = [
     {
@@ -137,6 +147,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         // Preload trip cover images
         for (const trip of this.tripsCreatedByUser) {
           this.tripCoverImages[trip.cover_image_id] = await this.getTripsCoverImage(trip.cover_image_id);
+          const userRoles = await this.userRolesService.getAllUsersRolesForTripFromBE(trip.trip_id, this.currUser?.uid ?? '');
+          this.tripUserRolesMap[trip.trip_id] = userRoles;
+          const masterUser = await this.userService.getUserbyFirebaseId(trip.master_user_id);
+    this.tripMasterNames[trip.trip_id] = masterUser?.user_name ?? 'Unknown';
         }
       }
     })
