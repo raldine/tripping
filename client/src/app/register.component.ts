@@ -321,7 +321,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
                 // Wait for the toast to be visible before navigating (adjust timing if needed)
                 await new Promise(resolve => setTimeout(resolve, 3000));
                 this.isUploading = false;
-                this.router.navigate(["/trip-details", this.sharingRedirectService.getCapturedTripIdForRedirect()]);
+                this.router.navigate(["/dashboard"]);
 
               }
 
@@ -349,7 +349,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
                 // Wait for the toast to be visible before navigating (adjust timing if needed)
                 await new Promise(resolve => setTimeout(resolve, 3000));
                 this.isUploading = false;
-                this.router.navigate(["/trip-details", this.sharingRedirectService.getCapturedTripIdForRedirect()]);
+                this.router.navigate(["/dashboard"]);
               }
 
             }
