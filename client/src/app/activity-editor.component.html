@@ -11,7 +11,7 @@
             </div>
             <div class="mb-2 field-wrapper">
                 <label for="activity_type" class="block">Activity Type:</label><br>
-                <select class="uniform-input" id="activity_type" formControlName="activity_type" placeholder="Select an activity type" (change)="changeCurrSelectedActivity($event)">
+                <select class="uniform-input" id="activity_type" formControlName="activity_type" placeholder="Select an activity type">
                   @for(option of activityTypesOptions; track option){
                       <option [value]="option">{{ option }}</option>
                   }

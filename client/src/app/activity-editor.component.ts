@@ -124,6 +124,9 @@ export class ActivityEditorComponent {
   //error uploading toast
   messagingService = inject(MessageService);
 
+  // check_in_flight_mode: boolean = false;
+  activityTypeSub!: Subscription | undefined
+
 
 
   isUploading = false;  // Flag to control the spinner visibility
@@ -223,6 +226,17 @@ export class ActivityEditorComponent {
     //set calendar limits:
     this.min_date = this.selected_tripInfo?.start_date ?? ''
     this.max_date = this.selected_tripInfo?.end_date ?? ''
+
+    this.activityTypeSub = this.activityForm.get('activity_type')?.valueChanges.subscribe((value: string) => {
+      console.log('Selected activity type:', value);
+    
+      if (value === 'Check In - Flight') {
+        this.setAutocompleteRestrictions(null); // No restriction
+      } else {
+        const code = this.selected_tripInfo?.d_iso2?.trim();
+        this.setAutocompleteRestrictions(code ? [code] : null);
+      }
+    });
 
     this.authStateCaptured$ = this.firebaseAuthStore.getAuthState$
     this.authStateSubscription = this.authStateCaptured$.subscribe((authState) => {
@@ -426,12 +440,44 @@ export class ActivityEditorComponent {
   }
 
 
-  changeCurrSelectedActivity(event: Event){
-    const selectedValue = (event.target as HTMLSelectElement).value;
-    console.log("event value ", selectedValue)
-    // this.curr_selected_activity_type = event
+  // changeCurrSelectedActivity(value: Event | null){
+  //   const selectedValue = (event.target as HTMLSelectElement).value;
+  //   console.log("event value ", selectedValue)
+  //   // this.curr_selected_activity_type = event
+  //   if(selectedValue===null){
+  //     return
+  //   }
 
+  //   // if(selectedValue==="Check In - Flight"){
+  //   //   console.log("settting no country restrictions")
+  //   //   this.autocomplete.setComponentRestrictions({});
+  //   // } else {
+  //   //   this.autocomplete.setComponentRestrictions({country: this.selected_tripInfo?.d_iso2})
+  //   // }
+
+  // }
+
+  setAutocompleteRestrictions(countries: string[] | string | null): void {
+    if (!this.autocomplete) return;
+  
+    try {
+      if (countries === null) {
+        this.autocomplete.setComponentRestrictions({country: []})
+      } else if (typeof countries === 'string') {
+        this.autocomplete.setComponentRestrictions({ country: [countries] });
+      } else if (Array.isArray(countries)) {
+        this.autocomplete.setComponentRestrictions({ country: countries });
+      } else {
+        throw new Error('Invalid format');
+      }
+    } catch (error) {
+      console.warn('Failed to set restrictions:', countries, error);
+    }
   }
+  
+  
+  
+  
 
   detectWhichItineraryItBelongsto(event: Event){
     const selectedValue = (event.target as HTMLSelectElement).value;
@@ -515,6 +561,9 @@ export class ActivityEditorComponent {
     this.loggedInUserDetailsSub.unsubscribe();
     this.selectedTripDetailsSub.unsubscribe();
     this.paramsSub.unsubscribe();
+    if (this.activityTypeSub) {
+      this.activityTypeSub.unsubscribe();
+    }
 
 
   }
